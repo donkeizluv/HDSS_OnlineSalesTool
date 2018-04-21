@@ -1,0 +1,42 @@
+{
+  "name": "archiver-tool",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "webpack --mode development --hide-modules",
+    "build-min": "webpack --mode production --hide-modules"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "bootstrap": "^4.1.0",
+    "jquery": "3.3.1",
+    "jwt-decode": "^2.2.0",
+    "moment": "^2.22.1",
+    "popper.js": "^1.14.1",
+    "query-string": "^6.0.0",
+    "vee-validate": "^2.0.6",
+    "vue": "^2.5.16",
+    "vue-js-modal": "^1.3.13",
+    "vue-router": "^3.0.1",
+    "vue-toasted": "^1.1.24",
+    "vuejs-paginate": "^1.8.0",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-es2015": "^6.24.1",
+    "clean-webpack-plugin": "^0.1.19",
+    "css-loader": "^0.28.11",
+    "hard-source-webpack-plugin": "^0.6.4",
+    "style-loader": "^0.21.0",
+    "vue-loader": "^14.2.2",
+    "vue-template-compiler": "^2.5.16",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.0.14"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  }
+}
