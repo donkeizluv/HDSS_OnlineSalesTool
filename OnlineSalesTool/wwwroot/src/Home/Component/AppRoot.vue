@@ -3,11 +3,7 @@
         <nav-bar :app-name="'Online Sales Tool'" :env="'DEV'"></nav-bar>
         <div v-bind:class="{'greybg':!IsAuthenticated }">
             <div class="container-fluid">
-                <div class="row">
-                    <div class="col">
-                        <router-view></router-view>
-                    </div>
-                </div>
+                <router-view></router-view>
             </div>
         </div>
     </div>

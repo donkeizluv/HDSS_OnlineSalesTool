@@ -25,6 +25,7 @@ namespace OnlineSalesTool.Logic
         public IEnumerable<DateTime> DaysInMonthRange => Enumerable.Range(0, (int)(LastDate - FirstDate).TotalDays + 1)
                                                             .Select(i => FirstDate.AddDays(i));
         public DateTime MonthYear { get; private set; }
+        public string DisplayMonthYear => MonthYear.ToString("MM-yyyy");
         public IEnumerable<ShiftSchedulePOCO> Schedules { get; }
         public int TargetPos { get; private set; }
 

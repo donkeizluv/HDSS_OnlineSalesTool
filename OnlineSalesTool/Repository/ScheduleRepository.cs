@@ -2,13 +2,12 @@
 using NLog;
 using OnlineSalesTool.CustomException;
 using OnlineSalesTool.EFModel;
-using OnlineSalesTool.Service;
 using OnlineSalesTool.Logic;
 using OnlineSalesTool.POCO;
+using OnlineSalesTool.Service;
 using OnlineSalesTool.ViewModels;
 using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace OnlineSalesTool.Repository
@@ -17,7 +16,7 @@ namespace OnlineSalesTool.Repository
     {
         public const int NearestMonthScheduleTake = 3;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private OnlineSalesContext _context;
+        private readonly OnlineSalesContext _context;
         
         public ScheduleRepository(OnlineSalesContext context, IUserResolver userResolver) : base(userResolver.GetPrincipal())
         {
@@ -34,7 +33,7 @@ namespace OnlineSalesTool.Repository
                 .Where(u => u.ManagerId == PrincipalUserId)
                 .Select(u => new AppUserPOCO() {
                     UserId = u.UserId,
-                    Username = u.Username
+                    DisplayName =  $"{u.Name} - {u.Hr}"
                 }).AsNoTracking().ToListAsync(),
                 //Get all POS under management
                 POSs = await _context.Pos.Where(p => p.UserId == PrincipalUserId)
@@ -53,7 +52,7 @@ namespace OnlineSalesTool.Repository
                             StartAt = d.StartAt, EndAt = d.EndAt
                         })
                     }),
-                    PreviousMonthSchedule = p.ShiftSchedule.GroupBy(ss=> new {
+                    PreviousMonthSchedules = p.ShiftSchedule.GroupBy(ss=> new {
                         ss.ShiftDate.Year,
                         ss.ShiftDate.Month
                     }).OrderByDescending(g => g.Key.Year)
@@ -96,8 +95,7 @@ namespace OnlineSalesTool.Repository
             //Find any dupicate of same ShiftDate-ShiftId-UserId
             var dupFound =
                 from s in scheduleContainer.Schedules
-                group s by new
-                {
+                group s by new {
                     s.ShiftDate,
                     s.ShiftId,
                     s.UserId
@@ -137,6 +135,7 @@ namespace OnlineSalesTool.Repository
                 throw new BussinessException($"Some shift ids are not valid or POS does not have this shift");
             }
             //Check all user id of shift detail are managed by current user
+            //Get all user under this user management
             var managedUserIds = await _context.AppUser
                 .Where(u => u.ManagerId == userId)
                 .Select(u => u.UserId)
@@ -154,6 +153,14 @@ namespace OnlineSalesTool.Repository
             {
                 throw new BussinessException($"User ids: {string.Concat(notUnderManaged.Select(u => u + " "))} are not managed by: {userId}");
             }
+            //Check if this specific schedule Month/Year has been defined
+            if (_context.ShiftSchedule.Any(s => s.Pos.PosId == scheduleContainer.TargetPos &&
+            s.ShiftDate.Month == scheduleContainer.MonthYear.Month &&
+            s.ShiftDate.Year == scheduleContainer.MonthYear.Year))
+            {
+                throw new BussinessException($"Schedule: {scheduleContainer.MonthYear.ToString("MM/yyyy")} of POS: {scheduleContainer.TargetPos} has already been defined");
+            }
+            //Clean
         }
 
         public async Task SaveSchedule(ScheduleContainer schedule)

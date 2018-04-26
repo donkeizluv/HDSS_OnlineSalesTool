@@ -8,6 +8,7 @@ namespace OnlineSalesTool.POCO
     public class AppUserPOCO
     {
         public int UserId { get; set; }
-        public string Username { get; set; }
+        //public string Username { get; set; }
+        public string DisplayName { get; set; }
     }
 }

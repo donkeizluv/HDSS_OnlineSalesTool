@@ -1,10 +1,9 @@
 ﻿using OnlineSalesTool.Filter;
-using OnlineSalesTool.PageModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using OnlineSalesTool.ViewModels;
 
 namespace OnlineSalesTool.Controllers
 {

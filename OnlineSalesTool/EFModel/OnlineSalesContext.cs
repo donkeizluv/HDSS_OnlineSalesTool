@@ -1,8 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 
 namespace OnlineSalesTool.EFModel
 {
@@ -20,18 +18,13 @@ namespace OnlineSalesTool.EFModel
         public virtual DbSet<ShiftSchedule> ShiftSchedule { get; set; }
         public virtual DbSet<UserAbility> UserAbility { get; set; }
 
-        public static readonly LoggerFactory ConsoleLoggerFactory
-    = new LoggerFactory(new[] { new ConsoleLoggerProvider((_, __) => true, true) });
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(@"Server=(localdb)\Local;Database=OnlineSales;Trusted_Connection=True;");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer(@"Server=(localdb)\local;Database=OnlineSales;Trusted_Connection=True;");
             }
-#if DEBUG
-            //optionsBuilder.UseLoggerFactory(ConsoleLoggerFactory);
-#endif
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -62,7 +55,15 @@ namespace OnlineSalesTool.EFModel
                     .IsRequired()
                     .HasMaxLength(60);
 
+                entity.Property(e => e.Hr)
+                    .HasColumnName("HR")
+                    .HasMaxLength(20);
+
                 entity.Property(e => e.LastLogin).HasColumnType("datetime");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.Phone).HasMaxLength(20);
 
@@ -224,7 +225,7 @@ namespace OnlineSalesTool.EFModel
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(10);
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<ShiftDetail>(entity =>

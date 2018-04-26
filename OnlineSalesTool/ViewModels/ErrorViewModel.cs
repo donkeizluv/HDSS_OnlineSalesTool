@@ -1,6 +1,6 @@
 using System;
 
-namespace OnlineSalesTool.PageModels
+namespace OnlineSalesTool.ViewModels
 {
     public class ErrorViewModel
     {

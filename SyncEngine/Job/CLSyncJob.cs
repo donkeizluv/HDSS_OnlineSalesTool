@@ -56,7 +56,7 @@ namespace SyncService.Job
                 //Assign cases to CA
                 foreach (var newCase in newCases)
                 {
-                    if(assigner.GetUserMatchedSchedule(newCase.PosCode, out var userIds, out string reason))
+                    if(assigner.GetUserMatchedSchedule(newCase.PosCode, DateTime.Now, out var userIds, out string reason))
                     {
                         _logger.Trace($"Assign OK, tracking number: {newCase.TrackingNumber} to: {string.Concat(userIds.Select(id => id + " "))}");
                         _logger.Trace($"Assign to user id: {userIds.First()}");

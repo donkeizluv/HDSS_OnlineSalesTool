@@ -6,6 +6,7 @@ import jwt from 'jwt-decode'
 import common from '../Home/Common'
 
 import appConst from './AppConst'
+import API from './API'
 import router from './router'
 
 
@@ -44,7 +45,7 @@ export default new Vuex.Store({
                     var form = new FormData();
                     form.append('username', cred.username);
                     form.append('pwd', cred.pwd);
-                    var response = await axios.post(appConst.Login, form);
+                    var response = await axios.post(API.Login, form);
                     var token = response.data.auth_token;
                     //console.log(response);
                     //Decode jwt

@@ -112,7 +112,7 @@ namespace TestConsole
 
             foreach (var item in testList)
             {
-                if (matcher.GetUserMatchedSchedule(item, out var ids, out string reason))
+                if (matcher.GetUserMatchedSchedule(item, DateTime.Now , out var ids, out string reason))
                 {
                     foreach (var id in ids)
                     {

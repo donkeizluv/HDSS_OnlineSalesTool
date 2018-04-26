@@ -10,6 +10,7 @@ namespace OnlineSalesTool.POCO
     {
         private DateTime _shiftDate;
 
+        public int Day => _shiftDate.Day;
         public DateTime ShiftDate { get => _shiftDate.Date; set => _shiftDate = value; }
         public int UserId { get; set; }
         public int ShiftId { get; set; }

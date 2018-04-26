@@ -1,5 +1,4 @@
-﻿using OnlineSalesTool.Logic;
-using NLog;
+﻿using NLog;
 using OnlineSalesTool.EFModel;
 using System;
 using System.Linq;
@@ -36,30 +35,29 @@ namespace OnlineSalesTool.Logic.Impl
         /// <param name="user"></param>
         /// <param name="reason"></param>
         /// <returns></returns>
-        public bool GetUserMatchedSchedule(string posCode, out IEnumerable<int> matchUserId, out string reason)
+        public bool GetUserMatchedSchedule(string posCode, DateTime date, out IEnumerable<int> matchUserId, out string reason)
         {
             reason = string.Empty;
             matchUserId = null;
-            var today = DateTime.Now;
-            var timeOfday = today.TimeOfDay;
+            var timeOfDate = date.TimeOfDay;
 
             if (string.IsNullOrEmpty(posCode)) throw new ArgumentNullException();
-            _logger.Trace($"Try assigning for {nameof(posCode)}: {posCode} at: {timeOfday}");
+            _logger.Trace($"Try assigning for {nameof(posCode)}: {posCode} at: {timeOfDate}");
             //Find shift schedule of this POS that match current system time
             //var shiftSchedules = _getShiftSchedule.Invoke(_context, today, posCode);
 
             //No need to include if no ref to those entity need at the end of this db context
             var shiftSchedules = _context.ShiftSchedule
-                .Where(p => p.ShiftDate.Date == today.Date)
+                .Where(p => p.ShiftDate.Date == date.Date)
                 //.Include(p => p.Pos)
                 .Where(p => p.Pos.PosCode == posCode)
                 //.Include(shift => shift.Shift)
                 //    .ThenInclude(detail => detail.ShiftDetail)
-                .Where(s => s.Shift.ShiftDetail.Any(d => timeOfday >= d.StartAt && timeOfday <= d.EndAt)).AsNoTracking().ToList();
+                .Where(s => s.Shift.ShiftDetail.Any(d => timeOfDate >= d.StartAt && timeOfDate <= d.EndAt)).AsNoTracking().ToList();
 
             if (shiftSchedules.Count() < 1)
             {
-                reason = $"Cant find any {nameof(ShiftSchedule)} for {nameof(posCode)}: {posCode}, on: {today}";
+                reason = $"Cant find any {nameof(ShiftSchedule)} for {nameof(posCode)}: {posCode}, on: {date}";
                 return false;
             }
             _logger.Trace($"Matched schedule found: {shiftSchedules.Count()}");

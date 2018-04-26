@@ -14,6 +14,6 @@ namespace OnlineSalesTool.Logic
         /// <param name="order"></param>
         /// <param name="user"></param>
         /// <returns></returns>
-        bool GetUserMatchedSchedule(string posCode, out IEnumerable<int> matchUserId, out string reason);
+        bool GetUserMatchedSchedule(string posCode, DateTime date, out IEnumerable<int> matchUserId, out string reason);
     }
 }

@@ -26,11 +26,11 @@ namespace OnlineSalesTool.Controllers
 
         [HttpGet]
         //[Authorize]
-        public async Task<ShiftAssignerViewModel> GetVM()
+        public async Task<IActionResult> GetVM()
         {
             using (_repo)
             {
-                return await _repo.CreateAssignerVM();
+                return Ok(await _repo.CreateAssignerVM());
             }
             
         }
@@ -38,6 +38,7 @@ namespace OnlineSalesTool.Controllers
         //[Authorize]
         public async Task<IActionResult> Save([FromBody]ScheduleContainer schedule)
         {
+            if (!ModelState.IsValid || schedule == null) return BadRequest("Invalid post data");
             using (_repo)
             {
                 try
@@ -48,7 +49,7 @@ namespace OnlineSalesTool.Controllers
                 catch (BussinessException ex) //Fail bussiness check
                 {
                     Utility.LogException(ex, _logger);
-                    return BadRequest("Bussiness logic check failed.");
+                    return BadRequest(ex.Message);
                 }
                 catch (DbUpdateException ex)
                 {

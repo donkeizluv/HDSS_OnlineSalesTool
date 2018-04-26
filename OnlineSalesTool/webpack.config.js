@@ -39,6 +39,7 @@ module.exports = {
         //        comments: false //No comments
         //    }
         //}),
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), //Ignore locales to reduce bundled size
         new CleanWebpackPlugin(['wwwroot/dist'], []),
         //new HardSourceWebpackPlugin()
     ],

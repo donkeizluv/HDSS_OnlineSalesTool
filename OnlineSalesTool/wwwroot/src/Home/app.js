@@ -3,7 +3,7 @@
 import VModal from 'vue-js-modal'
 import Toasted from 'vue-toasted'
 //import VueProgressBar from 'vue-progressbar'
-
+import vSelect from 'vue-select'
 import appConst from './AppConst'
 //import mixin from '../Home/mixin'
 import store from './store'
@@ -12,6 +12,7 @@ import App from './Component/AppRoot.vue'
 
 
 //Extend & reg
+Vue.component('v-select', vSelect)
 Vue.use(VModal, { dialog: true });
 Vue.use(Toasted,
     {
@@ -20,11 +21,6 @@ Vue.use(Toasted,
         theme: 'primary',
         iconPack: 'fontawesome'
     });
-//Vue.use(VueProgressBar, {
-//    color: 'rgb(143, 255, 199)',
-//    failedColor: 'red',
-//    height: '2px'
-//})
 //Registers globally
 //Vue.mixin(mixin);
 //Init
