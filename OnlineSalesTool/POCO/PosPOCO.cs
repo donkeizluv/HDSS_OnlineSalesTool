@@ -10,7 +10,7 @@ namespace OnlineSalesTool.POCO
         public string PosName { get; set; }
         public IEnumerable<ShiftPOCO> Shifts { get; set; }
         //Limit this set to x nearest month
-        public IEnumerable<ScheduleContainer> PreviousMonthSchedules { get; set; }
+        public IEnumerable<ScheduleContainerPOCO> PreviousMonthSchedules { get; set; }
 
         public bool HasCurrentMonthSchedule { get; set; }
     }

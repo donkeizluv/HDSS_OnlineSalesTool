@@ -1,12 +1,12 @@
-﻿<template id="hello">
-    <div>
-        <h4>TRUE SPA - Hello!</h4>
-    </div>
+﻿<template id="footer">
+    <footer>
+
+    </footer>
 </template>
 <script>
     export default {
-        name: 'hello',
-        template: '#hello'
+        name: 'footer',
+        template: '#footer'
     }
 </script>
 <style scoped>

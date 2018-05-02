@@ -33,7 +33,7 @@ namespace OnlineSalesTool.Repository
                 .Where(u => u.ManagerId == PrincipalUserId)
                 .Select(u => new AppUserPOCO() {
                     UserId = u.UserId,
-                    DisplayName =  $"{u.Name} - {u.Hr}"
+                    DisplayName = $"{u.Name} - {u.Hr}"
                 }).AsNoTracking().ToListAsync(),
                 //Get all POS under management
                 POSs = await _context.Pos.Where(p => p.UserId == PrincipalUserId)
@@ -47,22 +47,26 @@ namespace OnlineSalesTool.Repository
                         Name = ps.Shift.Name,
                         ShiftId = ps.ShiftId,
                         //Get all shift details of this Shift
-                        ShiftDetails = ps.Shift.ShiftDetail
-                        .Select(d => new ShiftDetailPOCO() {
-                            StartAt = d.StartAt, EndAt = d.EndAt
-                        })
+                        //ShiftDetails = ps.Shift.ShiftDetail
+                        //.Select(d => new ShiftDetailPOCO() {
+                        //    StartAt = d.StartAt, EndAt = d.EndAt
+                        //})
                     }),
-                    PreviousMonthSchedules = p.ShiftSchedule.GroupBy(ss=> new {
+                    PreviousMonthSchedules = p.ShiftSchedule.GroupBy(ss => new {
                         ss.ShiftDate.Year,
                         ss.ShiftDate.Month
                     }).OrderByDescending(g => g.Key.Year)
                     .ThenByDescending(g => g.Key.Month)
                     .Take(NearestMonthScheduleTake)
-                    .Select(g => new ScheduleContainer(p.PosId, new DateTime(g.Key.Year, g.Key.Month, 1),
-                                                    g.Select(gg => new ShiftSchedulePOCO() {
-                                                                        ShiftDate = gg.ShiftDate,
-                                                                        ShiftId = gg.ShiftId,
-                                                                        UserId = gg.UserId }))),
+                    .Select(g => new ScheduleContainerPOCO(
+                            g.Select(gg => new ShiftSchedulePOCO(){
+                                        ShiftDate = gg.ShiftDate,
+                                        Shift = new ShiftPOCO() { Name = gg.Shift.Name, ShiftId = gg.ShiftId },
+                                        User = new AppUserPOCO()
+                                        {
+                                            UserId = gg.User.UserId,
+                                            DisplayName = $"{gg.User.Name} - {gg.User.Hr}"
+                                        }}), new DateTime(g.Key.Year, g.Key.Month, 1))),
                     HasCurrentMonthSchedule = p.ShiftSchedule.Any(ss => ss.ShiftDate.Year == now.Year && ss.ShiftDate.Month == now.Month)
                 }).AsNoTracking().ToListAsync(),
                 //Current SYS Month/Year
@@ -80,6 +84,11 @@ namespace OnlineSalesTool.Repository
         {
             var userId = PrincipalUserId;
             if (scheduleContainer == null) throw new ArgumentNullException($"Param: {nameof(scheduleContainer)} is null.");
+            var emptyDefine = scheduleContainer.Schedules.FirstOrDefault(s => s.Shift == null || s.User == null);
+            if(emptyDefine != null)
+            {
+                throw new BussinessException($"Some shift details missing shift/user definition");
+            }
             //Check format valid
             if (!scheduleContainer.CheckBasicFormat(out string formatReason))
             {
@@ -97,8 +106,8 @@ namespace OnlineSalesTool.Repository
                 from s in scheduleContainer.Schedules
                 group s by new {
                     s.ShiftDate,
-                    s.ShiftId,
-                    s.UserId
+                    s.Shift.ShiftId,
+                    s.User.UserId
                 } into g
                 select g;
             int dupCount = dupFound.Count(g => g.Count() > 1);
@@ -129,7 +138,7 @@ namespace OnlineSalesTool.Repository
             //ShiftId of POS except shiftid of day if any then not all are defined
             if (groupByDate.Any(g => shiftsOfPos
                 .Select(shiftId2 => shiftId2.ShiftId)
-                .Except(g.Select(s => s.ShiftId))
+                .Except(g.Select(s => s.Shift.ShiftId))
                 .Any()))
             {
                 throw new BussinessException($"Some shift ids are not valid or POS does not have this shift");
@@ -146,8 +155,8 @@ namespace OnlineSalesTool.Repository
             }
             //Group by all user ids of schedule
             var groupByUserId = scheduleContainer.Schedules
-                                .GroupBy(s => s.UserId)
-                                .Select(u => u.First().UserId);
+                                .GroupBy(s => s.User.UserId)
+                                .Select(u => u.First().User.UserId);
             var notUnderManaged = groupByUserId.Except(managedUserIds);
             if(notUnderManaged.Any())
             {

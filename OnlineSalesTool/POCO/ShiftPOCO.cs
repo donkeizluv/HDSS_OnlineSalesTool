@@ -6,6 +6,6 @@ namespace OnlineSalesTool.POCO
     {
         public string Name { get; set; }
         public int ShiftId { get; set; }
-        public IEnumerable<ShiftDetailPOCO> ShiftDetails { get; set; }
+        //public IEnumerable<ShiftDetailPOCO> ShiftDetails { get; set; }
     }
 }

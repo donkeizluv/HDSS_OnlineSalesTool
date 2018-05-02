@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace OnlineSalesTool.Logic
 {
     /// <summary>
-    /// Container for all daily shift schedule of specific month
+    /// Container for all daily shift schedule of specific month. Use for create new schedule
     /// </summary>
     public class ScheduleContainer
     {
@@ -25,7 +25,6 @@ namespace OnlineSalesTool.Logic
         public IEnumerable<DateTime> DaysInMonthRange => Enumerable.Range(0, (int)(LastDate - FirstDate).TotalDays + 1)
                                                             .Select(i => FirstDate.AddDays(i));
         public DateTime MonthYear { get; private set; }
-        public string DisplayMonthYear => MonthYear.ToString("MM-yyyy");
         public IEnumerable<ShiftSchedulePOCO> Schedules { get; }
         public int TargetPos { get; private set; }
 
@@ -43,8 +42,8 @@ namespace OnlineSalesTool.Logic
             {
                 ShiftDate = p.ShiftDate,
                 PosId = TargetPos,
-                ShiftId = p.ShiftId,
-                UserId = p.UserId
+                ShiftId = p.Shift.ShiftId,
+                UserId = p.User.UserId
             });
         }
 

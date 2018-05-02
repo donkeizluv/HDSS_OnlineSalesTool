@@ -14,6 +14,7 @@ namespace OnlineSalesTool.ViewModels
         public IEnumerable<AppUserPOCO> Users { get; set; }
         //Current system MonthYear
         public DateTime SystemMonthYear { get => _systemMonthYear; set => _systemMonthYear = value.Date; }
+        public string SystemMonthYearDisplay => SystemMonthYear.ToString("MM-yyyy");
         //Total days of current system date
         public int TotalDaysOfMonth { get => DateTime.DaysInMonth(SystemMonthYear.Year, SystemMonthYear.Month); }
     }

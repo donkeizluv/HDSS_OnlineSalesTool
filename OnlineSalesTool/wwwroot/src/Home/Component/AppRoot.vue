@@ -6,6 +6,9 @@
                 <router-view></router-view>
             </div>
         </div>
+        <!--<footer>
+            HDSS - 2018
+        </footer>-->
     </div>
 </template>
 <script>
@@ -41,10 +44,6 @@
                     //Reload fail then logout
                     await this.$store.dispatch(LOGOUT);
                 }
-            }
-        },
-        data() {
-            return {
             }
         }
     }

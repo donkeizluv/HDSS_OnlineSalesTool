@@ -1,9 +1,9 @@
 ﻿<!--Assigner view-->
 <template id="assigner">
-    <div class="d-flex justify-content-center flex-wrap">
+    <div class="d-flex justify-content-around flex-wrap">
         <!--Use slot-->
         <template v-for="item in days">
-            <shift-detail v-bind:users="users" v-bind:day.sync="item" />
+            <shift-detail v-bind:users="users" v-bind:readonly="readonly" v-bind:day.sync="item" />
         </template>
     </div>
 </template>
@@ -28,6 +28,10 @@
             //Users to assign to shifts
             users: {
                 type: Array
+            },
+            readonly: {
+                type: Boolean,
+                default: false
             }
         },
         data: function () {
