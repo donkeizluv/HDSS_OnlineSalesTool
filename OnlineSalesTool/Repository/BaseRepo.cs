@@ -17,9 +17,8 @@ namespace OnlineSalesTool.Repository
         {
             get
             {
-#if DEBUG
-                return 1; //Admin
-#endif
+                //For testing without Auth
+                //return 1; //Admin
                 if (!ContextHelper.TryGetContextValue<int>(UserPrincipal, CustomClaims.UserId, out int userId))
                     //Cant happen if user has signed in & proper claims added
                     throw new InvalidOperationException("Cant get UserId of current acting principal");

@@ -14,6 +14,7 @@ namespace OnlineSalesTool.Repository
 {
     public class ScheduleRepository : BaseRepo, IScheduleRepository
     {
+        //Number of prev sche to return in VM
         public const int NearestMonthScheduleTake = 3;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly OnlineSalesContext _context;

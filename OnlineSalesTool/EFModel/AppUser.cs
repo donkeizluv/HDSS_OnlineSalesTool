@@ -17,6 +17,7 @@ namespace OnlineSalesTool.EFModel
         public int UserId { get; set; }
         public string Name { get; set; }
         public string Username { get; set; }
+        public bool Active { get; set; }
         public string Hr { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }

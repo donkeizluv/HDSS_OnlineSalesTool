@@ -47,6 +47,7 @@ namespace OnlineSalesTool
             services.AddSingleton(Configuration); //Define specific option then inject use IOptions
             //Inject repos
             services.AddTransient<IScheduleRepository, ScheduleRepository>();
+            services.AddTransient<IAccountRepository, AccountRepository>();
             //Inject INDUS
             //services.AddSingleton<IIndusAdapter>(IndusFactory.GetIndusInstance(Configuration,
             //    File.ReadAllText($"{Program.ExeDir}\\{Configuration.GetSection("Indus").GetValue<string>("QueryFileName")}")));
@@ -107,7 +108,9 @@ namespace OnlineSalesTool
             {
                 options.Providers.Add<GzipCompressionProvider>();
                 //Everything else is too small to compress
-                options.MimeTypes = new[] { "text/css", "application/javascript" };
+                options.MimeTypes = new[] {
+                    "text/css",
+                    "application/javascript" };
             });
 
             services.Configure<GzipCompressionProviderOptions>(options =>

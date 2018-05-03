@@ -9,15 +9,22 @@ using Newtonsoft.Json;
 using OnlineSalesTool.Logic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using OnlineSalesTool.Repository;
+using OnlineSalesTool.EFModel;
+using System;
+using System.Collections.Generic;
+using OnlineSalesTool.Service;
+using System.Linq;
 
 namespace OnlineSalesTool.Controllers
 {
     [CustomExceptionFilterAttribute]
     public class AccountController : Controller
     {
-        private IConfiguration _config;
+        private readonly IConfiguration _config;
         private readonly IJwtFactory _jwtFactory;
         private readonly JwtIssuerOptions _jwtOptions;
+        private readonly IAccountRepository _repo;
 
         internal string Issuer
         {
@@ -33,7 +40,7 @@ namespace OnlineSalesTool.Controllers
                 return _config.GetSection("Authentication").GetValue<bool>("NoPwdCheck");
             }
         }
-        
+
         internal string Domain
         {
             get
@@ -44,11 +51,13 @@ namespace OnlineSalesTool.Controllers
 
         public AccountController(IConfiguration config,
             IJwtFactory jwtFactory,
-            IOptions<JwtIssuerOptions> jwtOptions)
+            IOptions<JwtIssuerOptions> jwtOptions,
+            IAccountRepository repo)
         {
             _config = config;
             _jwtFactory = jwtFactory;
             _jwtOptions = jwtOptions.Value;
+            _repo = repo;
         }
 
         public enum LoginResult
@@ -64,26 +73,51 @@ namespace OnlineSalesTool.Controllers
         public async Task<IActionResult> DoLogin([FromForm]string username = "", [FromForm]string pwd = "")
         {
             //Check against db or whatever here
-            var loginLevel = LoginResult.OK;
-            //var loginLevel = GetLoginLevel(username, pwd, _context, out var user);
-            if (loginLevel == LoginResult.Error) return Unauthorized();
-            if (loginLevel == LoginResult.NoPermission) return Unauthorized();
-            if (loginLevel == LoginResult.NotActive) return Unauthorized();
+            (LoginResult level, AppUser user) = await GetLoginLevel(username, pwd);
+            if (level == LoginResult.Error) return Unauthorized();
+            if (level == LoginResult.NoPermission) return Unauthorized();
+            if (level == LoginResult.NotActive) return Unauthorized();
             //OK proceed
             //add claims to identity
             var userIdentity = new ClaimsIdentity();
             //Add whatever claim user has here
-            userIdentity.AddClaims(new[] { new Claim( CustomClaims.Username.ToString(), username.ToLower()) });
+            userIdentity.AddClaims(CreateClaimSet(user));
             //Create token
             var jwt = await Token.GenerateJwt(userIdentity,
                 _jwtFactory,
-                "username",
+                user.Username,
                 _jwtOptions,
                 new JsonSerializerSettings { Formatting = Formatting.Indented });
             //Return token
             return Ok(jwt);
         }
-       
+        
+        private IEnumerable<Claim> CreateClaimSet(AppUser user)
+        {
+            var claims = new List<Claim>
+                {
+                    new Claim(CustomClaims.Username.ToString() , user.Username.ToLower()),
+                    new Claim(CustomClaims.UserId.ToString(), user.UserId.ToString()),
+                };
+            //add abilities to claims
+            claims.AddRange(user.UserAbility.Select(a => new Claim(AppConst.AbilityClaimName, a.Ability.Name)));
+            return claims;
+        }
+        
+        private async Task<(LoginResult, AppUser)> GetLoginLevel(string userName, string pwd)
+        {
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(pwd))
+                return (LoginResult.Error, null);
+            if (!Validate(userName, pwd)) return (LoginResult.Error, null);
+            //Includes everything needs to be added to Claims
+            var user = await _repo.GetUser(userName);
+            if (user == null)
+                return (LoginResult.NoPermission, null); //no permission
+            if (!user.Active)
+                return (LoginResult.NotActive, null);
+            return (LoginResult.OK, user);
+        }
+
         private bool Validate(string userName, string pwd)
         {
             if (NoPwdCheck) return true;

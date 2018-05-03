@@ -8,11 +8,12 @@ using OnlineSalesTool.Repository;
 using OnlineSalesTool.Service;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OnlineSalesTool.Controllers
 {
     [CustomExceptionFilterAttribute]
-    //[Authorize]
+    [Authorize]
     public class ShiftController : Controller
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
@@ -24,13 +25,13 @@ namespace OnlineSalesTool.Controllers
         }
 
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> GetVM()
         {
             return Ok(await _repo.CreateAssignerVM());
         }
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> Save([FromBody]ScheduleContainer schedule)
         {
             if (!ModelState.IsValid || schedule == null) return BadRequest("Invalid post data");

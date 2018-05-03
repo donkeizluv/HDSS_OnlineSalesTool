@@ -1,14 +1,16 @@
 ﻿<template>
     <div>
+        <v-dialog :clickToClose=false />
         <nav-bar :app-name="'Online Sales Tool'" :env="'DEV'"></nav-bar>
         <div v-bind:class="{'greybg':!IsAuthenticated }">
             <div class="container-fluid">
-                <router-view></router-view>
+                <keep-alive>
+                    <router-view v-on:showsuccess="ShowSuccessToast"
+                                 v-on:showinfo="ShowInfoToast"
+                                 v-on:showerror="ShowBlockingDialog"></router-view>
+                </keep-alive>
             </div>
         </div>
-        <!--<footer>
-            HDSS - 2018
-        </footer>-->
     </div>
 </template>
 <script>
@@ -44,6 +46,28 @@
                     //Reload fail then logout
                     await this.$store.dispatch(LOGOUT);
                 }
+            }
+        },
+        methods: {
+            ShowSuccessToast(mess) {
+                //This has shitty support for specific icon & multiple style class
+                this.$toasted.success(mess, {
+                    icon: 'fa-check-circle',
+                    className: 'toast-font-size'
+                });
+            },
+            ShowInfoToast(mess) {
+                this.$toasted.info(mess, {
+                    icon: 'fa-exclamation-circle',
+                    className: 'toast-font-size'
+                });
+            },
+            ShowBlockingDialog(mess) {
+                this.$modal.show('dialog', {
+                    title: 'Lỗi :(',
+                    text: mess,
+                    buttons: []
+                });
             }
         }
     }

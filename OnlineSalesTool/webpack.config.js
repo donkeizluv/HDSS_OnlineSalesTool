@@ -1,6 +1,7 @@
 ﻿'use strict';
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+const { VueLoaderPlugin } = require('vue-loader')
 //const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 module.exports = {
@@ -41,6 +42,7 @@ module.exports = {
         //}),
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), //Ignore locales to reduce bundled size
         new CleanWebpackPlugin(['wwwroot/dist'], []),
+        new VueLoaderPlugin()
         //new HardSourceWebpackPlugin()
     ],
     stats: {

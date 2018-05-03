@@ -13,5 +13,9 @@ namespace OnlineSalesTool.Service
         public const string ISODate = "yyyy-MM-dd";
         public const string NA = "N/A";
         public const string JSONNull = "null";
+
+        //Ability
+        public const string AbilityClaimName = "Ability";
+
     }
 }

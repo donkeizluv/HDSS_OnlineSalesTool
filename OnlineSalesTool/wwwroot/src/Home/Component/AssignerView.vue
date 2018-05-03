@@ -7,14 +7,16 @@
                     <div class="form-inline">
                         <!--Select POS-->
                         <label>POS: </label>
-                        <select class="form-control m-2" 
+                        <select class="form-control m-2"
                                 v-model="SelectedPos" 
                                 v-on:change="SelectedPosChanged"
                                 v-bind:disabled="CreateMode">
                             <option disabled>POS...</option>
-                            <option v-for="pos in POSs" 
-                                    v-bind:key="pos.PosId" 
-                                    v-bind:value="pos.PosId">{{pos.PosName}} - {{pos.PosCode}}</option>
+                            <option v-for="pos in POSs"
+                                    v-bind:key="pos.PosId"
+                                    v-bind:value="pos.PosId">
+                                {{ComposePOSLabel(pos)}}
+                            </option>
                         </select>
                         <!--Select prev month-->
                         <label>Tháng: </label>
@@ -62,7 +64,15 @@
         <div class="row">
             <div class="col">
                 <!--Title-->
-                <h5 class="text-center mb-md-3">{{TitleText}}</h5>
+                <h4 v-show="IsModeTextVisible" class="text-center mb-md-3">
+                    {{ModeText.Name}}
+                    <span class="badge badge-success">
+                        {{ModeText.POS}}
+                    </span>
+                    <span class="badge badge-danger">
+                        {{ModeText.MonthYear}}
+                    </span>
+                </h4>
             </div>
         </div>
         <div class="row">
@@ -83,7 +93,7 @@
 <script>
     import axios from 'axios'
     import shiftdetail from './ShiftDetail.vue'
-    //import moment from 'moment'
+    import moment from 'moment'
 
     //Api
     import API_Const from '../API'
@@ -95,24 +105,7 @@
             'shift-detail': shiftdetail
         },
         created: async function () {
-            //Fetch VM
-            try {
-                //Get VM
-                var response = await axios.get(API_Const.AssignerVmAPI);
-                var vm = response.data;
-                //console.log(vm);
-                //Set POSs
-                this.POSs = vm.POSs;
-                //Set users
-                this.Users = vm.Users;
-                //Set sys ref
-                this.SystemMonthYear = vm.SystemMonthYear;
-                this.SystemMonthYearDisplay = vm.SystemMonthYearDisplay;
-                this.TotalDaysOfMonth = vm.TotalDaysOfMonth;
-            } catch (e) {
-                //Show some sort of alert
-                console.log(e);
-            }
+            await this.LoadVM();
         },
         data: function() {
             return {
@@ -131,7 +124,16 @@
                 ReadOnly: true,
                 ShiftDetailDisplay: false,
                 //Current displaying
-                DisplayText: null,
+
+                //Creating, viewing...
+                ModeText: {
+                    Name: '',
+                    POS: '',
+                    MonthYear: null
+                },
+                IsModeTextVisible: false,
+
+                //Bindings
                 CurrentPOS: null,
                 CurrentPrevSchedules: null,
                 CurrentShifts: [],
@@ -139,10 +141,6 @@
             };
         },
         computed: {
-            TitleText: function () {
-                if (!this.DisplayText) return ''
-                return this.DisplayText;
-            },
             CanLoadSchedule: function () {
                 if (this.SelectedPrevSchedule)
                     return true;
@@ -169,6 +167,32 @@
             }
         },
         methods: {
+            LoadVM: async function () {
+                //Fetch VM
+                try {
+                    //Get VM
+                    var response = await axios.get(API_Const.AssignerVmAPI);
+                    var vm = response.data;
+                    //console.log(vm);
+                    //Set POSs
+                    this.POSs = vm.POSs;
+                    //Set users
+                    this.Users = vm.Users;
+                    //Set sys ref
+                    this.SystemMonthYear = vm.SystemMonthYear;
+                    this.SystemMonthYearDisplay = vm.SystemMonthYearDisplay;
+                    this.TotalDaysOfMonth = vm.TotalDaysOfMonth;
+                } catch (e) {
+                    //Show some sort of alert
+                    //this.$router.app.$emit('showerror', 'Tải dữ liệu thất bại, vui lòng liên hệ IT.');
+                    this.$emit('showerror', 'Tải dữ liệu thất bại, vui lòng liên hệ IT.');
+                    //Disabled function
+                    //TODO: Better mechanism to do this
+                    this.POSs = null;
+                    this.Users = null;
+                    //console.log(e);
+                }
+            },
             SelectedPosChanged: function () {
                 if (this.CreateMode) return;
                 //Unset selected schedule
@@ -182,7 +206,7 @@
                 //Set displaying shifts
                 this.CurrentShifts = this.CurrentPOS.Shifts;
                 //Clear title
-                this.DisplayText = '';
+                this.HideModeText();
             },
             ClearSchedule: function () {
                 this.CurrentDays = [];
@@ -231,10 +255,58 @@
                     //Happens if selected pos changed without updating CurrentPOS
                     this.CurrentDays = emptyDays;
                 }
-                this.DisplayText = `Tạo ca trực mới: ${this.CurrentPOS.PosCode} ${this.SystemMonthYearDisplay}`;
+                this.ShowModeText('Tạo ca trực mới: ', this.CurrentPOS.PosCode, this.SystemMonthYearDisplay)
+                //this.ModeName = `Tạo ca trực mới: ${this.CurrentPOS.PosCode} ${this.SystemMonthYearDisplay}`;
             },
-            SaveSchedule: function () {
-                if (!this.CancelSchedule) return;
+            SaveSchedule: async function () {
+                if (!this.CanSaveSchedule) return;
+                var api = API_Const.SaveScheduleAPI;
+                //Transform to linear shift detail format
+                //Contructor:
+                //ScheduleContainer(int targetPos, DateTime targetMonthYear, IEnumerable<ShiftSchedulePOCO> schedules)
+                var postObject = {
+                    targetPos: this.CurrentPOS.PosId, //Target POS of this schedule
+                    //Must be same default time of non specified time of C# Datetime in order to re-select after saved successfully
+                    //MomentJS, C# default time if not specified is 12:00:00, 00:00:00 respectively
+                    targetMonthYear: moment(this.SystemMonthYear).date(1).format('YYYY-MM-DD[T00:00:00]'), //Target month of this schedule, day must be 1
+                    schedules: []
+                };
+                var schedules = this.CurrentDays.reduce((acc, d) => {
+                    let shiftDetails = d.Shifts.map(s => {
+                        return {
+                            ShiftDate: moment(this.SystemMonthYear).date(d.Day).format(),
+                            User: {
+                                UserId: s.Assign.value
+                            },
+                            Shift: {
+                                ShiftId: s.ShiftId
+                            }
+                        };
+                    });
+                    acc.push(...shiftDetails);
+                    return acc;
+                }, []);
+                //console.log(schedules);
+                postObject.schedules = schedules;
+                try {
+                    await axios.post(API_Const.SaveScheduleAPI, postObject);
+                    this.$emit('showsuccess', 'Tạo lịch làm việc mới thành công!');
+                    //Set current view to newly added schedule
+                    //Reload VM
+                    var prevPos = this.SelectedPos;
+                    await this.LoadVM();
+                    //Back to view
+                    this.CancelSchedule();
+                    //Set POS then PrevSchedules
+                    this.SelectedPos = prevPos;
+                    this.SelectedPosChanged();
+                    this.SelectedPrevSchedule = postObject.targetMonthYear;
+                    this.LoadPrevSchedule();
+                } catch (e) {
+                    //Show error mess
+                    //console.log(e);
+                    this.$emit('showinfo', 'Có lỗi trong quá trình tạo lịch làm việc.');
+                }
 
             },
             CancelSchedule: function () {
@@ -244,7 +316,7 @@
                 this.ReadOnly = true;
                 this.CurrentDays = [];
                 this.SelectedPrevSchedule = null;
-                this.DisplayText = '';
+                this.HideModeText();
             },
             //Internal use
             GetEmptyDays: function (dayCount, shifts) {
@@ -266,7 +338,7 @@
             },
             LoadPrevSchedule: function () {
                 if (this.CreateMode) return;
-                if (!this.CanLoadSchedule) {
+                if (!this.CanLoadSchedule) { //????
                     this.ClearSchedule();
                     return;
                 }
@@ -296,11 +368,26 @@
                 //console.log(days);
                 //Display
                 this.CurrentDays = emptyDays;
-                this.DisplayText = `Xem ca trực: ${this.CurrentPOS.PosCode} ${scheduleContainer.DisplayMonthYear}`;
+                this.ShowModeText('Xem ca trực: ', this.CurrentPOS.PosCode, scheduleContainer.DisplayMonthYear)
+                //this.ModeName = `Xem ca trực: ${this.CurrentPOS.PosCode} ${scheduleContainer.DisplayMonthYear}`;
+            },
+            ShowModeText: function (name, pos, monthYear) {
+                this.ModeText.Name = name;
+                this.ModeText.POS = pos;
+                this.ModeText.MonthYear = monthYear;
+                this.IsModeTextVisible = true;
+            },
+            HideModeText: function () {
+                this.ModeText.Name = '';
+                this.ModeText.POS = '';
+                this.ModeText.MonthYear = '';
+                this.IsModeTextVisible = false;
+            },
+            ComposePOSLabel: function (pos) {
+                return pos.PosCode + (pos.HasCurrentMonthSchedule ? '' : ' (chưa xếp)');
+                //Too long
+                //return `${pos.PosName}-${pos.PosCode}` + (pos.HasCurrentMonthSchedule ? '' : ' (chưa xếp)');
             }
         }
     }
 </script>
-<style scoped>
-
-</style>

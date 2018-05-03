@@ -11,7 +11,7 @@ namespace OnlineSalesTool.EFModel
         }
 
         public int AbilityId { get; set; }
-        public string Ability1 { get; set; }
+        public string Name { get; set; }
         public string Description { get; set; }
 
         public ICollection<UserAbility> UserAbility { get; set; }

@@ -31,16 +31,15 @@ namespace OnlineSalesTool.EFModel
         {
             modelBuilder.Entity<Ability>(entity =>
             {
-                entity.HasIndex(e => e.Ability1)
+                entity.HasIndex(e => e.Name)
                     .HasName("U_Ability")
                     .IsUnique();
 
-                entity.Property(e => e.Ability1)
-                    .IsRequired()
-                    .HasColumnName("Ability")
-                    .HasMaxLength(20);
-
                 entity.Property(e => e.Description).HasMaxLength(50);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(20);
             });
 
             modelBuilder.Entity<AppUser>(entity =>
