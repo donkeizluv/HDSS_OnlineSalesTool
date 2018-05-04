@@ -18,7 +18,12 @@
                                             <i class="fas fa-user" aria-hidden="true" id="basic-addon1" />
                                         </div>
                                     </div>
-                                    <input v-model="Username" type="text" class="form-control" placeholder="Tên đăng nhập" aria-describedby="basic-addon1">
+                                    <input v-bind:disabled="Loading"
+                                           v-model="Username"
+                                           type="text"
+                                           class="form-control"
+                                           placeholder="Tên đăng nhập"
+                                           aria-describedby="basic-addon1">
                                 </div>
                                 <!--Pwd-->
                                 <div class="input-group mb-3">
@@ -27,11 +32,18 @@
                                             <i class="fas fa-key" aria-hidden="true" id="basic-addon2" />
                                         </div>
                                     </div>
-                                    <input v-model="Pwd" type="password" placeholder="Mật khẩu" v-on:keyup.enter="Login" class="form-control" aria-describedby="basic-addon2">
+                                    <input v-bind:disabled="Loading"
+                                           v-model="Pwd" 
+                                           type="password" 
+                                           placeholder="Mật khẩu" 
+                                           v-on:keyup.enter="Login" 
+                                           class="form-control" 
+                                           aria-describedby="basic-addon2">
                                 </div>
                                 <p id="status" class="text-center text-danger" style="height: 15px;">{{Status}}</p>
-                                <button v-bind:disabled="!CanSubmit" v-on:click="Login" class="btn btn-primary btn-block">
-                                    <span>Login</span>
+                                <button v-bind:disabled="!CanSubmit || Loading" v-on:click="Login" class="btn btn-primary btn-block">
+                                    <i v-if="Loading" class="fas fa-spinner fa-pulse"></i>
+                                    <span v-else>Login</span>
                                 </button>
                             </div>
                         </div>
@@ -51,6 +63,9 @@
                 if (this.Username && this.Pwd)
                     return true;
                 return false;
+            },
+            Loading: function () {
+                return this.$store.getters.Loading;
             }
         },
         data: function () {

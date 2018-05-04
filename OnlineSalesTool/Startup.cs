@@ -15,6 +15,7 @@ using OnlineSalesTool.Service;
 using OnlineSalesTool.Repository;
 using System;
 using System.Text;
+using OnlineSalesTool.Options;
 
 namespace OnlineSalesTool
 {
@@ -44,7 +45,7 @@ namespace OnlineSalesTool
             //Inject JWT factory
             services.AddSingleton<IJwtFactory, JwtFactory>();
             //Inject config
-            services.AddSingleton(Configuration); //Define specific option then inject use IOptions
+            //services.AddSingleton(Configuration); //Define specific option then inject use IOptions
             //Inject repos
             services.AddTransient<IScheduleRepository, ScheduleRepository>();
             services.AddTransient<IAccountRepository, AccountRepository>();
@@ -55,14 +56,24 @@ namespace OnlineSalesTool
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             //Inject resolver service
             services.AddTransient<IUserResolver, UserResolver>();
+
             //Get setting section
             var jwtSetting = Configuration.GetSection(nameof(JwtIssuerOptions));
-            //Inject option
-            services.Configure<JwtIssuerOptions>(options =>
+            var authSetting = Configuration.GetSection(nameof(AuthenticationOptions));
+            //Inject options
+            //JWT option
+            services.Configure<JwtIssuerOptions>(o =>
             {
-                options.Issuer = jwtSetting[nameof(JwtIssuerOptions.Issuer)];
-                options.Audience = jwtSetting[nameof(JwtIssuerOptions.Audience)];
-                options.SigningCredentials = new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256);
+                o.Issuer = jwtSetting[nameof(JwtIssuerOptions.Issuer)];
+                o.Audience = jwtSetting[nameof(JwtIssuerOptions.Audience)];
+                o.SigningCredentials = new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256);
+            });
+            //Auth option
+            services.Configure<AuthenticationOptions>(o =>
+            {
+                o.NoPwdCheck = authSetting[nameof(AuthenticationOptions.NoPwdCheck)] == "1";
+                o.Issuer = authSetting[nameof(AuthenticationOptions.Issuer)];
+                o.Domain = authSetting[nameof(AuthenticationOptions.Domain)];
             });
 
             var tokenValidationParameters = new TokenValidationParameters
@@ -78,19 +89,18 @@ namespace OnlineSalesTool
 
                 RequireExpirationTime = false,
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
+                ClockSkew = TimeSpan.FromDays(1)
             };
 
-            services.AddAuthentication(options =>
+            services.AddAuthentication(o =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-            }).AddJwtBearer(configureOptions =>
+                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(o =>
             {
-                configureOptions.ClaimsIssuer = jwtSetting[nameof(JwtIssuerOptions.Issuer)];
-                configureOptions.TokenValidationParameters = tokenValidationParameters;
-                configureOptions.SaveToken = true;
+                o.ClaimsIssuer = jwtSetting[nameof(JwtIssuerOptions.Issuer)];
+                o.TokenValidationParameters = tokenValidationParameters;
+                o.SaveToken = true;
             });
 
             //policy

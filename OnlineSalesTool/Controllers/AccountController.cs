@@ -15,48 +15,27 @@ using System;
 using System.Collections.Generic;
 using OnlineSalesTool.Service;
 using System.Linq;
+using OnlineSalesTool.Options;
 
 namespace OnlineSalesTool.Controllers
 {
-    [CustomExceptionFilterAttribute]
+    [LogExceptionFilterAttribute]
     public class AccountController : Controller
     {
-        private readonly IConfiguration _config;
         private readonly IJwtFactory _jwtFactory;
         private readonly JwtIssuerOptions _jwtOptions;
+        private readonly AuthenticationOptions _authOption;
         private readonly IAccountRepository _repo;
-
-        internal string Issuer
-        {
-            get
-            {
-                return _config.GetSection("Authentication").GetValue<string>("Issuer");
-            }
-        }
-        internal bool NoPwdCheck
-        {
-            get
-            {
-                return _config.GetSection("Authentication").GetValue<bool>("NoPwdCheck");
-            }
-        }
-
-        internal string Domain
-        {
-            get
-            {
-                return _config.GetSection("Authentication").GetValue<string>("Domain");
-            }
-        }
 
         public AccountController(IConfiguration config,
             IJwtFactory jwtFactory,
             IOptions<JwtIssuerOptions> jwtOptions,
+            IOptions<AuthenticationOptions> authOptions,
             IAccountRepository repo)
         {
-            _config = config;
             _jwtFactory = jwtFactory;
             _jwtOptions = jwtOptions.Value;
+            _authOption = authOptions.Value;
             _repo = repo;
         }
 
@@ -70,7 +49,7 @@ namespace OnlineSalesTool.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> DoLogin([FromForm]string username = "", [FromForm]string pwd = "")
+        public async Task<IActionResult> Login([FromForm]string username = "", [FromForm]string pwd = "")
         {
             //Check against db or whatever here
             (LoginResult level, AppUser user) = await GetLoginLevel(username, pwd);
@@ -92,15 +71,23 @@ namespace OnlineSalesTool.Controllers
             return Ok(jwt);
         }
         
+        [HttpGet]
+        [Authorize]
+        //Use this to check if token still valid
+        public IActionResult Ping()
+        {
+            return Ok();
+        }
+
         private IEnumerable<Claim> CreateClaimSet(AppUser user)
         {
             var claims = new List<Claim>
                 {
-                    new Claim(CustomClaims.Username.ToString() , user.Username.ToLower()),
-                    new Claim(CustomClaims.UserId.ToString(), user.UserId.ToString()),
+                    new Claim(CustomClaims.Username , user.Username.ToLower()),
+                    new Claim(CustomClaims.UserId, user.UserId.ToString()),
                 };
             //add abilities to claims
-            claims.AddRange(user.UserAbility.Select(a => new Claim(AppConst.AbilityClaimName, a.Ability.Name)));
+            claims.AddRange(user.UserAbility.Select(a => new Claim(CustomClaims.Ability, a.Ability.Name)));
             return claims;
         }
         
@@ -120,8 +107,8 @@ namespace OnlineSalesTool.Controllers
 
         private bool Validate(string userName, string pwd)
         {
-            if (NoPwdCheck) return true;
-            return WindowsAuth.Validate_Principal2(userName, pwd, Domain);
+            if (_authOption.NoPwdCheck) return true;
+            return WindowsAuth.Validate_Principal2(userName, pwd, _authOption.Domain);
         }
     }
 }

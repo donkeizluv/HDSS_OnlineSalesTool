@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using OnlineSalesTool.Options;
 
 namespace OnlineSalesTool.Helper
 {

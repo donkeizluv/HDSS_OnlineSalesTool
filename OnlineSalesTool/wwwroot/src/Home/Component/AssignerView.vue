@@ -97,6 +97,8 @@
 
     //Api
     import API_Const from '../API'
+    //Actions
+    import { CHECK_TOKEN_EXPIRE, LOGOUT } from '../actions'
 
     export default {
         name: 'AssignerView',
@@ -104,11 +106,17 @@
         components: {
             'shift-detail': shiftdetail
         },
-        created: async function () {
-            await this.LoadVM();
+
+        beforeRouteEnter(to, from, next) {
+            next(async me => {
+                //this component
+                me.Init();
+            })
         },
+
         data: function() {
             return {
+                VM: null,
                 POSs: [],
                 Users: [],
                 //Sys
@@ -141,6 +149,9 @@
             };
         },
         computed: {
+            Loading: function () {
+                return this.$store.getters.Loading;
+            },
             CanLoadSchedule: function () {
                 if (this.SelectedPrevSchedule)
                     return true;
@@ -167,12 +178,22 @@
             }
         },
         methods: {
+            //Call this on enter/create of this component
+            Init: async function () {
+                try {
+                    await this.$store.dispatch(CHECK_TOKEN_EXPIRE);
+                    await this.LoadVM();
+                } catch (e) {
+                    await this.$store.dispatch(LOGOUT);
+                }
+            }, 
             LoadVM: async function () {
                 //Fetch VM
                 try {
                     //Get VM
                     var response = await axios.get(API_Const.AssignerVmAPI);
                     var vm = response.data;
+                    this.VM = vm;
                     //console.log(vm);
                     //Set POSs
                     this.POSs = vm.POSs;
@@ -183,14 +204,11 @@
                     this.SystemMonthYearDisplay = vm.SystemMonthYearDisplay;
                     this.TotalDaysOfMonth = vm.TotalDaysOfMonth;
                 } catch (e) {
-                    //Show some sort of alert
-                    //this.$router.app.$emit('showerror', 'Tải dữ liệu thất bại, vui lòng liên hệ IT.');
                     this.$emit('showerror', 'Tải dữ liệu thất bại, vui lòng liên hệ IT.');
                     //Disabled function
                     //TODO: Better mechanism to do this
                     this.POSs = null;
                     this.Users = null;
-                    //console.log(e);
                 }
             },
             SelectedPosChanged: function () {

@@ -7,7 +7,7 @@ namespace OnlineSalesTool.Filter
     /// <summary>
     /// Log unhandled exceptions
     /// </summary>
-    public class CustomExceptionFilterAttribute : ExceptionFilterAttribute
+    public class LogExceptionFilterAttribute : ExceptionFilterAttribute
     {
         public override void OnException(ExceptionContext context)
         {

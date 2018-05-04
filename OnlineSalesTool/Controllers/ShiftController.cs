@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace OnlineSalesTool.Controllers
 {
-    [CustomExceptionFilterAttribute]
+    [LogExceptionFilterAttribute]
     [Authorize]
     public class ShiftController : Controller
     {

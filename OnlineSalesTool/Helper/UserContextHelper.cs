@@ -11,16 +11,16 @@ namespace OnlineSalesTool.Service
 {
     public static class ContextHelper
     {
-        public static bool TryGetContextValue<T>(HttpContext context, CustomClaims type, out T value)
+        public static bool TryGetContextValue<T>(HttpContext context, string claimType, out T value)
         {
             if(context == null) throw new ArgumentNullException();
-            return TryGetContextValue<T>(context.User, type, out value);
+            return TryGetContextValue<T>(context.User, claimType, out value);
         }
-        public static bool TryGetContextValue<T>(ClaimsPrincipal principal, CustomClaims type, out T value)
+        public static bool TryGetContextValue<T>(ClaimsPrincipal principal, string claimType, out T value)
         {
             if(principal == null) throw new ArgumentNullException();
             value = default(T);
-            var claim = principal.FindFirst(type.ToString());
+            var claim = principal.FindFirst(claimType);
             if (claim == null) return false;
             try
             {

@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesTool.Logic
 {
-    public enum CustomClaims
+    public static class CustomClaims
     {
-        Username,
-        UserId
+        public const string Username = "Username";
+        public const string UserId = "UserId";
+        public const string Ability = "Ability";
     }
 }

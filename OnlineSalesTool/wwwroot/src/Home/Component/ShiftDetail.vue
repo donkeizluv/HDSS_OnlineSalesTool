@@ -1,7 +1,16 @@
 ﻿<!--Shift detail cell-->
 <template id="shiftdetail">
     <div v-bind:class="BorderColor">
-        <div class="card-header">Ngày {{day.Day}}</div>
+        <div class="card-header">
+            <div>
+                <span class="float-left">Ngày {{day.Day}}</span>
+                <div class="float-right">
+                    <i v-show="!readonly" v-if="IsAllSet" class="fas fa-check-circle text-success"></i>
+                    <i v-else class="fas fa-exclamation-circle text-danger"></i>
+                </div>
+            </div>
+            
+        </div>
         <div class="card-body">
             <div v-for="shift in day.Shifts" v-bind:key="shift.ShiftId">
                 <div class="d-flex flex-column">
@@ -53,7 +62,7 @@
                     return `readonly-border-color ${this.DefaultCardClass}`;
                 else {
                     if (this.IsAllSet) {
-                        return `border-info  ${this.DefaultCardClass}`;
+                        return `border-success  ${this.DefaultCardClass}`;
                     }
                     return `border-danger  ${this.DefaultCardClass}`;
 

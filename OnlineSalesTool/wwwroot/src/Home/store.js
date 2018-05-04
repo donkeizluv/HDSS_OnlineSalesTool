@@ -10,8 +10,8 @@ import API from './API'
 import router from './router'
 
 
-import { LOGIN, LOGOUT, RELOAD_TOKEN } from './actions'
-import { IDENTITY, EXPIRE, TOKEN } from './mutations'
+import { LOGIN, LOGOUT, RELOAD_TOKEN, SET_LOADING, CHECK_TOKEN_EXPIRE } from './actions'
+import { IDENTITY, EXPIRE, TOKEN, LOADING } from './mutations'
 
 Vue.use(Vuex)
 
@@ -20,12 +20,20 @@ export default new Vuex.Store({
         //Auth
         Token: localStorage.getItem(appConst.TokenStorage) || '',
         Identity: localStorage.getItem(appConst.IdentityStorage) || '',
-        Expire: localStorage.getItem(appConst.ExpireStorage) || 0
+        Expire: localStorage.getItem(appConst.ExpireStorage) || 0,
+        //Token: null,
+        //Identity: null,
+        //Expire: 0,
+
+        //Loading
+        Loading: false
+
     },
     getters: {
         AuthToken: state => state.Token,
         IsAuthenticated: state => !!state.Token,
-        Identity: state => state.Identity
+        Identity: state => state.Identity,
+        Loading: state => state.Loading
     },
     mutations: {
         [TOKEN](state, value) {
@@ -36,11 +44,15 @@ export default new Vuex.Store({
         },
         [IDENTITY] (state, value) {
             this.state.Identity = value;
+        },
+        [LOADING](state, value) {
+            this.state.Loading = value;
         }
         
     },
     actions: {
         [LOGIN]: async ({ commit, dispatch }, cred) => {
+                await dispatch(SET_LOADING, true);
                 try {
                     var form = new FormData();
                     form.append('username', cred.username);
@@ -55,11 +67,13 @@ export default new Vuex.Store({
                     localStorage.setItem(appConst.IdentityStorage, cred.username);
                     localStorage.setItem(appConst.ExpireStorage, response.data.expires_in);
                     //Load states
-                    dispatch(RELOAD_TOKEN);
+                    await dispatch(RELOAD_TOKEN);
                     //Go
                     router.push('Home');
+                    await dispatch(SET_LOADING, false);
                 } catch (e) {
                     //console.log(e);
+                    await dispatch(SET_LOADING, false);
                     localStorage.removeItem(appConst.TokenStorage);
                     throw e;
                 }
@@ -94,6 +108,23 @@ export default new Vuex.Store({
                 localStorage.removeItem(appConst.Identity);
                 localStorage.removeItem(appConst.ExpireStorage);
                 router.push('Login');
+        },
+        [SET_LOADING]: async ({ commit, dispatch }, value) => {
+            commit(LOADING, value);
+        },
+        [CHECK_TOKEN_EXPIRE]: async ({ state }) => {
+            try {
+                await axios({
+                    url: API.Ping,
+                    headers: { 'Authorization': `Bearer ${state.Token}` }
+                });
+                //console.log('Token ok');
+            } catch (e) {
+                //console.log(e);
+                //console.log('Token invalid');
+                throw e;
+            }
+            
         }
     }
 })

@@ -18,7 +18,8 @@ function requireAuth(to, from, next) {
 
 function requireNoAuth(to, from, next) {
     if (store.getters.IsAuthenticated) {
-        next(false);
+        //next(false);
+        next('Home');
     } else {
         next();
     }
@@ -28,7 +29,7 @@ const routes = [
     //Default
     {
         path: '/',
-        redirect: '/Assign'
+        redirect: '/Home'
     },
     //Auth
     { path: '/Home', name: 'Home', component: assignerView, display: 'Trang chính', navbar: true, beforeEnter: requireAuth },

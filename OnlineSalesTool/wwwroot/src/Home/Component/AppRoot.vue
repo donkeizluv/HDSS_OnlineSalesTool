@@ -7,7 +7,8 @@
                 <keep-alive>
                     <router-view v-on:showsuccess="ShowSuccessToast"
                                  v-on:showinfo="ShowInfoToast"
-                                 v-on:showerror="ShowBlockingDialog"></router-view>
+                                 v-on:showerror="ShowBlockingDialog"
+                                 v-on:showdialog="ShowDialog"></router-view>
                 </keep-alive>
             </div>
         </div>
@@ -18,6 +19,7 @@
     import navbar from './NavBar.vue'
     import axios from 'axios'
     import { RELOAD_TOKEN, LOGOUT } from '../actions'
+    import API from '../API'
 
     export default {
         components: {
@@ -30,15 +32,15 @@
         },
         created: async function () {
             //To login page incase 401
-            axios.interceptors.response.use( (response) => {
-                return response;
-            }, (error) => {
-                if (error.response.status == 401) {
-                    this.$store.dispatch(LOGOUT);
+            axios.interceptors.response.use(r => {
+                return r;
+            }, async e => {
+                if (e.response.status == 401) {
+                    await this.$store.dispatch(LOGOUT);
                 }
-                return Promise.reject(error);
+                return Promise.reject(e);
             });
-            //Init store if authed
+            //Reload state if has token
             if (this.$store.getters.IsAuthenticated) {
                 try {
                     await this.$store.dispatch(RELOAD_TOKEN);
@@ -67,6 +69,17 @@
                     title: 'Lỗi :(',
                     text: mess,
                     buttons: []
+                });
+            },
+            ShowDialog(mess, t) {
+                this.$modal.show('dialog', {
+                    title: t,
+                    text: mess,
+                    buttons: [
+                        {
+                            title: 'OK',
+                            handler: () => { this.$modal.hide('dialog') }
+                        }]
                 });
             }
         }

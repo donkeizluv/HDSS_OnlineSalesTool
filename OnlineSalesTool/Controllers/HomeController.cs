@@ -8,13 +8,11 @@ using OnlineSalesTool.ViewModels;
 namespace OnlineSalesTool.Controllers
 {
     //[Authorize]
-    [CustomExceptionFilterAttribute]
+    [LogExceptionFilterAttribute]
     public class HomeController : Controller
     {
-        private IConfiguration _config;
-        public HomeController(IConfiguration config)
+        public HomeController()
         {
-            _config = config;
         }
 
         [HttpGet]
