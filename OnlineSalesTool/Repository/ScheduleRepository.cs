@@ -17,12 +17,9 @@ namespace OnlineSalesTool.Repository
         //Number of prev sche to return in VM
         public const int NearestMonthScheduleTake = 3;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly OnlineSalesContext _context;
-        
-        public ScheduleRepository(OnlineSalesContext context, IUserResolver userResolver) : base(userResolver.GetPrincipal())
-        {
-            _context = context;
-        }
+
+        public ScheduleRepository(OnlineSalesContext context, IUserResolver userResolver)
+            : base(userResolver.GetPrincipal(), context) { }
 
         public async Task<ShiftAssignerViewModel> CreateAssignerVM()
         {
@@ -30,14 +27,14 @@ namespace OnlineSalesTool.Repository
             var vm = new ShiftAssignerViewModel()
             {
                 //Get all ids under management
-                Users = await _context.AppUser
+                Users = await DbContext.AppUser
                 .Where(u => u.ManagerId == PrincipalUserId)
                 .Select(u => new AppUserPOCO() {
                     UserId = u.UserId,
                     DisplayName = $"{u.Name} - {u.Hr}"
                 }).AsNoTracking().ToListAsync(),
                 //Get all POS under management
-                POSs = await _context.Pos.Where(p => p.UserId == PrincipalUserId)
+                POSs = await DbContext.Pos.Where(p => p.UserId == PrincipalUserId)
                 .Select(p => new PosPOCO() {
                     PosCode = p.PosCode,
                     PosId = p.PosId,
@@ -117,12 +114,12 @@ namespace OnlineSalesTool.Repository
                 throw new BussinessException($"Duplicate of exact same detail count: {dupCount}");
             }
             //Check if this POS is manage by this user
-            if(!_context.Pos.Any(p => p.PosId == scheduleContainer.TargetPos))
+            if(!DbContext.Pos.Any(p => p.PosId == scheduleContainer.TargetPos))
             {
                 throw new BussinessException($"Target pos: {scheduleContainer.TargetPos} is not managed by user id: {userId}");
             }
             //Get all shift of POS
-            var shiftsOfPos = await _context.PosShift
+            var shiftsOfPos = await DbContext.PosShift
                 .Where(ps => ps.PosId == scheduleContainer.TargetPos)
                 .Select(ps => ps.Shift)
                 .AsNoTracking()
@@ -146,7 +143,7 @@ namespace OnlineSalesTool.Repository
             }
             //Check all user id of shift detail are managed by current user
             //Get all user under this user management
-            var managedUserIds = await _context.AppUser
+            var managedUserIds = await DbContext.AppUser
                 .Where(u => u.ManagerId == userId)
                 .Select(u => u.UserId)
                 .ToListAsync();
@@ -164,7 +161,7 @@ namespace OnlineSalesTool.Repository
                 throw new BussinessException($"User ids: {string.Concat(notUnderManaged.Select(u => u + " "))} are not managed by: {userId}");
             }
             //Check if this specific schedule Month/Year has been defined
-            if (_context.ShiftSchedule.Any(s => s.Pos.PosId == scheduleContainer.TargetPos &&
+            if (DbContext.ShiftSchedule.Any(s => s.Pos.PosId == scheduleContainer.TargetPos &&
             s.ShiftDate.Month == scheduleContainer.MonthYear.Month &&
             s.ShiftDate.Year == scheduleContainer.MonthYear.Year))
             {
@@ -177,14 +174,8 @@ namespace OnlineSalesTool.Repository
         {
             if (schedule == null) throw new ArgumentNullException();
             await ThrowIfCheckFail(schedule);
-            await _context.ShiftSchedule.AddRangeAsync(schedule.ToShiftSchedules());
-            await _context.SaveChangesAsync();
-        }
-
-        public void Dispose()
-        {
-            if (_context != null)
-                _context.Dispose();
+            await DbContext.ShiftSchedule.AddRangeAsync(schedule.ToShiftSchedules());
+            await DbContext.SaveChangesAsync();
         }
     }
 }

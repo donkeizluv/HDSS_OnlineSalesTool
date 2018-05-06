@@ -23,6 +23,7 @@ namespace OnlineSalesTool.Helper
 
         public async Task<string> GenerateEncodedToken(string userName, ClaimsIdentity identity)
         {
+            //Defailt claims for JWT
             var claims = new List<Claim>()
             {
                  new Claim(JwtRegisteredClaimNames.Sub, userName),

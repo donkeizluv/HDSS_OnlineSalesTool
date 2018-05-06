@@ -83,8 +83,8 @@ namespace OnlineSalesTool.Controllers
         {
             var claims = new List<Claim>
                 {
-                    new Claim(CustomClaims.Username , user.Username.ToLower()),
-                    new Claim(CustomClaims.UserId, user.UserId.ToString()),
+                    //new Claim(CustomClaims.Username , user.Username.ToLower()),
+                    new Claim(CustomClaims.UserId, user.UserId.ToString())
                 };
             //add abilities to claims
             claims.AddRange(user.UserAbility.Select(a => new Claim(CustomClaims.Ability, a.Ability.Name)));

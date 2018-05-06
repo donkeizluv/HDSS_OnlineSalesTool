@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesTool.Repository
 {
-    public interface IScheduleRepository : IDisposable
+    public interface IScheduleRepository
     {
         Task<ShiftAssignerViewModel> CreateAssignerVM();
         Task SaveSchedule(ScheduleContainer schedule);

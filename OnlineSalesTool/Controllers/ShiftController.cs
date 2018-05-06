@@ -28,6 +28,7 @@ namespace OnlineSalesTool.Controllers
         [Authorize]
         public async Task<IActionResult> GetVM()
         {
+            //return await Task.FromResult(BadRequest());
             return Ok(await _repo.CreateAssignerVM());
         }
         [HttpPost]
@@ -56,11 +57,6 @@ namespace OnlineSalesTool.Controllers
                 return BadRequest("System error.");
             }
 
-        }
-        protected override void Dispose(bool disposing)
-        {
-            if (_repo != null) _repo.Dispose();
-            base.Dispose(disposing);
         }
     }
 }

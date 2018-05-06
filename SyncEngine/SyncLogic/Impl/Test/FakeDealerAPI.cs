@@ -19,13 +19,13 @@ namespace SyncService.SyncLogic.Impl.Test
             {
                 orders.Add(new OnlineOrder()
                 {
-                    TrackingNumber = DevUlt.RandomString(10, _rnd),
-                    Name = DevUlt.RandomString(5, _rnd),
-                    NatId = DevUlt.RandomString(5, _rnd),
-                    Phone = DevUlt.RandomString(5, _rnd),
-                    Address = DevUlt.RandomString(5, _rnd),
-                    PosCode = DevUlt.RandomString(5, _rnd),
-                    Product = DevUlt.RandomString(5, _rnd),
+                    TrackingNumber = Utility.RandomString(10, _rnd),
+                    Name = Utility.RandomString(5, _rnd),
+                    NatId = Utility.RandomString(5, _rnd),
+                    Phone = Utility.RandomString(5, _rnd),
+                    Address = Utility.RandomString(5, _rnd),
+                    PosCode = Utility.RandomString(5, _rnd),
+                    Product = Utility.RandomString(5, _rnd),
                     Amount = 123,
                     Paid = 50,
                     LoanAmount = 73,
@@ -40,7 +40,7 @@ namespace SyncService.SyncLogic.Impl.Test
 
         public Task<string> GetOrderNumber(string trackingNumber)
         {
-            return Task.FromResult(DevUlt.RandomString(5, _rnd));
+            return Task.FromResult(Utility.RandomString(5, _rnd));
         }
 
         public Task RequestOrderNumber(OnlineOrder order)

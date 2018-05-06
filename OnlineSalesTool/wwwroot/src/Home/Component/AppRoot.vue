@@ -2,7 +2,7 @@
     <div>
         <v-dialog :clickToClose=false />
         <nav-bar :app-name="'Online Sales Tool'" :env="'DEV'"></nav-bar>
-        <div v-bind:class="{'greybg':!IsAuthenticated }">
+        <div v-bind:class="{'bg-grey': !IsAuthenticated }">
             <div class="container-fluid">
                 <keep-alive>
                     <router-view v-on:showsuccess="ShowSuccessToast"
@@ -50,6 +50,11 @@
                 }
             }
         },
+        data: function () {
+            return {
+                blackBg: false
+            }
+        },
         methods: {
             ShowSuccessToast(mess) {
                 //This has shitty support for specific icon & multiple style class
@@ -65,6 +70,7 @@
                 });
             },
             ShowBlockingDialog(mess) {
+                this.blackBg = true;
                 this.$modal.show('dialog', {
                     title: 'Lỗi :(',
                     text: mess,
@@ -86,7 +92,7 @@
     }
 </script>
 <style scoped>
-    .greybg {
+    .bg-grey {
         position: fixed; /* Stay in place */
         z-index: 1; /* Sit on top */
         left: 0;

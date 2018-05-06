@@ -5,15 +5,15 @@ namespace OnlineSalesTool.Service
 {
     public class UserResolver : IUserResolver
     {
-        private readonly IHttpContextAccessor _context;
+        private readonly IHttpContextAccessor _httpContext;
         public UserResolver(IHttpContextAccessor context)
         {
-            _context = context;
+            _httpContext = context;
         }
 
         public ClaimsPrincipal GetPrincipal()
         {
-            return _context.HttpContext.User;
+            return _httpContext.HttpContext.User;
         }
     }
 }
