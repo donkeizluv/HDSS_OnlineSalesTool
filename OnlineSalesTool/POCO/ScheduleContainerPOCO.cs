@@ -10,6 +10,10 @@ namespace OnlineSalesTool.POCO
     /// </summary>
     public class ScheduleContainerPOCO
     {
+        public ScheduleContainerPOCO()
+        {
+
+        }
         public ScheduleContainerPOCO(IEnumerable<ShiftSchedulePOCO> schedules, DateTime monthYear)
         {
             MonthYear = monthYear;

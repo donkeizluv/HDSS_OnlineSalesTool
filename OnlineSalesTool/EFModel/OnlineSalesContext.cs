@@ -17,13 +17,14 @@ namespace OnlineSalesTool.EFModel
         public virtual DbSet<ShiftDetail> ShiftDetail { get; set; }
         public virtual DbSet<ShiftSchedule> ShiftSchedule { get; set; }
         public virtual DbSet<UserAbility> UserAbility { get; set; }
+        public virtual DbSet<UserRole> UserRole { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer(@"Server=(localdb)\local;Database=OnlineSales;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=(localdb)\\local;Database=OnlineSales;Trusted_Connection=True;");
             }
         }
 
@@ -76,6 +77,12 @@ namespace OnlineSalesTool.EFModel
                     .WithMany(p => p.InverseManager)
                     .HasForeignKey(d => d.ManagerId)
                     .HasConstraintName("FK_AppUser_AppUser");
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.AppUser)
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AppUser_UserRole");
             });
 
             modelBuilder.Entity<Logs>(entity =>
@@ -280,6 +287,17 @@ namespace OnlineSalesTool.EFModel
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserAbility_AppUser");
+            });
+
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.HasKey(e => e.RoleId);
+
+                entity.Property(e => e.Description).HasMaxLength(100);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(20);
             });
         }
     }

@@ -1,5 +1,6 @@
 ﻿export const LOGIN = 'LOGIN'
 export const LOGOUT = 'LOGOUT'
+export const CLEAR_LOCALSTORE = 'CLEAR_LOCALSTORE'
 export const RELOAD_TOKEN = 'RELOAD_TOKEN'
 export const SET_LOADING = 'SET_LOADING'
 export const CHECK_TOKEN_EXPIRE = 'CHECK_TOKEN_EXPIRE'

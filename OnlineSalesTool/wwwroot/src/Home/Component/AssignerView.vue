@@ -41,7 +41,7 @@
                             </button>
                             <button class="btn btn-sm btn-warning m-2"
                                     type="button"
-                                    disabled="disabled">
+                                    v-bind:disabled="!CanEditSchedule">
                                 <i class="fas fa-edit"></i>
                             </button>
                             <button class="btn btn-sm btn-success m-2"
@@ -99,6 +99,8 @@
     import API_Const from '../API'
     //Actions
     import { CHECK_TOKEN_EXPIRE, LOGOUT } from '../actions'
+    //Const
+    import { AppFunction } from '../AppConst'
 
     export default {
         name: 'AssignerView',
@@ -149,6 +151,14 @@
             };
         },
         computed: {
+            //Vuex permission
+            CanCreate: function () {
+                return this.$store.getters.Can(AppFunction.CreateShiftSchedule);
+            },
+            CanEdit: function () {
+                return this.$store.getters.Can(AppFunction.EditShiftSchedule);
+            },
+
             Loading: function () {
                 return this.$store.getters.Loading;
             },
@@ -157,7 +167,13 @@
                     return true;
                 return false;
             },
+            CanEditSchedule: function () {
+                if (!this.CanEdit) return false;
+                if (this.CreateMode) return false;
+                return !!this.SelectedPos && !!this.SelectedPrevSchedule;
+            },
             CanCreateNewSchedule: function () {
+                if (!this.CanCreate) return false;
                 if (this.CreateMode) return false;
                 if (this.CurrentPOS)
                     return !this.CurrentPOS.HasCurrentMonthSchedule;

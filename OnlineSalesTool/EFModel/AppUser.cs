@@ -15,6 +15,7 @@ namespace OnlineSalesTool.EFModel
         }
 
         public int UserId { get; set; }
+        public int RoleId { get; set; }
         public string Name { get; set; }
         public string Username { get; set; }
         public bool Active { get; set; }
@@ -26,6 +27,7 @@ namespace OnlineSalesTool.EFModel
         public int? ManagerId { get; set; }
 
         public AppUser Manager { get; set; }
+        public UserRole Role { get; set; }
         public ICollection<AppUser> InverseManager { get; set; }
         public ICollection<OnlineOrder> OnlineOrder { get; set; }
         public ICollection<Pos> Pos { get; set; }

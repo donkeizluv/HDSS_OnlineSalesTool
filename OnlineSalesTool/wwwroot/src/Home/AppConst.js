@@ -1,6 +1,13 @@
-﻿export default {
+﻿export const ConstStorage = {
     //Local store
     TokenStorage: 'user-token',
     IdentityStorage: 'id',
     ExpireStorage: 'exp'
+    //AbilityStoreage: 'ablity',
+    //RoleStoreage: 'role'
+
+};
+export const AppFunction = {
+    CreateShiftSchedule: 'CreateShiftSchedule',
+    EditShiftSchedule: 'EditShiftSchedule'
 }

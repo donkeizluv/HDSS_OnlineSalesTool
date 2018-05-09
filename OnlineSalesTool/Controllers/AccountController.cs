@@ -84,7 +84,8 @@ namespace OnlineSalesTool.Controllers
             var claims = new List<Claim>
                 {
                     //new Claim(CustomClaims.Username , user.Username.ToLower()),
-                    new Claim(CustomClaims.UserId, user.UserId.ToString())
+                    new Claim(CustomClaims.UserId, user.UserId.ToString()),
+                    new Claim(CustomClaims.UserRole, user.Role.Name)
                 };
             //add abilities to claims
             claims.AddRange(user.UserAbility.Select(a => new Claim(CustomClaims.Ability, a.Ability.Name)));
@@ -95,8 +96,8 @@ namespace OnlineSalesTool.Controllers
         {
             if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(pwd))
                 return (LoginResult.Error, null);
+            //Validate against AD
             if (!Validate(userName, pwd)) return (LoginResult.Error, null);
-            //Includes everything needs to be added to Claims
             var user = await _repo.GetUser(userName);
             if (user == null)
                 return (LoginResult.NoPermission, null); //no permission

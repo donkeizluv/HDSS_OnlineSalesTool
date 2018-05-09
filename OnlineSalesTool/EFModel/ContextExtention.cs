@@ -8,7 +8,7 @@ namespace OnlineSalesTool.EFModel
         //preserve
         //public OnlineSalesContext() : base(AppState.DbContextOption)
         //{
-           
+
         //}
         public OnlineSalesContext(DbContextOptions<OnlineSalesContext> options) : base(options)
         {
