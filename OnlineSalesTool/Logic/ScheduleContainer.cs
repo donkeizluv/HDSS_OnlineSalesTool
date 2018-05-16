@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using MoreLinq;
+using Newtonsoft.Json;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.POCO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace OnlineSalesTool.Logic
 {
@@ -25,26 +25,32 @@ namespace OnlineSalesTool.Logic
         public IEnumerable<DateTime> DaysInMonthRange => Enumerable.Range(0, (int)(LastDate - FirstDate).TotalDays + 1)
                                                             .Select(i => FirstDate.AddDays(i));
         public DateTime MonthYear { get; private set; }
-        public IEnumerable<ShiftSchedulePOCO> Schedules { get; }
+        public IEnumerable<ScheduleDetailPOCO> Schedules { get; }
         public int TargetPos { get; private set; }
 
         [JsonConstructor]
-        public ScheduleContainer(int targetPos, DateTime targetMonthYear, IEnumerable<ShiftSchedulePOCO> schedules)
+        public ScheduleContainer(int targetPos, DateTime targetMonthYear, IEnumerable<ScheduleDetailPOCO> schedules)
         {
             MonthYear = targetMonthYear;
             Schedules = schedules;
             TargetPos = targetPos;
         }
 
-        public IEnumerable<ShiftSchedule> ToShiftSchedules()
+        public PosSchedule ToPosSchedule()
         {
-            return Schedules.Select(p => new ShiftSchedule()
+            var ps =  new PosSchedule()
             {
-                ShiftDate = p.ShiftDate,
-                PosId = TargetPos,
-                ShiftId = p.Shift.ShiftId,
-                UserId = p.User.UserId
+                MonthYear = MonthYear,
+                PosId = TargetPos
+            };
+            var details = Schedules.Select(d => new ScheduleDetail()
+            {
+                Day = d.Day,
+                UserId = d.User.UserId,
+                ShiftId = d.Shift.ShiftId
             });
+            details.ForEach(d => ps.ScheduleDetail.Add(d));
+            return ps;
         }
 
         public bool CheckBasicFormat(out string reason)
@@ -62,10 +68,9 @@ namespace OnlineSalesTool.Logic
                 reason = $"{nameof(MonthYear)} Day must be 1";
                 return false;
             }
-            //All shift dates must be same month / year with MonthYear
-            if (Schedules.Any(s => s.ShiftDate.Month != MonthYear.Month || s.ShiftDate.Year != MonthYear.Year))
+            if(Schedules.Any(s => s.Day < 1 || s.Day > 31))
             {
-                reason = $"Month/Year of some shift details are different from MonthYear of this schedule";
+                reason = $"Some Day of detail are not valid within Day range (1-31)";
                 return false;
             }
             return true;

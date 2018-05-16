@@ -50,22 +50,20 @@ namespace OnlineSalesTool.Repository
                         //    StartAt = d.StartAt, EndAt = d.EndAt
                         //})
                     }),
-                    PreviousMonthSchedules = p.ShiftSchedule.GroupBy(ss => new {
-                        ss.ShiftDate.Year,
-                        ss.ShiftDate.Month
-                    }).OrderByDescending(g => g.Key.Year)
-                    .ThenByDescending(g => g.Key.Month)
+                    PreviousMonthSchedules = p.PosSchedule
+                    .OrderByDescending(g => g.MonthYear.Year)
+                    .ThenByDescending(g => g.MonthYear.Month)
                     .Take(NearestMonthScheduleTake)
-                    .Select(g => new ScheduleContainerPOCO(
-                            g.Select(gg => new ShiftSchedulePOCO(){
-                                        ShiftDate = gg.ShiftDate,
+                    .Select(g => new PosSchedulePOCO(
+                            g.ScheduleDetail.Select(gg => new ScheduleDetailPOCO(){
+                                        Day = gg.Day,
                                         Shift = new ShiftPOCO() { Name = gg.Shift.Name, ShiftId = gg.ShiftId },
                                         User = new AppUserPOCO()
                                         {
                                             UserId = gg.User.UserId,
                                             DisplayName = $"{gg.User.Name} - {gg.User.Hr}"
-                                        }}), new DateTime(g.Key.Year, g.Key.Month, 1))),
-                    HasCurrentMonthSchedule = p.ShiftSchedule.Any(ss => ss.ShiftDate.Year == now.Year && ss.ShiftDate.Month == now.Month)
+                                        }}), new DateTime(g.MonthYear.Year, g.MonthYear.Month, 1))),
+                    HasCurrentMonthSchedule = p.PosSchedule.Any(ps => ps.MonthYear.Year == now.Year && ps.MonthYear.Month == now.Month)
                 }).AsNoTracking().ToListAsync(),
                 //Current SYS Month/Year
                 SystemMonthYear = now
@@ -93,7 +91,7 @@ namespace OnlineSalesTool.Repository
                 throw new BussinessException(formatReason);
             }
             //Every day of month must have shifts defined
-            var missing = scheduleContainer.DaysInMonthRange.Except(scheduleContainer.Schedules.Select(s => s.ShiftDate));
+            var missing = scheduleContainer.DaysInMonthRange.Select(d => d.Day).Except(scheduleContainer.Schedules.Select(s => s.Day));
             if (missing.Any())
             {
                 throw new BussinessException($"Missing shift for days: {string.Concat(missing.Select(s => s.ToString("dd") + " "))}");
@@ -103,7 +101,7 @@ namespace OnlineSalesTool.Repository
             var dupFound =
                 from s in scheduleContainer.Schedules
                 group s by new {
-                    s.ShiftDate,
+                    s.Day,
                     s.Shift.ShiftId,
                     s.User.UserId
                 } into g
@@ -128,7 +126,7 @@ namespace OnlineSalesTool.Repository
             {
                 throw new BussinessException($"Cant find any shifts of target pos: {scheduleContainer.TargetPos}");
             }
-            var groupByDate = scheduleContainer.Schedules.GroupBy(s => s.ShiftDate);
+            var groupByDate = scheduleContainer.Schedules.GroupBy(s => s.Day);
             //Every day must have number shift defined equals to number of shift the POS has
             //For ex: POS123 have 4 shift, every day of schedule must have 4 shift schedule defined
             //Also if detail contains ShiftId that are not defined in PosShift of the POS then -> not valid
@@ -161,9 +159,9 @@ namespace OnlineSalesTool.Repository
                 throw new BussinessException($"User ids: {string.Concat(notUnderManaged.Select(u => u + " "))} are not managed by: {userId}");
             }
             //Check if this specific schedule Month/Year has been defined
-            if (DbContext.ShiftSchedule.Any(s => s.Pos.PosId == scheduleContainer.TargetPos &&
-            s.ShiftDate.Month == scheduleContainer.MonthYear.Month &&
-            s.ShiftDate.Year == scheduleContainer.MonthYear.Year))
+            if (DbContext.PosSchedule.Any(s => s.Pos.PosId == scheduleContainer.TargetPos &&
+            s.MonthYear.Month == scheduleContainer.MonthYear.Month &&
+            s.MonthYear.Year == scheduleContainer.MonthYear.Year))
             {
                 throw new BussinessException($"Schedule: {scheduleContainer.MonthYear.ToString("MM/yyyy")} of POS: {scheduleContainer.TargetPos} has already been defined");
             }
@@ -174,7 +172,7 @@ namespace OnlineSalesTool.Repository
         {
             if (schedule == null) throw new ArgumentNullException();
             await ThrowIfCheckFail(schedule);
-            await DbContext.ShiftSchedule.AddRangeAsync(schedule.ToShiftSchedules());
+            await DbContext.PosSchedule.AddAsync(schedule.ToPosSchedule());
             await DbContext.SaveChangesAsync();
         }
     }

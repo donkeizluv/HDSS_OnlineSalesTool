@@ -64,8 +64,8 @@
                     return true;
                 return false;
             },
-            Loading: function () {
-                return this.$store.getters.Loading;
+            isLoading: function () {
+                return this.$store.getters.isLoading;
             }
         },
         data: function () {

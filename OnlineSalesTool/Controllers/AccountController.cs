@@ -25,13 +25,13 @@ namespace OnlineSalesTool.Controllers
         private readonly IJwtFactory _jwtFactory;
         private readonly JwtIssuerOptions _jwtOptions;
         private readonly AuthenticationOptions _authOption;
-        private readonly IAccountRepository _repo;
+        private readonly IUserRepository _repo;
 
         public AccountController(IConfiguration config,
             IJwtFactory jwtFactory,
             IOptions<JwtIssuerOptions> jwtOptions,
             IOptions<AuthenticationOptions> authOptions,
-            IAccountRepository repo)
+            IUserRepository repo)
         {
             _jwtFactory = jwtFactory;
             _jwtOptions = jwtOptions.Value;

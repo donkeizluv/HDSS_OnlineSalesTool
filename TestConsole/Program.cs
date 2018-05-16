@@ -26,27 +26,12 @@ namespace TestConsole
         static void Main(string[] args)
         {
             var context = new OnlineSalesContext("Server=(LocalDb)\\local;Database=OnlineSales;");
-            //TestScheduleMatcher(context);
+            TestScheduleMatcher(context);
             //SchedulerRepo_Check(context).GetAwaiter().GetResult();
             //TestSchedulerRepo_CreateVM(context).GetAwaiter().GetResult();
             //Wtf();
             Console.WriteLine("Done!");
             Console.ReadLine();
-        }
-        private static void Wtf()
-        {
-            var list1 = new int[] { 1, 2 };
-            var list2 = new int[] { 2 };
-            Console.WriteLine("list1 except list2");
-            foreach (var item in list1.Except(list2))
-            {
-                Console.WriteLine(item);
-            }
-            Console.WriteLine("list2 except list1");
-            foreach (var item in list2.Except(list1))
-            {
-                Console.WriteLine(item);
-            }
         }
         //private static async Task TestSchedulerRepo_CreateVM(OnlineSalesContext context)
         //{
@@ -112,7 +97,7 @@ namespace TestConsole
 
             foreach (var item in testList)
             {
-                if (matcher.GetUserMatchedSchedule(item, DateTime.Now , out var ids, out string reason))
+                if (matcher.GetUserMatchedSchedule(item, new DateTime(2018,5,1, 19,3,3,3, DateTimeKind.Utc) , out var ids, out string reason))
                 {
                     foreach (var id in ids)
                     {

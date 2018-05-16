@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesTool.Repository
 {
-    public interface IAccountRepository
+    public interface IUserRepository
     {
         Task<AppUser> GetUser(string userName);
     }

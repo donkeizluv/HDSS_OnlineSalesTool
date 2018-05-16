@@ -12,23 +12,24 @@
                 </li>
             </ul>
             <!--Account-->
-            <ul v-if="!IsAuthenticated" class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <router-link class="nav-link" to="Login">Login</router-link>
-                </li>
-            </ul>
-            <ul v-else class="navbar-nav ml-auto">
+            <ul v-if="isAuthenticated" class="navbar-nav ml-auto">
                 <li class="nav-item">
                     <router-link class="nav-link" to="Info">
                         <span>
                             Xin chào!
-                            {{Identity}}
+                            {{identity}}
                         </span>
                     </router-link>
                 </li>
                 <!--Dispatch log out action-->
-                <li class="nav-item"><a class="nav-link" v-on:click="Logout">Logout</a></li>
+                <li class="nav-item"><a class="nav-link" v-on:click="logout">Logout</a></li>
             </ul>
+            <ul v-else class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <router-link class="nav-link" to="Login">Login</router-link>
+                </li>
+            </ul>
+
         </div>
     </nav>
 </template>
@@ -49,10 +50,10 @@
             }
         },
         computed: {
-            IsAuthenticated: function(){
+            isAuthenticated: function(){
                 return this.$store.getters.IsAuthenticated;
             },
-            Identity: function () {
+            identity: function () {
                 return this.$store.getters.Identity;
             }
         },
@@ -62,7 +63,7 @@
             }
         },
         methods: {
-            Logout: function () {
+            logout: function () {
                 this.$store.dispatch(LOGOUT);
             }
         }

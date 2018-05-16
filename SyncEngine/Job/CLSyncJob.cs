@@ -27,8 +27,7 @@ namespace SyncService.Job
             _logger.Trace("------------Start sync routine------------");
             var schedulerContext = context.Scheduler.Context;
             //Get data context
-            var module = schedulerContext.Get(MODULE_KEY) as NinjectModule;
-            if (module == null) throw new InvalidOperationException("DI Module is not set");
+            if (!(schedulerContext.Get(MODULE_KEY) is NinjectModule module)) throw new InvalidOperationException("DI Module is not set");
             var kernel = new StandardKernel(module);
             //Resolve DI
             _dbContext = kernel.Get<OnlineSalesContext>();

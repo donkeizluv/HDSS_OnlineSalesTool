@@ -7,20 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OnlineSalesTool.Logic.Impl
 {
-    //TODO: Test
     public class SimpleScheduleMatcher : IScheduleMatcher
     {
-        //Not needed yet
-        //private static Func<OnlineSalesContext, DateTime, string, IEnumerable<ShiftSchedule>> _getShiftSchedule =
-        //   EF.CompileQuery((OnlineSalesContext context, DateTime day, string posCode) =>
-        //       context.ShiftSchedule
-        //        .Where(p => p.ShiftDate.Date == day.Date)
-        //        .Include(p => p.Pos)
-        //        .Where(p => p.Pos.PosCode == posCode)
-        //        .Include(shift => shift.Shift)
-        //            .ThenInclude(detail => detail.ShiftDetail)
-        //        .Where(s => s.Shift.ShiftDetail.Any(d => day.TimeOfDay >= d.StartAt && day.TimeOfDay <= d.EndAt)));
-
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly OnlineSalesContext _context;
 
@@ -37,31 +25,37 @@ namespace OnlineSalesTool.Logic.Impl
         /// <returns></returns>
         public bool GetUserMatchedSchedule(string posCode, DateTime date, out IEnumerable<int> matchUserId, out string reason)
         {
+            if (string.IsNullOrEmpty(posCode)) throw new ArgumentNullException();
+            if(date == default(DateTime)) throw new ArgumentNullException();
+            //Init vars
             reason = string.Empty;
             matchUserId = null;
             var timeOfDate = date.TimeOfDay;
 
-            if (string.IsNullOrEmpty(posCode)) throw new ArgumentNullException();
             _logger.Trace($"Try assigning for {nameof(posCode)}: {posCode} at: {timeOfDate}");
             //Find shift schedule of this POS that match current system time
             //var shiftSchedules = _getShiftSchedule.Invoke(_context, today, posCode);
 
-            //No need to include if no ref to those entity need at the end of this db context
-            var shiftSchedules = _context.ShiftSchedule
-                .Where(p => p.ShiftDate.Date == date.Date)
-                //.Include(p => p.Pos)
-                .Where(p => p.Pos.PosCode == posCode)
-                //.Include(shift => shift.Shift)
-                //    .ThenInclude(detail => detail.ShiftDetail)
-                .Where(s => s.Shift.ShiftDetail.Any(d => timeOfDate >= d.StartAt && timeOfDate <= d.EndAt)).AsNoTracking().ToList();
+            //BUG: Cant merge this query and with out using ToList
+            //Will cause "the multi-part identifier could not be bound"
+            //Workaround is to include shiftdetail then filter on that list
+            var detail = _context.PosSchedule
+                .Where(s => s.Pos.PosCode == posCode)
+                .Where(s => s.MonthYear.Date == new DateTime(date.Year, date.Month, 1))
+                .SelectMany(s => s.ScheduleDetail.Where(d => d.Day == date.Day))
+                .Include(s => s.Shift)
+                    .ThenInclude(sd => sd.ShiftDetail).ToList();
+            _logger.Trace($"Found {detail.Count()} {nameof(ScheduleDetail)} of {date.Date.ToString("MM/yyyy")}");
+            //Match specific time
+            var matched = detail.Where(s => s.Shift.ShiftDetail.Any(d => timeOfDate >= d.StartAt && timeOfDate <= d.EndAt));
 
-            if (shiftSchedules.Count() < 1)
+            if (!matched.Any())
             {
-                reason = $"Cant find any {nameof(ShiftSchedule)} for {nameof(posCode)}: {posCode}, on: {date}";
+                reason = $"Cant find any {nameof(ScheduleDetail)} for {nameof(posCode)}: {posCode}, on: {date}";
                 return false;
             }
-            _logger.Trace($"Matched schedule found: {shiftSchedules.Count()}");
-            matchUserId = shiftSchedules.Select(s => s.UserId).Distinct();
+            _logger.Trace($"Detail matched specific time {timeOfDate}: {matched.Count()}");
+            matchUserId = matched.Select(m => m.UserId).Distinct();
             return true;
         }
     }

@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesTool.Repository
 {
-    public class AccountRepository : BaseRepo, IAccountRepository
+    public class UserRepository : BaseRepo, IUserRepository
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public AccountRepository(OnlineSalesContext context, IUserResolver userResolver)
+        public UserRepository(OnlineSalesContext context, IUserResolver userResolver)
             : base(userResolver.GetPrincipal(), context){}
 
         public async Task<AppUser> GetUser(string userName)

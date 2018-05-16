@@ -58,7 +58,7 @@ export default new Vuex.Store({
             }
         },
         //App wide loading
-        Loading: state => state.Loading
+        Loading: state => state.isLoading
     },
     mutations: {
         //Auth
@@ -80,7 +80,7 @@ export default new Vuex.Store({
 
         //App wide loading
         [LOADING](state, value) {
-            this.state.Loading = value;
+            this.state.isLoading = value;
         }
         
     },
@@ -98,7 +98,7 @@ export default new Vuex.Store({
                     localStorage.setItem(ConstStorage.TokenStorage, token);
                     localStorage.setItem(ConstStorage.IdentityStorage, cred.username);
                     localStorage.setItem(ConstStorage.ExpireStorage, response.data.expires_in);
-                    //Init states
+                    //init states
                     await dispatch(RELOAD_TOKEN);
                     //Go
                     router.push('Home');
@@ -126,7 +126,7 @@ export default new Vuex.Store({
                 var ability = [];
                 if (decode.hasOwnProperty('Ability'))
                     ability = decode.Ability;
-                //Init states
+                //init states
                 commit(TOKEN, token);
                 commit(EXPIRE, exp);
                 commit(IDENTITY, decode.sub);

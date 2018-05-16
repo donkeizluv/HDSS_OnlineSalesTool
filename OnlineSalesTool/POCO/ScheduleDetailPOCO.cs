@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesTool.POCO
 {
-    public class ShiftSchedulePOCO
+    public class ScheduleDetailPOCO
     {
-        private DateTime _shiftDate;
-        public int Day => _shiftDate.Day;
-        public DateTime ShiftDate { get => _shiftDate.Date; set => _shiftDate = value; }
+        public int Day { get; set; }
         //public int UserId { get; set; }
         public AppUserPOCO User { get; set; }
         public ShiftPOCO Shift { get; set; }

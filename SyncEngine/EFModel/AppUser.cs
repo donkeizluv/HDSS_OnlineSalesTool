@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OnlineSalesTool.EFModel
+namespace SyncEngine.EFModel
 {
     public partial class AppUser
     {
@@ -10,7 +10,7 @@ namespace OnlineSalesTool.EFModel
             InverseManager = new HashSet<AppUser>();
             OnlineOrder = new HashSet<OnlineOrder>();
             Pos = new HashSet<Pos>();
-            ScheduleDetail = new HashSet<ScheduleDetail>();
+            ShiftSchedule = new HashSet<ShiftSchedule>();
             UserAbility = new HashSet<UserAbility>();
         }
 
@@ -31,7 +31,7 @@ namespace OnlineSalesTool.EFModel
         public ICollection<AppUser> InverseManager { get; set; }
         public ICollection<OnlineOrder> OnlineOrder { get; set; }
         public ICollection<Pos> Pos { get; set; }
-        public ICollection<ScheduleDetail> ScheduleDetail { get; set; }
+        public ICollection<ShiftSchedule> ShiftSchedule { get; set; }
         public ICollection<UserAbility> UserAbility { get; set; }
     }
 }

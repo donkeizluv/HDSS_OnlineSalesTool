@@ -48,7 +48,7 @@ namespace OnlineSalesTool
             //services.AddSingleton(Configuration); //Define specific option then inject use IOptions
             //Inject repos
             services.AddTransient<IScheduleRepository, ScheduleRepository>();
-            services.AddTransient<IAccountRepository, AccountRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
             //Inject INDUS
             //services.AddSingleton<IIndusAdapter>(IndusFactory.GetIndusInstance(Configuration,
             //    File.ReadAllText($"{Program.ExeDir}\\{Configuration.GetSection("Indus").GetValue<string>("QueryFileName")}")));

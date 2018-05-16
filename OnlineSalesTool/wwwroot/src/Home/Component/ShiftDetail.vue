@@ -1,11 +1,11 @@
 ﻿<!--Shift detail cell-->
 <template id="shiftdetail">
-    <div v-bind:class="BorderColor">
+    <div v-bind:class="borderColor">
         <div class="card-header">
             <div>
                 <span class="float-left">Ngày {{day.Day}}</span>
                 <div class="float-right">
-                    <i v-show="!readonly" v-if="IsAllSet" class="fas fa-check-circle text-success"></i>
+                    <i v-show="!readonly" v-if="isAllSet" class="fas fa-check-circle text-success"></i>
                     <i v-else class="fas fa-exclamation-circle text-danger"></i>
                 </div>
             </div>
@@ -14,9 +14,9 @@
         <div class="card-body">
             <div v-for="shift in day.Shifts" v-bind:key="shift.ShiftId">
                 <div class="d-flex flex-column">
-                    <span class="text-secondary">{{shift.Name}}</span>
+                    <span class="text-secondary">{{shift.name}}</span>
                     <v-select v-bind:disabled="readonly"
-                              v-bind:options="UsersLeft"
+                              v-bind:options="usersLeft"
                               v-model="shift.Assign"></v-select>
                 </div>
             </div>
@@ -46,7 +46,7 @@
         },
         computed: {
             //Return list of users left to assign
-            UsersLeft: function () {
+            usersLeft: function () {
                 //User left to assign
                 var assigned = this.day.Shifts.map(a => {
                     if (a.Assign)
@@ -57,18 +57,18 @@
                 var left = this.users.filter(u => !assigned.includes(u.UserId));
                 return left.map(u => { return { label: u.DisplayName, value: u.UserId }; });
             },
-            BorderColor: function () {
+            borderColor: function () {
                 if (this.readonly)
                     return `readonly-border-color ${this.DefaultCardClass}`;
                 else {
-                    if (this.IsAllSet) {
+                    if (this.isAllSet) {
                         return `border-success  ${this.DefaultCardClass}`;
                     }
                     return `border-danger  ${this.DefaultCardClass}`;
 
                 }
             },
-            IsAllSet: function () {
+            isAllSet: function () {
                 return this.day.Shifts.every(d => {
                     if (!d.Assign) return false;
                     if (!d.Assign.value) return false;

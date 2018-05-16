@@ -1,22 +1,28 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace OnlineSalesTool.EFModel
+namespace SyncEngine.EFModel
 {
     public partial class OnlineSalesContext : DbContext
     {
+        public OnlineSalesContext()
+        {
+        }
+
+        public OnlineSalesContext(DbContextOptions<OnlineSalesContext> options)
+            : base(options)
+        {
+        }
+
         public virtual DbSet<Ability> Ability { get; set; }
         public virtual DbSet<AppUser> AppUser { get; set; }
         public virtual DbSet<Logs> Logs { get; set; }
         public virtual DbSet<OnlineOrder> OnlineOrder { get; set; }
         public virtual DbSet<Pos> Pos { get; set; }
-        public virtual DbSet<PosSchedule> PosSchedule { get; set; }
         public virtual DbSet<PosShift> PosShift { get; set; }
         public virtual DbSet<ProcessStage> ProcessStage { get; set; }
-        public virtual DbSet<ScheduleDetail> ScheduleDetail { get; set; }
         public virtual DbSet<Shift> Shift { get; set; }
         public virtual DbSet<ShiftDetail> ShiftDetail { get; set; }
+        public virtual DbSet<ShiftSchedule> ShiftSchedule { get; set; }
         public virtual DbSet<UserAbility> UserAbility { get; set; }
         public virtual DbSet<UserRole> UserRole { get; set; }
 
@@ -24,7 +30,8 @@ namespace OnlineSalesTool.EFModel
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(@"Server=(localdb)\local;Database=OnlineSales;Trusted_Connection=True;");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=(localdb)\\local;Database=OnlineSales;Trusted_Connection=True;");
             }
         }
 
@@ -189,17 +196,6 @@ namespace OnlineSalesTool.EFModel
                     .HasConstraintName("FK_Pos_AppUser");
             });
 
-            modelBuilder.Entity<PosSchedule>(entity =>
-            {
-                entity.Property(e => e.MonthYear).HasColumnType("date");
-
-                entity.HasOne(d => d.Pos)
-                    .WithMany(p => p.PosSchedule)
-                    .HasForeignKey(d => d.PosId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PosSchedule_Pos");
-            });
-
             modelBuilder.Entity<PosShift>(entity =>
             {
                 entity.HasKey(e => new { e.PosId, e.ShiftId });
@@ -234,29 +230,6 @@ namespace OnlineSalesTool.EFModel
                     .HasMaxLength(20);
             });
 
-            modelBuilder.Entity<ScheduleDetail>(entity =>
-            {
-                entity.HasKey(e => new { e.Day, e.PosScheduleId, e.UserId, e.ShiftId });
-
-                entity.HasOne(d => d.PosSchedule)
-                    .WithMany(p => p.ScheduleDetail)
-                    .HasForeignKey(d => d.PosScheduleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ScheduleDetail_PosSchedule");
-
-                entity.HasOne(d => d.Shift)
-                    .WithMany(p => p.ScheduleDetail)
-                    .HasForeignKey(d => d.ShiftId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ShiftSchedule_Shift1");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.ScheduleDetail)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ShiftSchedule_AppUser");
-            });
-
             modelBuilder.Entity<Shift>(entity =>
             {
                 entity.HasIndex(e => e.Name)
@@ -279,6 +252,31 @@ namespace OnlineSalesTool.EFModel
                     .HasForeignKey(d => d.ShiftId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ShiftDetail_Shift");
+            });
+
+            modelBuilder.Entity<ShiftSchedule>(entity =>
+            {
+                entity.HasKey(e => new { e.ShiftDate, e.PosId, e.UserId, e.ShiftId });
+
+                entity.Property(e => e.ShiftDate).HasColumnType("date");
+
+                entity.HasOne(d => d.Pos)
+                    .WithMany(p => p.ShiftSchedule)
+                    .HasForeignKey(d => d.PosId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShiftSchedule_Pos1");
+
+                entity.HasOne(d => d.Shift)
+                    .WithMany(p => p.ShiftSchedule)
+                    .HasForeignKey(d => d.ShiftId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShiftSchedule_Shift1");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.ShiftSchedule)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ShiftSchedule_AppUser");
             });
 
             modelBuilder.Entity<UserAbility>(entity =>

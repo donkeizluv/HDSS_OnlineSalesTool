@@ -5,55 +5,55 @@
             <div class="col-lg-8 mx-auto">
                 <div class="form-group">
                     <div class="form-inline">
-                        <!--Select POS-->
+                        <!--Select pos-->
                         <label>POS: </label>
                         <select class="form-control m-2"
-                                v-model="SelectedPos" 
-                                v-on:change="SelectedPosChanged"
-                                v-bind:disabled="CreateMode">
-                            <option disabled>POS...</option>
-                            <option v-for="pos in POSs"
+                                v-model="selectedPos"
+                                v-on:change="selectedPosChanged"
+                                v-bind:disabled="createMode">
+                            <option disabled>pos...</option>
+                            <option v-for="pos in poses"
                                     v-bind:key="pos.PosId"
                                     v-bind:value="pos.PosId">
-                                {{ComposePOSLabel(pos)}}
+                                {{composePOSLabel(pos)}}
                             </option>
                         </select>
                         <!--Select prev month-->
                         <label>Tháng: </label>
                         <select class="form-control m-2"
-                                v-model="SelectedPrevSchedule"
-                                v-on:change="LoadPrevSchedule"
-                                v-bind:disabled="CreateMode">
+                                v-model="selectedPrevSchedule"
+                                v-on:change="loadPrevSchedule"
+                                v-bind:disabled="createMode">
                             <option disabled>Tháng...</option>
-                            <option v-for="prev in CurrentPrevSchedules" 
+                            <option v-for="prev in currentPrevSchedules"
                                     v-bind:key="prev.MonthYear" 
                                     v-bind:value="prev.MonthYear">{{prev.DisplayMonthYear}}</option>
                         </select>
                         <form class="form-inline">
-                            <!--<button class="btn m-2" type="button" v-on:click="LoadPrevSchedule" v-bind:disabled="!CanLoadSchedule">
+                            <!--<button class="btn m-2" type="button" v-on:click="loadPrevSchedule" v-bind:disabled="!CanLoadSchedule">
                                 <span>Xem</span>
                             </button>-->
                             <button class="btn btn-sm btn-primary m-2"
                                     type="button"
-                                    v-on:click="CreateNewSchedule"
-                                    v-bind:disabled="!CanCreateNewSchedule">
+                                    v-on:click="createNewSchedule"
+                                    v-bind:disabled="!canCreateNewSchedule">
                                 <i class="fas fa-plus"></i>
                             </button>
                             <button class="btn btn-sm btn-warning m-2"
                                     type="button"
-                                    v-bind:disabled="!CanEditSchedule">
+                                    v-bind:disabled="!canEditSchedule">
                                 <i class="fas fa-edit"></i>
                             </button>
                             <button class="btn btn-sm btn-success m-2"
                                     type="button"
-                                    v-on:click="SaveSchedule"
-                                    v-bind:disabled="!CanSaveSchedule">
+                                    v-on:click="saveSchedule"
+                                    v-bind:disabled="!canSaveSchedule">
                                 <i class="fas fa-check"></i>
                             </button>
                             <button class="btn btn-sm btn-danger m-2"
                                     type="button"
-                                    v-on:click="CancelSchedule"
-                                    v-bind:disabled="!CanCancelSchedule">
+                                    v-on:click="cancelSchedule"
+                                    v-bind:disabled="!canCancelSchedule">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </form>
@@ -64,13 +64,13 @@
         <div class="row">
             <div class="col">
                 <!--Title-->
-                <h4 v-show="IsModeTextVisible" class="text-center mb-md-3">
-                    {{ModeText.Name}}
+                <h4 v-show="isModeTextVisible" class="text-center mb-md-3">
+                    {{modeText.name}}
                     <span class="badge badge-success">
-                        {{ModeText.POS}}
+                        {{modeText.pos}}
                     </span>
                     <span class="badge badge-danger">
-                        {{ModeText.MonthYear}}
+                        {{modeText.MonthYear}}
                     </span>
                 </h4>
             </div>
@@ -79,10 +79,10 @@
             <div class="col">
                 <!--Schedule details-->
                 <div class="d-flex justify-content-around flex-wrap">
-                    <template v-for="item in CurrentDays">
-                        <shift-detail v-bind:display="ShiftDetailDisplay"
-                                      v-bind:users="Users"
-                                      v-bind:readonly="ReadOnly"
+                    <template v-for="item in currentDays">
+                        <shift-detail v-bind:display="shiftDetailDisplay"
+                                      v-bind:users="users"
+                                      v-bind:readonly="readOnly"
                                       v-bind:day.sync="item" />
                     </template>
                 </div>
@@ -112,98 +112,111 @@
         beforeRouteEnter(to, from, next) {
             next(async me => {
                 //this component
-                me.Init();
+                if(!me.VM)
+                    me.init();
             })
         },
 
         data: function() {
             return {
+                //Maybe store VM in vuex?
+                //VM data
                 VM: null,
-                POSs: [],
-                Users: [],
+                poses: [],
+                users: [],
                 //Sys
-                SystemMonthYear: null,
-                SystemMonthYearDisplay: null,
-                TotalDaysOfMonth: null,
+                systemMonthYear: null,
+                systemMonthYearDisplay: null,
+                totalDaysOfMonth: null,
+                //Display bindings
+                currentPOS: null,
+                //Binding depends on POS
+                currentPrevSchedules: null,
+                currentShifts: [],
+                currentDays: [],
 
                 //selected identifier
-                SelectedPos: null,
-                SelectedPrevSchedule: null,
+                selectedPos: null,
+                selectedPrevSchedule: null,
 
-                CreateMode: false,
-                ReadOnly: true,
-                ShiftDetailDisplay: false,
+                createMode: false,
+                readOnly: true,
+                shiftDetailDisplay: false,
                 //Current displaying
 
                 //Creating, viewing...
-                ModeText: {
-                    Name: '',
-                    POS: '',
+                modeText: {
+                    name: '',
+                    pos: '',
                     MonthYear: null
                 },
-                IsModeTextVisible: false,
-
-                //Bindings
-                CurrentPOS: null,
-                CurrentPrevSchedules: null,
-                CurrentShifts: [],
-                CurrentDays: []
+                isModeTextVisible: false
             };
         },
         computed: {
             //Vuex permission
-            CanCreate: function () {
+            canCreate: function () {
                 return this.$store.getters.Can(AppFunction.CreateShiftSchedule);
             },
-            CanEdit: function () {
+            canEdit: function () {
                 return this.$store.getters.Can(AppFunction.EditShiftSchedule);
             },
 
-            Loading: function () {
+            isLoading: function () {
                 return this.$store.getters.Loading;
             },
             CanLoadSchedule: function () {
-                if (this.SelectedPrevSchedule)
+                if (this.selectedPrevSchedule)
                     return true;
                 return false;
             },
-            CanEditSchedule: function () {
-                if (!this.CanEdit) return false;
-                if (this.CreateMode) return false;
-                return !!this.SelectedPos && !!this.SelectedPrevSchedule;
+            canEditSchedule: function () {
+                if (!this.canEdit) return false;
+                if (this.createMode) return false;
+                return !!this.selectedPos && !!this.selectedPrevSchedule;
             },
-            CanCreateNewSchedule: function () {
-                if (!this.CanCreate) return false;
-                if (this.CreateMode) return false;
-                if (this.CurrentPOS)
-                    return !this.CurrentPOS.HasCurrentMonthSchedule;
+            canCreateNewSchedule: function () {
+                if (!this.canCreate) return false;
+                if (this.createMode) return false;
+                if (this.currentPOS)
+                    return !this.currentPOS.HasCurrentMonthSchedule;
                 return false;
             },
-            CanSaveSchedule: function () {
-                if (this.ReadOnly) return false;
+            canSaveSchedule: function () {
+                if (this.readOnly) return false;
                 //Check if all shifts of days are set
-                return this.CurrentDays.every(d => d.Shifts.every(s => {
+                return this.currentDays.every(d => d.Shifts.every(s => {
                     if (!s.Assign) return false;
                     if (!s.Assign.value) return false;
                     return true;
                 }));
             },
-            CanCancelSchedule: function () {
+            canCancelSchedule: function () {
                 //Back to view mode
-                return this.CreateMode
+                return this.createMode
             }
         },
         methods: {
             //Call this on enter/create of this component
-            Init: async function () {
+            init: async function () {
                 try {
                     await this.$store.dispatch(CHECK_TOKEN_EXPIRE);
-                    await this.LoadVM();
+                    await this.loadVM();
+                    //Display first prev schedule of 1st POS
+                    if (this.poses.length > 0) {
+                        this.selectedPos = this.poses[0].PosId;
+                        this.selectedPosChanged();
+                    }
+                    if (this.currentPrevSchedules.length > 0) {
+                        this.selectedPrevSchedule = this.currentPrevSchedules[0].MonthYear;
+                        this.loadPrevSchedule();
+                    }
+
                 } catch (e) {
                     await this.$store.dispatch(LOGOUT);
                 }
             }, 
-            LoadVM: async function () {
+            loadVM: async function () {
                 //Fetch VM
                 try {
                     //Get VM
@@ -211,56 +224,62 @@
                     var vm = response.data;
                     this.VM = vm;
                     //console.log(vm);
-                    //Set POSs
-                    this.POSs = vm.POSs;
+                    //Set poses
+                    this.poses = vm.POSs;
                     //Set users
-                    this.Users = vm.Users;
+                    this.users = vm.Users;
                     //Set sys ref
-                    this.SystemMonthYear = vm.SystemMonthYear;
-                    this.SystemMonthYearDisplay = vm.SystemMonthYearDisplay;
-                    this.TotalDaysOfMonth = vm.TotalDaysOfMonth;
+                    this.systemMonthYear = vm.SystemMonthYear;
+                    this.systemMonthYearDisplay = vm.SystemMonthYearDisplay;
+                    this.totalDaysOfMonth = vm.TotalDaysOfMonth;
                 } catch (e) {
                     this.$emit('showerror', 'Tải dữ liệu thất bại, vui lòng liên hệ IT.');
                     //Disabled function
                     //TODO: Better mechanism to do this
-                    this.POSs = null;
-                    this.Users = null;
+                    this.poses = [];
+                    this.users = [];
                 }
             },
-            SelectedPosChanged: function () {
-                if (this.CreateMode) return;
+            selectedPosChanged: function () {
+                if (this.createMode) return;
                 //Unset selected schedule
-                this.SelectedPrevSchedule = null;
-                //Get POS object
-                this.CurrentPOS = this.POSs.find(p => p.PosId == this.SelectedPos);
-                if (!this.CurrentPOS) return; //Someone tries to screw up the app
-                //console.log(this.CurrentPOS);
-                //Set displaying schedules
-                this.CurrentPrevSchedules = this.CurrentPOS.PreviousMonthSchedules;
-                //Set displaying shifts
-                this.CurrentShifts = this.CurrentPOS.Shifts;
-                //Clear title
-                this.HideModeText();
+                this.selectedPrevSchedule = null;
+                //Find POS
+                this.currentPOS = this.poses.find(p => p.PosId == this.selectedPos);
+                if (!this.currentPOS) return; //Someone tries to screw up the app
+                //Set affective Shifts
+                this.currentShifts = this.currentPOS.Shifts;
+                //Set displaying available prev schedules
+                this.currentPrevSchedules = this.currentPOS.PreviousMonthSchedules;
+                //If prev sche is available, display 1st schedule
+                if (this.currentPrevSchedules.length > 0) {
+                    this.selectedPrevSchedule = this.currentPrevSchedules[0].MonthYear;
+                    this.loadPrevSchedule();
+                    return;
+                }
+                //No prev avalable -> clear displaying cells
+                this.hideModeText();
+                this.clearSchedule();
             },
-            ClearSchedule: function () {
-                this.CurrentDays = [];
+            clearSchedule: function () {
+                this.currentDays = [];
             },
-            CreateNewSchedule: function () {
-                if (!this.CanCreateNewSchedule) return;
-                this.CreateMode = true;
-                this.ReadOnly = false;
+            createNewSchedule: function () {
+                if (!this.canCreateNewSchedule) return;
+                this.createMode = true;
+                this.readOnly = false;
                 //Create new....
-                //If CurrentDays are loaded then check if those days belong to same POS
-                var emptyDays = this.GetEmptyDays(this.TotalDaysOfMonth, this.CurrentShifts);
-                var flattenUsers = this.Users.map(u => u.UserId);
-                var flattenShifts = this.CurrentShifts.map(s => s.ShiftId);
-                if (this.CurrentPOS.PosId == this.SelectedPos) {
-                    //Reuse loaded day
+                //If currentDays are loaded then check if those days belong to same pos
+                var emptyDays = this.createEmptyDays(this.totalDaysOfMonth, this.currentShifts);
+                var flattenUsers = this.users.map(u => u.UserId);
+                var flattenShifts = this.currentShifts.map(s => s.ShiftId);
+                if (this.currentPOS.PosId == this.selectedPos) {
+                    //Recontruct loaded day to current month array
                     var reconstruct = [];
                     //Replace empty days with loaded days if they are same day
                     for(let d of emptyDays) {
                         //Refill values of empty days with loaded one
-                        var loaded = this.CurrentDays.find(l => l.Day == d.Day);
+                        var loaded = this.currentDays.find(l => l.Day == d.Day);
                         if (loaded) {
                             //Re-built shifts of loaded with current shifts & re-fill values if possible
                             var emptyShifts = d.Shifts;
@@ -283,32 +302,32 @@
                             reconstruct.push(d) 
                         }
                     }
-                    this.CurrentDays = reconstruct;
+                    this.currentDays = reconstruct;
                 }
                 else {
-                    //Happens if selected pos changed without updating CurrentPOS
-                    this.CurrentDays = emptyDays;
+                    //Happens if selected pos changed without updating currentPOS
+                    this.currentDays = emptyDays;
                 }
-                this.ShowModeText('Tạo ca trực mới: ', this.CurrentPOS.PosCode, this.SystemMonthYearDisplay)
-                //this.ModeName = `Tạo ca trực mới: ${this.CurrentPOS.PosCode} ${this.SystemMonthYearDisplay}`;
+                this.showModeText('Tạo ca trực mới: ', this.currentPOS.PosCode, this.systemMonthYearDisplay)
+                //this.ModeName = `Tạo ca trực mới: ${this.currentPOS.PosCode} ${this.systemMonthYearDisplay}`;
             },
-            SaveSchedule: async function () {
-                if (!this.CanSaveSchedule) return;
+            saveSchedule: async function () {
+                if (!this.canSaveSchedule) return;
                 var api = API_Const.SaveScheduleAPI;
                 //Transform to linear shift detail format
                 //Contructor:
                 //ScheduleContainer(int targetPos, DateTime targetMonthYear, IEnumerable<ShiftSchedulePOCO> schedules)
                 var postObject = {
-                    targetPos: this.CurrentPOS.PosId, //Target POS of this schedule
+                    targetPos: this.currentPOS.PosId, //Target pos of this schedule
                     //Must be same default time of non specified time of C# Datetime in order to re-select after saved successfully
                     //MomentJS, C# default time if not specified is 12:00:00, 00:00:00 respectively
-                    targetMonthYear: moment(this.SystemMonthYear).date(1).format('YYYY-MM-DD[T00:00:00]'), //Target month of this schedule, day must be 1
+                    targetMonthYear: moment(this.systemMonthYear).date(1).format('YYYY-MM-DD[T00:00:00]'), //Target month of this schedule, day must be 1
                     schedules: []
                 };
-                var schedules = this.CurrentDays.reduce((acc, d) => {
+                var schedules = this.currentDays.reduce((acc, d) => {
                     let shiftDetails = d.Shifts.map(s => {
                         return {
-                            ShiftDate: moment(this.SystemMonthYear).date(d.Day).format(),
+                            Day: d.Day,
                             User: {
                                 UserId: s.Assign.value
                             },
@@ -327,15 +346,15 @@
                     this.$emit('showsuccess', 'Tạo lịch làm việc mới thành công!');
                     //Set current view to newly added schedule
                     //Reload VM
-                    var prevPos = this.SelectedPos;
-                    await this.LoadVM();
+                    var prevPos = this.selectedPos;
+                    await this.loadVM();
                     //Back to view
-                    this.CancelSchedule();
-                    //Set POS then PrevSchedules
-                    this.SelectedPos = prevPos;
-                    this.SelectedPosChanged();
-                    this.SelectedPrevSchedule = postObject.targetMonthYear;
-                    this.LoadPrevSchedule();
+                    this.cancelSchedule();
+                    //Set pos then PrevSchedules
+                    this.selectedPos = prevPos;
+                    this.selectedPosChanged();
+                    this.selectedPrevSchedule = postObject.targetMonthYear;
+                    this.loadPrevSchedule();
                 } catch (e) {
                     //Show error mess
                     //console.log(e);
@@ -343,24 +362,24 @@
                 }
 
             },
-            CancelSchedule: function () {
-                if (!this.CreateMode) return;
+            cancelSchedule: function () {
+                if (!this.createMode) return;
                 //Clean up ....
-                this.CreateMode = false;
-                this.ReadOnly = true;
-                this.CurrentDays = [];
-                this.SelectedPrevSchedule = null;
-                this.HideModeText();
+                this.createMode = false;
+                this.readOnly = true;
+                this.currentDays = [];
+                this.selectedPrevSchedule = null;
+                this.hideModeText();
             },
             //Internal use
-            GetEmptyDays: function (dayCount, shifts) {
+            createEmptyDays: function (dayCount, shifts) {
                 var arr = Array(dayCount).fill(1).map((x, y) => x + y);
                 var days = arr.map(d => {
                     return {
                         Day: d,
                         Shifts: shifts.map(s => {
                             return {
-                                Name: s.Name,
+                                name: s.name,
                                 ShiftId: s.ShiftId,
                                 //Assign: { label: null, value: null }
                                 Assign: null
@@ -370,14 +389,14 @@
                 });
                 return days;
             },
-            LoadPrevSchedule: function () {
-                if (this.CreateMode) return;
+            loadPrevSchedule: function () {
+                if (this.createMode) return;
                 if (!this.CanLoadSchedule) { //????
-                    this.ClearSchedule();
+                    this.clearSchedule();
                     return;
                 }
                 //Get schedule container
-                var scheduleContainer = this.CurrentPrevSchedules.find(s => s.MonthYear == this.SelectedPrevSchedule);
+                var scheduleContainer = this.currentPrevSchedules.find(s => s.MonthYear === this.selectedPrevSchedule);
                 if (!scheduleContainer) throw 'Cant get scheduleContainer';
                 //console.log(scheduleContainer);
                 //Group Shifts of ShiftDetails
@@ -388,36 +407,36 @@
                 }, []);
                 //console.log(containerShifts);
                 //Create empty array of each days
-                var emptyDays = this.GetEmptyDays(scheduleContainer.TotalDaysOfMonth, containerShifts);
+                var emptyDays = this.createEmptyDays(scheduleContainer.TotalDaysOfMonth, containerShifts);
                 //Transform to displaying days
                 //Map linear schedule details to empty day objects
                 emptyDays.forEach(emptyDay => {
-                    var containerShifts = scheduleContainer.Schedules.filter(shift => shift.Day == emptyDay.Day);
+                    var containerShifts = scheduleContainer.Schedules.filter(shift => shift.Day === emptyDay.Day);
                     //console.log(containerShifts);
                     containerShifts.forEach(cs => {
-                        var shift = emptyDay.Shifts.find(shift => shift.ShiftId == cs.Shift.ShiftId);
+                        var shift = emptyDay.Shifts.find(shift => shift.ShiftId === cs.Shift.ShiftId);
                         shift.Assign = { value: cs.User.UserId, label: cs.User.DisplayName };
                     });
                 });
                 //console.log(days);
                 //Display
-                this.CurrentDays = emptyDays;
-                this.ShowModeText('Xem ca trực: ', this.CurrentPOS.PosCode, scheduleContainer.DisplayMonthYear)
-                //this.ModeName = `Xem ca trực: ${this.CurrentPOS.PosCode} ${scheduleContainer.DisplayMonthYear}`;
+                this.currentDays = emptyDays;
+                this.showModeText('Xem ca trực: ', this.currentPOS.PosCode, scheduleContainer.DisplayMonthYear)
+                //this.ModeName = `Xem ca trực: ${this.currentPOS.PosCode} ${scheduleContainer.DisplayMonthYear}`;
             },
-            ShowModeText: function (name, pos, monthYear) {
-                this.ModeText.Name = name;
-                this.ModeText.POS = pos;
-                this.ModeText.MonthYear = monthYear;
-                this.IsModeTextVisible = true;
+            showModeText: function (name, pos, monthYear) {
+                this.modeText.name = name;
+                this.modeText.pos = pos;
+                this.modeText.MonthYear = monthYear;
+                this.isModeTextVisible = true;
             },
-            HideModeText: function () {
-                this.ModeText.Name = '';
-                this.ModeText.POS = '';
-                this.ModeText.MonthYear = '';
-                this.IsModeTextVisible = false;
+            hideModeText: function () {
+                this.modeText.name = '';
+                this.modeText.pos = '';
+                this.modeText.MonthYear = '';
+                this.isModeTextVisible = false;
             },
-            ComposePOSLabel: function (pos) {
+            composePOSLabel: function (pos) {
                 return pos.PosCode + (pos.HasCurrentMonthSchedule ? '' : ' (chưa xếp)');
                 //Too long
                 //return `${pos.PosName}-${pos.PosCode}` + (pos.HasCurrentMonthSchedule ? '' : ' (chưa xếp)');

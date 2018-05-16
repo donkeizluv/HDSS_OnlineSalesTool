@@ -2,7 +2,6 @@
 
 import VModal from 'vue-js-modal'
 import Toasted from 'vue-toasted'
-//import VueProgressBar from 'vue-progressbar'
 import vSelect from 'vue-select'
 import appConst from './AppConst'
 //import mixin from '../Home/mixin'
@@ -23,7 +22,7 @@ Vue.use(Toasted,
     });
 //Registers globally
 //Vue.mixin(mixin);
-//Init
+//init
 new Vue({
     //mixins: [mixin],
     store: store,

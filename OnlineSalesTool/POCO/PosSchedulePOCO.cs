@@ -8,18 +8,18 @@ namespace OnlineSalesTool.POCO
     /// <summary>
     /// For displaying in assigner
     /// </summary>
-    public class ScheduleContainerPOCO
+    public class PosSchedulePOCO
     {
-        public ScheduleContainerPOCO()
+        public PosSchedulePOCO()
         {
 
         }
-        public ScheduleContainerPOCO(IEnumerable<ShiftSchedulePOCO> schedules, DateTime monthYear)
+        public PosSchedulePOCO(IEnumerable<ScheduleDetailPOCO> schedules, DateTime monthYear)
         {
             MonthYear = monthYear;
             Schedules = schedules;
         }
-        public IEnumerable<ShiftSchedulePOCO> Schedules { get; set; }
+        public IEnumerable<ScheduleDetailPOCO> Schedules { get; set; }
         public DateTime MonthYear { get; set; }
 
 

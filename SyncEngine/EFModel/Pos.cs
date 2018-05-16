@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OnlineSalesTool.EFModel
+namespace SyncEngine.EFModel
 {
     public partial class Pos
     {
         public Pos()
         {
-            PosSchedule = new HashSet<PosSchedule>();
             PosShift = new HashSet<PosShift>();
+            ShiftSchedule = new HashSet<ShiftSchedule>();
         }
 
         public int PosId { get; set; }
@@ -19,7 +19,7 @@ namespace OnlineSalesTool.EFModel
         public int UserId { get; set; }
 
         public AppUser User { get; set; }
-        public ICollection<PosSchedule> PosSchedule { get; set; }
         public ICollection<PosShift> PosShift { get; set; }
+        public ICollection<ShiftSchedule> ShiftSchedule { get; set; }
     }
 }
