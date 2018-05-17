@@ -1,31 +1,31 @@
 ﻿<template id="adminview">
     <div class="row">
         <div class="col-lg-12 mx-auto">
-            <v-tabs>
-                <v-tab title="1st">
-                    Manage POS component
-                </v-tab>
-                <v-tab title="2nd">
-                    Manage POS component
-                </v-tab>
-            </v-tabs>
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <router-link v-bind:class="[isActiveRoute('POS')? 'active' : '', 'nav-link']" to="/Manage/POS">POS</router-link>
+                </li>
+                <li v-bind:class="[isActiveRoute('User')? 'active' : '', 'nav-item']">
+                    <router-link class="nav-link" to="/Manage/User">Người dùng</router-link>
+                </li>
+            </ul>
+            <keep-alive>
+                <router-view></router-view>
+            </keep-alive>
         </div>
     </div>
 </template>
 <script>
     //https://github.com/cristijora/vue-tabs/issues/44
-    import { VueTabs, VTab } from 'vue-nav-tabs/dist/vue-tabs.js'
-    import 'vue-nav-tabs/themes/vue-tabs.css'
 
     export default {
         name: 'admin-view',
         template: '#adminview',
-        components: {
-            'v-tabs': VueTabs,
-            'v-tab': VTab
-        },
+        
         computed: {
-
+            currentRouteName: function () {
+                return this.$route.name;
+            }
         },
         data: function () {
             return {
@@ -33,94 +33,14 @@
             }
         },
         methods: {
-
+            isActiveRoute: function (name) {
+                //console.log(this.currentRouteName);
+                return this.currentRouteName === name;
+            }
         }
 
     }
 </script>
-<!--<style scoped>
-    .tabs-component {
-        margin: 4em 0;
-    }
+<style scoped>
 
-    .tabs-component-tabs {
-        border: solid 1px #ddd;
-        border-radius: 6px;
-        margin-bottom: 5px;
-    }
-
-    @media (min-width: 700px) {
-        .tabs-component-tabs {
-            border: 0;
-            align-items: stretch;
-            display: flex;
-            justify-content: flex-start;
-            margin-bottom: -1px;
-        }
-    }
-
-    .tabs-component-tab {
-        color: #999;
-        font-size: 14px;
-        font-weight: 600;
-        margin-right: 0;
-        list-style: none;
-    }
-
-        .tabs-component-tab:not(:last-child) {
-            border-bottom: dotted 1px #ddd;
-        }
-
-        .tabs-component-tab:hover {
-            color: #666;
-        }
-
-        .tabs-component-tab.is-active {
-            color: #000;
-        }
-
-        .tabs-component-tab.is-disabled * {
-            color: #cdcdcd;
-            cursor: not-allowed !important;
-        }
-
-    @media (min-width: 700px) {
-        .tabs-component-tab {
-            background-color: #fff;
-            border: solid 1px #ddd;
-            border-radius: 3px 3px 0 0;
-            margin-right: .5em;
-            transform: translateY(2px);
-            transition: transform .3s ease;
-        }
-
-            .tabs-component-tab.is-active {
-                border-bottom: solid 1px #fff;
-                z-index: 2;
-                transform: translateY(0);
-            }
-    }
-
-    .tabs-component-tab-a {
-        align-items: center;
-        color: inherit;
-        display: flex;
-        padding: .75em 1em;
-        text-decoration: none;
-    }
-
-    .tabs-component-panels {
-        padding: 4em 0;
-    }
-
-    @media (min-width: 700px) {
-        .tabs-component-panels {
-            border-top-left-radius: 0;
-            background-color: #fff;
-            border: solid 1px #ddd;
-            border-radius: 0 6px 6px 6px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, .05);
-            padding: 4em 2em;
-        }
-    }
-</style>-->
+</style>

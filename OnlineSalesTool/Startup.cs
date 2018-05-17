@@ -49,6 +49,7 @@ namespace OnlineSalesTool
             //Inject repos
             services.AddTransient<IScheduleRepository, ScheduleRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IPosRepository, PosRepository>();
             //Inject INDUS
             //services.AddSingleton<IIndusAdapter>(IndusFactory.GetIndusInstance(Configuration,
             //    File.ReadAllText($"{Program.ExeDir}\\{Configuration.GetSection("Indus").GetValue<string>("QueryFileName")}")));

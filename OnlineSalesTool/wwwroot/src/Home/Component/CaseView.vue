@@ -1,7 +1,7 @@
 ﻿<template id="caseview">
     <div>
         <!--Search bar-->
-        <div class="row top-margin">
+        <div class="row">
             <div class="col-sm-8 mx-auto">
                 <search-bar v-bind:disabled="loading"
                             v-bind:items="searchProps"
@@ -60,10 +60,6 @@
     }
 </script>
 <style scoped>
-    .top-margin {
-        margin-top: 15px;
-    }
-
     .borderless {
         border: none !important;
     }

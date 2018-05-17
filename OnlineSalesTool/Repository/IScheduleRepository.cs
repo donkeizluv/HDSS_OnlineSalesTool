@@ -9,7 +9,7 @@ namespace OnlineSalesTool.Repository
 {
     public interface IScheduleRepository
     {
-        Task<ShiftAssignerViewModel> CreateAssignerVM();
-        Task SaveSchedule(ScheduleContainer schedule);
+        Task<ShiftAssignerViewModel> Get();
+        Task Create(ScheduleContainer schedule);
     }
 }

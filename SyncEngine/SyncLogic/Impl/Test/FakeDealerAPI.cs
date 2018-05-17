@@ -19,7 +19,7 @@ namespace SyncService.SyncLogic.Impl.Test
             {
                 orders.Add(new OnlineOrder()
                 {
-                    TrackingNumber = Utility.RandomString(10, _rnd),
+                    OrderGuid = Utility.RandomString(10, _rnd),
                     Name = Utility.RandomString(5, _rnd),
                     NatId = Utility.RandomString(5, _rnd),
                     Phone = Utility.RandomString(5, _rnd),

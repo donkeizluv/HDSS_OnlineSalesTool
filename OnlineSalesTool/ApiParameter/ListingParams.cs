@@ -6,12 +6,10 @@ namespace OnlineSalesTool.ApiParameter
     {
         public int Id { get; set; }
         public int Page { get; set; }
-        public string Type { get; set; }
+        public string Filter { get; set; }
         public string Contain { get; set; }
         public string OrderBy { get; set; }
         public bool Asc { get; set; }
-        public HttpContext HttpContext { get; set; }
-        //public DocumentArchiverContext DbContext { get; set; }
 
         public class ParamBuilder
         {
@@ -21,8 +19,6 @@ namespace OnlineSalesTool.ApiParameter
             private string _contain;
             private string _orderBy;
             private bool _asc;
-            private HttpContext _httpContext;
-            //private DocumentArchiverContext _dbContext;
 
             public ParamBuilder SetId(int value)
             {
@@ -31,7 +27,7 @@ namespace OnlineSalesTool.ApiParameter
             }
             public ParamBuilder SetPage(int value)
             {
-                _page = value;
+                _page = value < 1 ? 1 : value;
                 return this;
             }
             public ParamBuilder SetType(string value)
@@ -54,28 +50,16 @@ namespace OnlineSalesTool.ApiParameter
                 _asc = value;
                 return this;
             }
-            public ParamBuilder SetHttpContext(HttpContext context)
-            {
-                _httpContext = context;
-                return this;
-            }
-            //public ParamBuilder SetDbContext(DocumentArchiverContext context)
-            //{
-            //    _dbContext = context;
-            //    return this;
-            //}
             public ListingParams Build()
             {
                 return new ListingParams()
                 {
                     Id = _id,
                     Page = _page,
-                    Type = _type,
+                    Filter = _type,
                     Contain = _contain,
                     OrderBy = _orderBy,
                     Asc = _asc,
-                    HttpContext = _httpContext,
-                    //DbContext = _dbContext
                 };
             }
         }

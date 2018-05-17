@@ -14,7 +14,7 @@
         <div class="card-body">
             <div v-for="shift in day.Shifts" v-bind:key="shift.ShiftId">
                 <div class="d-flex flex-column">
-                    <span class="text-secondary">{{shift.name}}</span>
+                    <span class="text-secondary">{{shift.Name}}</span>
                     <v-select v-bind:disabled="readonly"
                               v-bind:options="usersLeft"
                               v-model="shift.Assign"></v-select>

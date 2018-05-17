@@ -99,12 +99,16 @@
     import API_Const from '../API'
     //Actions
     import { CHECK_TOKEN_EXPIRE, LOGOUT } from '../actions'
+    //Mutation
+    import { VM_ASSIGNER } from '../mutations'
     //Const
     import { AppFunction } from '../AppConst'
 
     export default {
         name: 'AssignerView',
+
         template: '#assignerview',
+
         components: {
             'shift-detail': shiftdetail
         },
@@ -112,8 +116,8 @@
         beforeRouteEnter(to, from, next) {
             next(async me => {
                 //this component
-                if(!me.VM)
-                    me.init();
+                if(!me.vm)
+                    await me.init();
             })
         },
 
@@ -121,7 +125,6 @@
             return {
                 //Maybe store VM in vuex?
                 //VM data
-                VM: null,
                 poses: [],
                 users: [],
                 //Sys
@@ -153,9 +156,16 @@
                 isModeTextVisible: false
             };
         },
+
         computed: {
+            //VM
+            vm: function () {
+                return this.$store.getters.vm_assigner;
+            },
             //Vuex permission
             canCreate: function () {
+                //Must have shifts to create schedule
+                if (this.currentShifts.length < 1) return false;
                 return this.$store.getters.Can(AppFunction.CreateShiftSchedule);
             },
             canEdit: function () {
@@ -196,33 +206,30 @@
                 return this.createMode
             }
         },
+
         methods: {
             //Call this on enter/create of this component
             init: async function () {
-                try {
-                    await this.$store.dispatch(CHECK_TOKEN_EXPIRE);
-                    await this.loadVM();
-                    //Display first prev schedule of 1st POS
-                    if (this.poses.length > 0) {
-                        this.selectedPos = this.poses[0].PosId;
-                        this.selectedPosChanged();
-                    }
-                    if (this.currentPrevSchedules.length > 0) {
-                        this.selectedPrevSchedule = this.currentPrevSchedules[0].MonthYear;
-                        this.loadPrevSchedule();
-                    }
-
-                } catch (e) {
-                    await this.$store.dispatch(LOGOUT);
+                await this.$store.dispatch(CHECK_TOKEN_EXPIRE);
+                await this.loadVM();
+                //Display first prev schedule of 1st POS
+                if (this.poses.length > 0) {
+                    this.selectedPos = this.poses[0].PosId;
+                    this.selectedPosChanged();
+                }
+                if (this.currentPrevSchedules.length > 0) {
+                    this.selectedPrevSchedule = this.currentPrevSchedules[0].MonthYear;
+                    this.loadPrevSchedule();
                 }
             }, 
             loadVM: async function () {
                 //Fetch VM
                 try {
                     //Get VM
-                    var response = await axios.get(API_Const.AssignerVmAPI);
-                    var vm = response.data;
-                    this.VM = vm;
+                    let response = await axios.get(API_Const.AssignerVmAPI);
+                    let vm = response.data;
+                    //Commit VM
+                    this.$store.commit(VM_ASSIGNER, vm);
                     //console.log(vm);
                     //Set poses
                     this.poses = vm.POSs;
@@ -240,6 +247,7 @@
                     this.users = [];
                 }
             },
+
             selectedPosChanged: function () {
                 if (this.createMode) return;
                 //Unset selected schedule
@@ -270,23 +278,23 @@
                 this.readOnly = false;
                 //Create new....
                 //If currentDays are loaded then check if those days belong to same pos
-                var emptyDays = this.createEmptyDays(this.totalDaysOfMonth, this.currentShifts);
-                var flattenUsers = this.users.map(u => u.UserId);
-                var flattenShifts = this.currentShifts.map(s => s.ShiftId);
+                let emptyDays = this.createEmptyDays(this.totalDaysOfMonth, this.currentShifts);
+                let flattenUsers = this.users.map(u => u.UserId);
+                let flattenShifts = this.currentShifts.map(s => s.ShiftId);
                 if (this.currentPOS.PosId == this.selectedPos) {
                     //Recontruct loaded day to current month array
-                    var reconstruct = [];
+                    let reconstruct = [];
                     //Replace empty days with loaded days if they are same day
                     for(let d of emptyDays) {
                         //Refill values of empty days with loaded one
-                        var loaded = this.currentDays.find(l => l.Day == d.Day);
+                        let loaded = this.currentDays.find(l => l.Day == d.Day);
                         if (loaded) {
                             //Re-built shifts of loaded with current shifts & re-fill values if possible
-                            var emptyShifts = d.Shifts;
+                            let emptyShifts = d.Shifts;
                             //Refill loaded values to empty
                             emptyShifts.forEach(rs => {
                                 //Find shift
-                                var loadedShift = loaded.Shifts.find(l => l.ShiftId == rs.ShiftId);
+                                let loadedShift = loaded.Shifts.find(l => l.ShiftId == rs.ShiftId);
                                 if (loadedShift) {
                                     //If user still under mangement then re-use assign values
                                     if (flattenUsers.includes(loadedShift.Assign.value)) {
@@ -313,18 +321,18 @@
             },
             saveSchedule: async function () {
                 if (!this.canSaveSchedule) return;
-                var api = API_Const.SaveScheduleAPI;
+                let api = API_Const.SaveScheduleAPI;
                 //Transform to linear shift detail format
                 //Contructor:
                 //ScheduleContainer(int targetPos, DateTime targetMonthYear, IEnumerable<ShiftSchedulePOCO> schedules)
-                var postObject = {
+                let postObject = {
                     targetPos: this.currentPOS.PosId, //Target pos of this schedule
                     //Must be same default time of non specified time of C# Datetime in order to re-select after saved successfully
                     //MomentJS, C# default time if not specified is 12:00:00, 00:00:00 respectively
                     targetMonthYear: moment(this.systemMonthYear).date(1).format('YYYY-MM-DD[T00:00:00]'), //Target month of this schedule, day must be 1
                     schedules: []
                 };
-                var schedules = this.currentDays.reduce((acc, d) => {
+                let schedules = this.currentDays.reduce((acc, d) => {
                     let shiftDetails = d.Shifts.map(s => {
                         return {
                             Day: d.Day,
@@ -346,7 +354,7 @@
                     this.$emit('showsuccess', 'Tạo lịch làm việc mới thành công!');
                     //Set current view to newly added schedule
                     //Reload VM
-                    var prevPos = this.selectedPos;
+                    let prevPos = this.selectedPos;
                     await this.loadVM();
                     //Back to view
                     this.cancelSchedule();
@@ -373,13 +381,13 @@
             },
             //Internal use
             createEmptyDays: function (dayCount, shifts) {
-                var arr = Array(dayCount).fill(1).map((x, y) => x + y);
-                var days = arr.map(d => {
+                let arr = Array(dayCount).fill(1).map((x, y) => x + y);
+                let days = arr.map(d => {
                     return {
                         Day: d,
                         Shifts: shifts.map(s => {
                             return {
-                                name: s.name,
+                                Name: s.Name,
                                 ShiftId: s.ShiftId,
                                 //Assign: { label: null, value: null }
                                 Assign: null
@@ -396,25 +404,25 @@
                     return;
                 }
                 //Get schedule container
-                var scheduleContainer = this.currentPrevSchedules.find(s => s.MonthYear === this.selectedPrevSchedule);
+                let scheduleContainer = this.currentPrevSchedules.find(s => s.MonthYear === this.selectedPrevSchedule);
                 if (!scheduleContainer) throw 'Cant get scheduleContainer';
                 //console.log(scheduleContainer);
                 //Group Shifts of ShiftDetails
-                var containerShifts = scheduleContainer.Schedules.reduce((ac, sc) => {
+                let containerShifts = scheduleContainer.Schedules.reduce((ac, sc) => {
                     if (!ac.some(v => v.ShiftId == sc.Shift.ShiftId))
                         ac.push(sc.Shift);
                     return ac;
                 }, []);
                 //console.log(containerShifts);
                 //Create empty array of each days
-                var emptyDays = this.createEmptyDays(scheduleContainer.TotalDaysOfMonth, containerShifts);
+                let emptyDays = this.createEmptyDays(scheduleContainer.TotalDaysOfMonth, containerShifts);
                 //Transform to displaying days
                 //Map linear schedule details to empty day objects
                 emptyDays.forEach(emptyDay => {
-                    var containerShifts = scheduleContainer.Schedules.filter(shift => shift.Day === emptyDay.Day);
+                    let containerShifts = scheduleContainer.Schedules.filter(shift => shift.Day === emptyDay.Day);
                     //console.log(containerShifts);
                     containerShifts.forEach(cs => {
-                        var shift = emptyDay.Shifts.find(shift => shift.ShiftId === cs.Shift.ShiftId);
+                        let shift = emptyDay.Shifts.find(shift => shift.ShiftId === cs.Shift.ShiftId);
                         shift.Assign = { value: cs.User.UserId, label: cs.User.DisplayName };
                     });
                 });

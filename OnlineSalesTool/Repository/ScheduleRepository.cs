@@ -21,48 +21,96 @@ namespace OnlineSalesTool.Repository
         public ScheduleRepository(OnlineSalesContext context, IUserResolver userResolver)
             : base(userResolver.GetPrincipal(), context) { }
 
-        public async Task<ShiftAssignerViewModel> CreateAssignerVM()
+        public async Task<ShiftAssignerViewModel> Get()
         {
+            switch (Role)
+            {
+                case AppEnum.RoleEnum.CA:
+                    return await CreateVM_CA();
+                case AppEnum.RoleEnum.BDS:
+                    return await CreateVM_BDS();
+                case AppEnum.RoleEnum.ASM:
+                    throw new NotImplementedException();
+                case AppEnum.RoleEnum.ADMIN: //See all
+                    return await CreateVM_BDS();
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+        #region Create VM
+        private async Task<ShiftAssignerViewModel> CreateVM_CA()
+        {
+            //CA can see his manager POSs' schedules
             var now = DateTime.Now;
+            var man = DbContext.AppUser
+                .Include(u => u.Manager)
+                .First(u => u.UserId == UserId).Manager;
+            if (man == null) return null;
             var vm = new ShiftAssignerViewModel()
             {
-                //Get all ids under management
-                Users = await DbContext.AppUser
-                .Where(u => u.ManagerId == PrincipalUserId)
-                .Select(u => new AppUserPOCO() {
-                    UserId = u.UserId,
-                    DisplayName = $"{u.Name} - {u.Hr}"
-                }).AsNoTracking().ToListAsync(),
+                //Since CA cant create schedule, just return his own name
+                Users = new[] { new AppUserPOCO() { DisplayName = Username } },
                 //Get all POS under management
-                POSs = await DbContext.Pos.Where(p => p.UserId == PrincipalUserId)
-                .Select(p => new PosPOCO() {
-                    PosCode = p.PosCode,
-                    PosId = p.PosId,
-                    PosName = p.PosName,
-                    //Get all shifts of this POS
+                POSs = await DbContext.Pos.Where(u => u.UserId == man.UserId)
+                .Select(p => new PosPOCO(p) {
                     Shifts = p.PosShift
-                    .Select(ps => new ShiftPOCO() {
-                        Name = ps.Shift.Name,
-                        ShiftId = ps.ShiftId,
-                        //Get all shift details of this Shift
-                        //ShiftDetails = ps.Shift.ShiftDetail
-                        //.Select(d => new ShiftDetailPOCO() {
-                        //    StartAt = d.StartAt, EndAt = d.EndAt
-                        //})
-                    }),
+                            .Select(ps => ps.Shift)
+                            .Select(s => new ShiftPOCO() {
+                                ShiftId = s.ShiftId,
+                                Name = s.Name
+                            }),
                     PreviousMonthSchedules = p.PosSchedule
                     .OrderByDescending(g => g.MonthYear.Year)
                     .ThenByDescending(g => g.MonthYear.Month)
                     .Take(NearestMonthScheduleTake)
                     .Select(g => new PosSchedulePOCO(
-                            g.ScheduleDetail.Select(gg => new ScheduleDetailPOCO(){
-                                        Day = gg.Day,
-                                        Shift = new ShiftPOCO() { Name = gg.Shift.Name, ShiftId = gg.ShiftId },
-                                        User = new AppUserPOCO()
-                                        {
-                                            UserId = gg.User.UserId,
-                                            DisplayName = $"{gg.User.Name} - {gg.User.Hr}"
-                                        }}), new DateTime(g.MonthYear.Year, g.MonthYear.Month, 1))),
+                            g.ScheduleDetail.Select(gg => new ScheduleDetailPOCO()
+                            {
+                                Day = gg.Day,
+                                Shift = new ShiftPOCO() { Name = gg.Shift.Name, ShiftId = gg.ShiftId },
+                                User = new AppUserPOCO(gg.User)
+                            }), new DateTime(g.MonthYear.Year, g.MonthYear.Month, 1))),
+                    HasCurrentMonthSchedule = p.PosSchedule.Any(ps => ps.MonthYear.Year == now.Year && ps.MonthYear.Month == now.Month)
+                }).ToListAsync(),
+                //Current SYS Month/Year
+                SystemMonthYear = now
+            };
+            return vm;
+        }
+        private async Task<ShiftAssignerViewModel> CreateVM_BDS()
+        {
+            //BDS can see his POSs' schedules
+            var now = DateTime.Now;
+            var vm = new ShiftAssignerViewModel()
+            {
+                //Get all ids under management
+                Users = await DbContext.AppUser
+                .Where(u => u.ManagerId == UserId)
+                .Select(u => new AppUserPOCO(u)).ToListAsync(),
+                //Get all POS under management
+                POSs = await DbContext.Pos.Where(p => p.UserId == UserId)
+                .Select(p => new PosPOCO(p) {
+                    Shifts = p.PosShift
+                            .Select(ps => ps.Shift)
+                            .Select(s => new ShiftPOCO() {
+                                ShiftId = s.ShiftId,
+                                Name = s.Name
+                            }),
+                    PreviousMonthSchedules = p.PosSchedule
+                    .OrderByDescending(g => g.MonthYear.Year)
+                    .ThenByDescending(g => g.MonthYear.Month)
+                    .Take(NearestMonthScheduleTake)
+                    .Select(g => new PosSchedulePOCO(
+                            g.ScheduleDetail.Select(gg => new ScheduleDetailPOCO()
+                            {
+                                Day = gg.Day,
+                                Shift = new ShiftPOCO() { Name = gg.Shift.Name, ShiftId = gg.ShiftId },
+                                User = new AppUserPOCO()
+                                {
+                                    UserId = gg.User.UserId,
+                                    DisplayName = $"{gg.User.Name} - {gg.User.Hr}"
+                                }
+                            }), new DateTime(g.MonthYear.Year, g.MonthYear.Month, 1))),
                     HasCurrentMonthSchedule = p.PosSchedule.Any(ps => ps.MonthYear.Year == now.Year && ps.MonthYear.Month == now.Month)
                 }).AsNoTracking().ToListAsync(),
                 //Current SYS Month/Year
@@ -70,7 +118,7 @@ namespace OnlineSalesTool.Repository
             };
             return vm;
         }
-
+        #endregion
         /// <summary>
         /// Check if schedule sastisfies bussines logic
         /// </summary>
@@ -78,7 +126,7 @@ namespace OnlineSalesTool.Repository
         /// <returns></returns>
         private async Task ThrowIfCheckFail(ScheduleContainer scheduleContainer)
         {
-            var userId = PrincipalUserId;
+            var userId = UserId;
             if (scheduleContainer == null) throw new ArgumentNullException($"Param: {nameof(scheduleContainer)} is null.");
             var emptyDefine = scheduleContainer.Schedules.FirstOrDefault(s => s.Shift == null || s.User == null);
             if(emptyDefine != null)
@@ -168,7 +216,7 @@ namespace OnlineSalesTool.Repository
             //Clean
         }
 
-        public async Task SaveSchedule(ScheduleContainer schedule)
+        public async Task Create(ScheduleContainer schedule)
         {
             if (schedule == null) throw new ArgumentNullException();
             await ThrowIfCheckFail(schedule);

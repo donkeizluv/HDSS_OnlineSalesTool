@@ -8,12 +8,14 @@ namespace OnlineSalesTool.Logic
 {
     public interface IScheduleMatcher
     {
+
+        //bool GetUserMatchedSchedule(string posCode, DateTime date, out IEnumerable<int> matchUserId, out string reason);
         /// <summary>
         /// Try to assign this case to an user according to scheluded shift & System date
         /// </summary>
         /// <param name="order"></param>
         /// <param name="user"></param>
         /// <returns></returns>
-        bool GetUserMatchedSchedule(string posCode, DateTime date, out IEnumerable<int> matchUserId, out string reason);
+        Task<(bool, List<int>, string)> GetUserMatchedSchedule(string posCode, DateTime date);
     }
 }

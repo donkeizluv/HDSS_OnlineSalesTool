@@ -106,7 +106,7 @@ namespace OnlineSalesTool.EFModel
             {
                 entity.HasKey(e => e.OrderId);
 
-                entity.HasIndex(e => e.TrackingNumber)
+                entity.HasIndex(e => e.OrderGuid)
                     .HasName("U_TrackingNumber_OnlineOrder")
                     .IsUnique();
 
@@ -146,9 +146,9 @@ namespace OnlineSalesTool.EFModel
 
                 entity.Property(e => e.Received).HasColumnType("datetime");
 
-                entity.Property(e => e.TrackingNumber)
+                entity.Property(e => e.OrderGuid)
                     .IsRequired()
-                    .HasMaxLength(10);
+                    .HasMaxLength(32);
 
                 entity.HasOne(d => d.AssignUser)
                     .WithMany(p => p.OnlineOrder)

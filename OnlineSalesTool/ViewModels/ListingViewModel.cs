@@ -25,8 +25,7 @@ namespace OnlineSalesTool.ViewModels
         public virtual string OrderBy { get; set; }
         public virtual bool OrderAsc { get; set; }
         public abstract int ItemPerPage { get; }
-        public virtual List<T> Items { get; set; }
-        public virtual Dictionary<string, List<string>> Claims { get; set; }
+        public virtual IEnumerable<T> Items { get; set; }
         //update these every time add record
         public int TotalPages { get; private set; }
         private int _totalRows;

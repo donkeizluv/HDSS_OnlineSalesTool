@@ -19,7 +19,7 @@
                                         </div>
                                     </div>
                                     <input v-bind:disabled="Loading"
-                                           v-model="Username"
+                                           v-model="username"
                                            type="text"
                                            class="form-control"
                                            placeholder="Tên đăng nhập"
@@ -33,14 +33,14 @@
                                         </div>
                                     </div>
                                     <input v-bind:disabled="Loading"
-                                           v-model="Pwd" 
+                                           v-model="pwd" 
                                            type="password" 
                                            placeholder="Mật khẩu" 
                                            v-on:keyup.enter="Login" 
                                            class="form-control" 
                                            aria-describedby="basic-addon2">
                                 </div>
-                                <p id="status" class="text-center text-danger" style="height: 15px;">{{Status}}</p>
+                                <p id="status" class="text-center text-danger" style="height: 15px;">{{status}}</p>
                                 <button v-bind:disabled="!CanSubmit || Loading" v-on:click="Login" class="btn btn-primary btn-block">
                                     <i v-if="Loading" class="fas fa-spinner fa-pulse"></i>
                                     <span v-else>Login</span>
@@ -60,26 +60,26 @@
         template: '#loginTemplate',
         computed: {
             CanSubmit: function () {
-                if (this.Username && this.Pwd)
+                if (this.username && this.pwd)
                     return true;
                 return false;
             },
-            isLoading: function () {
-                return this.$store.getters.isLoading;
+            Loading: function () {
+                return this.$store.getters.Loading;
             }
         },
         data: function () {
             return {
-                Username: '',
-                Pwd: '',
-                Status: '',
+                username: '',
+                pwd: '',
+                status: '',
             }
         },
         methods: {
             Login: async function () {
                 if (!this.CanSubmit) return;
                 try {
-                    await this.$store.dispatch(LOGIN, { username: this.Username, pwd: this.Pwd });
+                    await this.$store.dispatch(LOGIN, { username: this.username, pwd: this.pwd });
                 } catch (e) {
                     //console.log(e);
                     this.Status = 'Đăng nhập thất bại';

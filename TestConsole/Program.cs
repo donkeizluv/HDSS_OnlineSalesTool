@@ -26,7 +26,7 @@ namespace TestConsole
         static void Main(string[] args)
         {
             var context = new OnlineSalesContext("Server=(LocalDb)\\local;Database=OnlineSales;");
-            TestScheduleMatcher(context);
+            TestScheduleMatcher(context).GetAwaiter().GetResult();
             //SchedulerRepo_Check(context).GetAwaiter().GetResult();
             //TestSchedulerRepo_CreateVM(context).GetAwaiter().GetResult();
             //Wtf();
@@ -90,16 +90,17 @@ namespace TestConsole
         //    await repo.SaveSchedule(schedule);
         //}
 
-        private static void TestScheduleMatcher(OnlineSalesContext context)
+        private static async Task TestScheduleMatcher(OnlineSalesContext context)
         {
             var matcher = new SimpleScheduleMatcher(context);
             var testList = new List<string>() { "POS12345", "POS12346" };
 
             foreach (var item in testList)
             {
-                if (matcher.GetUserMatchedSchedule(item, new DateTime(2018,5,1, 19,3,3,3, DateTimeKind.Utc) , out var ids, out string reason))
+                (bool result, List<int> userIds, string reason) = await matcher.GetUserMatchedSchedule(item, new DateTime(2018, 5, 1, 19, 3, 3, 3, DateTimeKind.Utc));
+                if (result)
                 {
-                    foreach (var id in ids)
+                    foreach (var id in userIds)
                     {
                         _logger.Trace($"match user id: {id}");
                     }

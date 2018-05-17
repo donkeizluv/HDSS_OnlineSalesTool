@@ -6,7 +6,7 @@ namespace OnlineSalesTool.EFModel
     public partial class OnlineOrder
     {
         public int OrderId { get; set; }
-        public string TrackingNumber { get; set; }
+        public string OrderGuid { get; set; }
         public string Name { get; set; }
         public string NatId { get; set; }
         public string Phone { get; set; }

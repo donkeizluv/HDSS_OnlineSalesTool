@@ -4,7 +4,7 @@ import AssignerView from './Component/AssignerView.vue'
 import CaseView from './Component/CaseView.vue'
 import AdminView from './Component/AdminView.vue'
 import LoginView from './Component/LoginView.vue'
-
+import PosManagerView from './Component/PosManagerView.vue'
 
 
 function requireAuth(to, from, next) {
@@ -39,14 +39,14 @@ const routes = [
         name: 'Home',
         component: CaseView,
         display: 'Trang chính',
-        navbar: true,
+        navbar: true, //Renders on nav bar if true
         beforeEnter: requireAuth
     },
     {
         path: '/Assign',
         name: 'Assign',
         component: AssignerView,
-        display: 'Ca trực',
+        display: 'Lịch trực',
         navbar: true,
         beforeEnter: requireAuth
     },
@@ -56,7 +56,15 @@ const routes = [
         component: AdminView,
         display: 'Quản lý',
         navbar: true,
-        beforeEnter: requireAuth
+        beforeEnter: requireAuth,
+        //Nested route
+        children: [
+            {
+                path: 'POS',
+                name: 'POS',
+                component: PosManagerView
+            }
+        ]
     },
     //No auth
     {

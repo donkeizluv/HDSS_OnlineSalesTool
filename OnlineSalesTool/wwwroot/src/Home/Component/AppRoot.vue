@@ -5,7 +5,8 @@
         <div v-bind:class="{'bg-grey': !IsAuthenticated }">
             <div class="container-fluid">
                 <keep-alive>
-                    <router-view v-on:showsuccess="ShowSuccessToast"
+                    <router-view class="top-margin"
+                                 v-on:showsuccess="ShowSuccessToast"
                                  v-on:showinfo="ShowInfoToast"
                                  v-on:showerror="ShowBlockingDialog"
                                  v-on:showdialog="ShowDialog"></router-view>
@@ -102,5 +103,8 @@
         overflow: auto; /* Enable scroll if needed */
         background-color: rgb(0,0,0); /* Fallback color */
         background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+    .top-margin {
+        margin-top: 1rem;
     }
 </style>

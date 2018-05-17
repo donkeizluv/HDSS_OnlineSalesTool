@@ -7,7 +7,7 @@
         </button>
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
-                <li class="nav-item" v-for="route in routes">
+                <li v-bind:class="[isActiveRoute(route.name)? 'active font-italic' : '' , 'nav-item']" v-for="route in routes">
                     <router-link v-show="route.navbar" class="nav-link" v-bind:to="route.path">{{route.display}}</router-link>
                 </li>
             </ul>
@@ -24,11 +24,11 @@
                 <!--Dispatch log out action-->
                 <li class="nav-item"><a class="nav-link" v-on:click="logout">Logout</a></li>
             </ul>
-            <ul v-else class="navbar-nav ml-auto">
+            <!--<ul v-else class="navbar-nav ml-auto">
                 <li class="nav-item">
                     <router-link class="nav-link" to="Login">Login</router-link>
                 </li>
-            </ul>
+            </ul>-->
 
         </div>
     </nav>
@@ -55,6 +55,9 @@
             },
             identity: function () {
                 return this.$store.getters.Identity;
+            },
+            currentRouteName: function () {
+                return this.$route.name;
             }
         },
         data: function () {
@@ -65,6 +68,9 @@
         methods: {
             logout: function () {
                 this.$store.dispatch(LOGOUT);
+            },
+            isActiveRoute: function (name) {
+                return this.currentRouteName === name;
             }
         }
     }

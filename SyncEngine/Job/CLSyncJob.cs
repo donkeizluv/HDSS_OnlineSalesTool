@@ -9,6 +9,7 @@ using SyncService.SyncLogic.Interface;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace SyncService.Job
 {
@@ -55,15 +56,16 @@ namespace SyncService.Job
                 //Assign cases to CA
                 foreach (var newCase in newCases)
                 {
-                    if(assigner.GetUserMatchedSchedule(newCase.PosCode, DateTime.Now, out var userIds, out string reason))
+                    (bool result, List<int> userIds, string reason) = await assigner.GetUserMatchedSchedule(newCase.PosCode, DateTime.Now);
+                    if(result)
                     {
-                        _logger.Trace($"Assign OK, tracking number: {newCase.TrackingNumber} to: {string.Concat(userIds.Select(id => id + " "))}");
+                        _logger.Trace($"Assign OK, tracking number: {newCase.OrderGuid} to: {string.Concat(userIds.Select(id => id + " "))}");
                         _logger.Trace($"Assign to user id: {userIds.First()}");
                         newCase.AssignUserId = userIds.First();
                     }
                     else //Fail to assign
                     {
-                        _logger.Trace($"Assign Failed: tracking number: {newCase.TrackingNumber}");
+                        _logger.Trace($"Assign Failed: tracking number: {newCase.OrderGuid}");
                         //Set stage to NotAssignable
                         //TODO: Queue email to BDS
                         newCase.StageId = (int)Stage.NotAssignable;
