@@ -1,12 +1,12 @@
 ﻿<template id="search-bar">
     <div class="form-inline justify-content-center">
         <div class="form-group">
-            <select v-model="model.text" class="form-control custom-select" v-bind:disabled="disabled">
+            <select v-model="model.filter" class="form-control custom-select" v-bind:disabled="disabled">
                 <option v-for="pair in items" v-bind:key="pair.value" v-bind:value="pair.value">{{pair.name}}</option>
             </select>
             <div class="input-group">
                 <input v-on:keyup.enter="submitSearch"
-                       v-model="model.filter"
+                       v-model="model.text"
                        class="form-control"
                        placeholder="Từ khóa..."
                        v-bind:disabled="disabled"
@@ -32,10 +32,14 @@
                 type: Boolean,
                 default: false
             },
-            'items': {
+            'items': { //value, name
                 type: Array,
                 required: true
             }
+            //'search': {
+            //    type: Object,
+            //    required: true
+            //}
         },
         created: function () {
             //Default value

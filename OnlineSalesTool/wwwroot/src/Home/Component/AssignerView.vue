@@ -175,11 +175,7 @@
             isLoading: function () {
                 return this.$store.getters.Loading;
             },
-            CanLoadSchedule: function () {
-                if (this.selectedPrevSchedule)
-                    return true;
-                return false;
-            },
+            
             canEditSchedule: function () {
                 if (!this.canEdit) return false;
                 if (this.createMode) return false;
@@ -216,29 +212,29 @@
                 if (this.poses.length > 0) {
                     this.selectedPos = this.poses[0].PosId;
                     this.selectedPosChanged();
-                }
-                if (this.currentPrevSchedules.length > 0) {
-                    this.selectedPrevSchedule = this.currentPrevSchedules[0].MonthYear;
-                    this.loadPrevSchedule();
+                    if (this.currentPrevSchedules.length > 0) {
+                        this.selectedPrevSchedule = this.currentPrevSchedules[0].MonthYear;
+                        this.loadPrevSchedule();
+                    }
+                
                 }
             }, 
             loadVM: async function () {
                 //Fetch VM
                 try {
                     //Get VM
-                    let response = await axios.get(API_Const.AssignerVmAPI);
-                    let vm = response.data;
+                    let { data } = await axios.get(API_Const.AssignerVmAPI);
+                    //console.log(data);
                     //Commit VM
-                    this.$store.commit(VM_ASSIGNER, vm);
-                    //console.log(vm);
+                    this.$store.commit(VM_ASSIGNER, data);
                     //Set poses
-                    this.poses = vm.POSs;
+                    this.poses = data.POSs;
                     //Set users
-                    this.users = vm.Users;
+                    this.users = data.Users;
                     //Set sys ref
-                    this.systemMonthYear = vm.SystemMonthYear;
-                    this.systemMonthYearDisplay = vm.SystemMonthYearDisplay;
-                    this.totalDaysOfMonth = vm.TotalDaysOfMonth;
+                    this.systemMonthYear = data.SystemMonthYear;
+                    this.systemMonthYearDisplay = data.SystemMonthYearDisplay;
+                    this.totalDaysOfMonth = data.TotalDaysOfMonth;
                 } catch (e) {
                     this.$emit('showerror', 'Tải dữ liệu thất bại, vui lòng liên hệ IT.');
                     //Disabled function
@@ -329,6 +325,7 @@
                     targetPos: this.currentPOS.PosId, //Target pos of this schedule
                     //Must be same default time of non specified time of C# Datetime in order to re-select after saved successfully
                     //MomentJS, C# default time if not specified is 12:00:00, 00:00:00 respectively
+                    //TODO: Check if time can be omitted
                     targetMonthYear: moment(this.systemMonthYear).date(1).format('YYYY-MM-DD[T00:00:00]'), //Target month of this schedule, day must be 1
                     schedules: []
                 };
@@ -399,7 +396,8 @@
             },
             loadPrevSchedule: function () {
                 if (this.createMode) return;
-                if (!this.CanLoadSchedule) { //????
+                //If no prev sche selected, clear display
+                if (!this.selectedPrevSchedule) {
                     this.clearSchedule();
                     return;
                 }

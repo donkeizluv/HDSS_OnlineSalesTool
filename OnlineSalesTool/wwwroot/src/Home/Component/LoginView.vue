@@ -65,7 +65,7 @@
                 return false;
             },
             Loading: function () {
-                return this.$store.getters.Loading;
+                return this.$store.getters.isLoading;
             }
         },
         data: function () {
@@ -82,7 +82,7 @@
                     await this.$store.dispatch(LOGIN, { username: this.username, pwd: this.pwd });
                 } catch (e) {
                     //console.log(e);
-                    this.Status = 'Đăng nhập thất bại';
+                    this.status = 'Đăng nhập thất bại';
                 }
             }
         }

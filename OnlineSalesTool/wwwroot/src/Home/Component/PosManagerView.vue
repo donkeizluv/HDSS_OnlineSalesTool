@@ -2,10 +2,9 @@
     <div>
         <!--Search bar-->
         <div class="row">
-            <div class="col-sm-8 mx-auto">
-                <!--<search-bar v-bind:disabled="isLoading"
-                            v-bind:items="searchFilters"
-                            v-on:submit="submitSearch"></search-bar>-->
+            <div class="col-sm-8 float-lg-left">
+                <search-bar v-bind:items="searchFilters"
+                            v-on:submit="submitSearch"></search-bar>
             </div>
         </div>
         <!--Listing-->
@@ -16,19 +15,27 @@
                         <thead>
                             <tr>
                                 <th>
-                                    Tên POS
+                                    <button class="btn btn-link" v-on:click="orderByClicked('PosName')">
+                                        <span v-html="headerOrderState('PosName')"></span>Tên POS
+                                    </button>
                                 </th>
                                 <th>
-                                    Code
+                                    <button class="btn btn-link" v-on:click="orderByClicked('PosCode')">
+                                        <span v-html="headerOrderState('PosCode')"></span>Pos Code
+                                    </button>
                                 </th>
                                 <th>
-                                    Địa chỉ
+                                    <span>Địa chỉ</span>
                                 </th>
                                 <th>
-                                    SĐT
+                                    <button class="btn btn-link" v-on:click="orderByClicked('Phone')">
+                                        <span v-html="headerOrderState('Phone')"></span>SĐT
+                                    </button>
                                 </th>
                                 <th>
-                                    BDS
+                                    <button class="btn btn-link" v-on:click="orderByClicked('BDS')">
+                                        <span v-html="headerOrderState('BDS')"></span>BDS
+                                    </button>
                                 </th>
                             </tr>
                         </thead>
@@ -52,6 +59,20 @@
                             </tr>
                         </tbody>
                     </table>
+                    <page-nav :page-count="totalPages"
+                              :click-handler="pageNavClicked"
+                              :page-range="2"
+                              :prev-text="'Trước'"
+                              :force-page="onPage - 1"
+                              :next-text="'Sau'"
+                              :page-class="'page-item'"
+                              :page-link-class="'page-link'"
+                              :prev-class="'page-item'"
+                              :prev-link-class="'page-link'"
+                              :next-class="'page-item'"
+                              :next-link-class="'page-link'"
+                              :container-class="'pagination pagination-sm no-bottom-margin justify-content-center'">
+                    </page-nav>
                 </div>
             </div>
         </div>
@@ -63,12 +84,18 @@
     import { LOGOUT, CHECK_TOKEN_EXPIRE } from '../actions'
     //Mutation
     import { VM_POSMAN } from '../mutations'
+    //Components
+    import SearchBar from './SearchBar.vue'
+    import pagenav from 'vuejs-paginate'
     import axios from 'axios'
 
     export default {
         name: 'posManagerView',
         template: 'posmanager',
-
+        components: {
+            'search-bar': SearchBar,
+            'page-nav': pagenav
+        },
         beforeRouteEnter(to, from, next) {
             //console.log('enter pos man');
             next(async me => {
@@ -86,9 +113,10 @@
             return {
                 items: [],
                 onPage: 1,
+                itemPerPage: 10,
                 filterBy: '',
                 filterString: '',
-                orderBy: '',
+                orderBy: 'PosName',
                 orderAsc: true,
                 items: [],
                 totalRows: 0,
@@ -102,26 +130,83 @@
                 ]
             }
         },
-        methods: {
+        methods: { 
             init: async function () {
                 await this.$store.dispatch(CHECK_TOKEN_EXPIRE);
                 await this.loadVM();
             },
             loadVM: async function () {
                 try {
-                    let response = await axios.get(API.PosManagerVM);
-                    console.log(response);
-                    let vm = response.data;
-                    //console.log(vm);
-                    this.$store.commit(VM_POSMAN, vm);
-                    this.items = vm.Items;
+                    let params = { ...this.getQuery() };
+                    //console.log(params);
+                    let { data } = await axios.get(API.PosManagerVM, {
+                        params
+                    });
+                    this.$store.commit(VM_POSMAN, data);
+                    this.items = data.Items;
+                    this.updatePagination(data.TotalPages, data.TotalRows);
+
                 } catch (e) {
                     this.$emit('showerror', 'Tải dữ liệu thất bại, vui lòng liên hệ IT.');
                 }
             },
+            updatePagination: function (totalPages, totalRows) {
+                this.totalPages = totalPages;
+                this.totalRows = totalRows;
+            },
+            getQuery: function () {
+                return {
+                    count: this.itemPerPage,
+                    page: this.onPage,
+                    type: this.filterBy,
+                    contain: this.filterString,
+                    order: this.orderBy,
+                    asc: this.orderAsc,
+                }
+            },
             submitSearch: function (model) {
-                
-            }
+                this.filterBy = model.filter;
+                this.filterString = model.text;
+                this.loadVM();
+            },
+            orderByClicked: function (orderBy) {
+                //Flip order by
+                if (this.orderBy === orderBy) {
+                    this.orderAsc = !this.orderAsc;
+                }
+                else {
+                    //Order this column
+                    this.orderBy = orderBy;
+                    this.orderAsc = true;
+                }
+                this.loadVM();
+            },
+            pageNavClicked: function (page) {
+                this.onPage = page;
+                this.loadItems();
+            },
+            //order methods
+            orderByClicked: function (orderBy) {
+                //Flip asc
+                if (this.orderBy === orderBy) {
+                    this.orderAsc = !this.orderAsc;
+                }
+                else {
+                    //Order this column
+                    this.orderBy = orderBy;
+                    this.orderAsc = true;
+                }
+                this.loadVM();
+            },
+            headerOrderState: function (orderBy) {
+                //console.log(orderBy);
+                if (orderBy === this.orderBy) {
+                    if (this.orderAsc)
+                        return '&utrif;';
+                    return '&dtrif;';
+                }
+                return '';
+            },
         }
     }
 </script>
