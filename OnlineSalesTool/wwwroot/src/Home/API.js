@@ -6,7 +6,11 @@
     AssignerVmAPI: '/API/Shift/Get',
     SaveScheduleAPI: '/API/Shift/Create',
     //POS manager
-    PosManagerVM: '/API/Pos/Get',
+    PosVM: '/API/Pos/Get',
     CreatePos: '/API/Pos/Create',
-    UpdatePos: '/API/Pos/Update'
+    UpdatePos: '/API/Pos/Update',
+    //User manager
+    UserVM: '/API/User/Get',
+    CreateUser: '/API/User/Create',
+    UpdateUser: '/API/User/Update'
 }

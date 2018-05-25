@@ -10,9 +10,9 @@ namespace OnlineSalesTool.ViewModels
     /// <summary>
     /// Generic listing of POSs
     /// </summary>
-    public class PosListingVM : ListingViewModel<PosPOCO>
+    public class UserListingVM : ListingViewModel<AppUserPOCO>
     {
-        public PosListingVM(ListingParams param) : base(param)
+        public UserListingVM(ListingParams param) : base(param)
         {
         }
     }

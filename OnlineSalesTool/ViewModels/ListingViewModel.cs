@@ -1,33 +1,27 @@
-﻿using System;
+﻿using OnlineSalesTool.ApiParameter;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace OnlineSalesTool.ViewModels
 {
-    public interface IListingViewModel
+    /// <summary>
+    /// Generic listing model
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class ListingViewModel<T>
     {
-        //For debug purposes
-        int OnPage { get; set; }
-        string FilterBy { get; set; }
-        string FilterString { get; set; }
-        string OrderBy { get; set; }
-        bool OrderAsc { get; set; }
-        int ItemPerPage { get; }
-        int TotalPages { get; }
-        int TotalRows{ get; }
-    }
-    public abstract class ListingViewModel<T> : IListingViewModel
-    {
-        public virtual int OnPage { get; set; }
-        public virtual string FilterBy { get; set; }
-        public virtual string FilterString { get; set; }
-        public virtual string OrderBy { get; set; }
-        public virtual bool OrderAsc { get; set; }
-        public abstract int ItemPerPage { get; }
-        public virtual IEnumerable<T> Items { get; set; }
+        public int OnPage { get; protected set; }
+        public string FilterBy { get; protected set; }
+        public string FilterString { get; protected set; }
+        public string OrderBy { get; protected set; }
+        public bool OrderAsc { get; protected set; }
+        //public int ItemPerPage { get; protected set; } = 10;
+        public IEnumerable<T> Items { get; protected set; }
         //update these every time add record
-        public int TotalPages { get; private set; }
+        public int ItemPerPage { get; protected set; }
+        public int TotalPages { get; protected set; }
         private int _totalRows;
         public int TotalRows
         {
@@ -37,11 +31,32 @@ namespace OnlineSalesTool.ViewModels
             }
             set
             {
-                _totalRows = value;
+                _totalRows = value < 1? 1 : value;
                 TotalPages = (_totalRows + ItemPerPage - 1) / ItemPerPage;
                 if (TotalPages < 1)
                     TotalPages = 1;
             }
+        }
+        //Interesting, why would C# even allow abstract class ctor to be public :/
+        protected ListingViewModel(ListingParams param)
+        {
+            if (param == null) throw new ArgumentNullException();
+            FilterBy = string.IsNullOrEmpty(param.Filter) ? string.Empty : param.Filter;
+            FilterString = param.Contain;
+            OnPage = param.Page;
+            OrderAsc = param.Asc;
+            OrderBy = param.OrderBy;
+        }
+        /// <summary>
+        /// Set items for this VM
+        /// </summary>
+        /// <param name="item">Item for this VM</param>
+        /// <param name="total">Paging purposes</param>
+        public void SetItems(IEnumerable<T> items, int itemPerPage, int total)
+        {
+            Items = items ?? throw new ArgumentNullException();
+            ItemPerPage = itemPerPage;
+            TotalRows = total;
         }
     }
 }

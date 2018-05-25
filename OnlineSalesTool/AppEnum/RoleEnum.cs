@@ -10,6 +10,7 @@ namespace OnlineSalesTool.AppEnum
     /// </summary>
     public enum RoleEnum
     {
+        UNKNOWN,
         CA,
         BDS,
         ASM,

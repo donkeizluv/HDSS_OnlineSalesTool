@@ -4,8 +4,13 @@ namespace OnlineSalesTool.ApiParameter
 {
     public class ListingParams
     {
+        private ListingParams()
+        {
+
+        }
         public int Id { get; set; }
-        public int Page { get; set; }
+        public int Page { get; set; } = 1;
+        public int ItemPerPage { get; set; } = 10;
         public string Filter { get; set; }
         public string Contain { get; set; }
         public string OrderBy { get; set; }
@@ -15,6 +20,7 @@ namespace OnlineSalesTool.ApiParameter
         {
             private int _id;
             private int _page;
+            private int _perPage;
             private string _type;
             private string _contain;
             private string _orderBy;
@@ -23,6 +29,11 @@ namespace OnlineSalesTool.ApiParameter
             public ParamBuilder SetId(int value)
             {
                 _id = value;
+                return this;
+            }
+            public ParamBuilder SetItemPerPage(int value)
+            {
+                _perPage = value < 5 ? 5 : value;
                 return this;
             }
             public ParamBuilder SetPage(int value)
@@ -56,6 +67,7 @@ namespace OnlineSalesTool.ApiParameter
                 {
                     Id = _id,
                     Page = _page,
+                    ItemPerPage = _perPage,
                     Filter = _type,
                     Contain = _contain,
                     OrderBy = _orderBy,

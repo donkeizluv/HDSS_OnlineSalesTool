@@ -1,0 +1,2 @@
+﻿Lazy load prev schedules
+Generic & fluent for creating VM in repo - DONE generic

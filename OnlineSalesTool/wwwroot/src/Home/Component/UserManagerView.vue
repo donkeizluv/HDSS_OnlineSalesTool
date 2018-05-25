@@ -1,4 +1,4 @@
-﻿<template id="posmanager">
+﻿<template id="usermanager">
     <div>
         <!--Search bar-->
         <div class="row">
@@ -16,22 +16,27 @@
                             <tr>
                                 <th>
                                     <button class="btn btn-link" v-on:click="orderByClicked('PosName')">
-                                        <span v-html="headerOrderState('PosName')"></span>Tên POS
+                                        <span v-html="headerOrderState('PosName')"></span>Username
                                     </button>
                                 </th>
                                 <th>
                                     <button class="btn btn-link" v-on:click="orderByClicked('PosCode')">
-                                        <span v-html="headerOrderState('PosCode')"></span>Pos Code
+                                        <span v-html="headerOrderState('PosCode')"></span>Họ tên
                                     </button>
                                 </th>
                                 <th>
-                                    <span class="text-primary">Địa chỉ</span>
+                                    <button class="btn btn-link" v-on:click="orderByClicked('PosCode')">
+                                        <span v-html="headerOrderState('PosCode')"></span>Loại
+                                    </button>
                                 </th>
                                 <th>
-                                    <!--<button class="btn btn-link" v-on:click="orderByClicked('Phone')">
-                                        <span v-html="headerOrderState('Phone')"></span>SĐT
-                                    </button>-->
-                                    <span class="text-primary">Phone</span>
+                                    <span class="text-primary">HR</span>
+                                </th>
+                                <th>
+                                    <span class="text-primary">SĐT1</span>
+                                </th>
+                                <th>
+                                    <span class="text-primary">SĐT2</span>
                                 </th>
                                 <th>
                                     <button class="btn btn-link" v-on:click="orderByClicked('BDS')">
@@ -43,16 +48,19 @@
                         <tbody>
                             <tr v-for="item in items" v-bind:key="item.PosId">
                                 <td>
-                                    <span>{{item.PosName}}</span>
+                                    <span>{{item.Username}}</span>
                                 </td>
                                 <td>
-                                    <span>{{item.PosCode}}</span>
+                                    <span>{{item.Role}}</span>
                                 </td>
                                 <td>
-                                    <span>{{item.Address}}</span>
+                                    <span>{{item.HR}}</span>
                                 </td>
                                 <td>
                                     <span>{{item.Phone}}</span>
+                                </td>
+                                <td>
+                                    <span>{{item.Phone2}}</span>
                                 </td>
                                 <td>
                                     <span>{{item.BDS.DisplayName}}</span>
@@ -84,15 +92,15 @@
     //Actions
     import { LOGOUT, CHECK_TOKEN_EXPIRE } from '../actions'
     //Mutation
-    import { VM_POSMAN } from '../mutations'
+    import { VM_USER } from '../mutations'
     //Components
     import SearchBar from './SearchBar.vue'
     import pagenav from 'vuejs-paginate'
     import axios from 'axios'
 
     export default {
-        name: 'posManagerView',
-        template: 'posmanager',
+        name: 'userManagerView',
+        template: 'usermanager',
         components: {
             'search-bar': SearchBar,
             'page-nav': pagenav
@@ -107,7 +115,7 @@
         computed: {
             //VM
             vm: function () {
-                return this.$store.getters.vm_posman;
+                return this.$store.getters.vm_user;
             }
         },
         data: function () {
@@ -117,7 +125,7 @@
                 itemPerPage: 10,
                 filterBy: '',
                 filterString: '',
-                orderBy: 'PosName',
+                orderBy: 'UserName',
                 orderAsc: true,
                 items: [],
                 totalRows: 0,
@@ -140,10 +148,10 @@
                 try {
                     let params = { ...this.getQuery() };
                     //console.log(params);
-                    let { data } = await axios.get(API.PosVM, {
+                    let { data } = await axios.get(API.UserVM, {
                         params
                     });
-                    this.$store.commit(VM_POSMAN, data);
+                    this.$store.commit(VM_USER, data);
                     this.items = data.Items;
                     this.updatePagination(data.TotalPages, data.TotalRows);
 

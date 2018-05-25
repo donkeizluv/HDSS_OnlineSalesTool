@@ -13,7 +13,6 @@
     "jwt-decode": "^2.2.0",
     "moment": "^2.22.1",
     "popper.js": "^1.14.1",
-    "query-string": "^6.1.0",
     "vee-validate": "^2.0.9",
     "vue": "^2.5.16",
     "vue-js-modal": "^1.3.13",
@@ -26,12 +25,13 @@
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "clean-webpack-plugin": "^0.1.19",
     "css-loader": "^0.28.11",
-    "hard-source-webpack-plugin": "^0.6.7",
+    "hard-source-webpack-plugin": "^0.6.9",
     "style-loader": "^0.21.0",
-    "vue-loader": "^15.0.11",
+    "vue-loader": "^15.1.0",
     "vue-template-compiler": "^2.5.16",
     "webpack": "^4.8.3",
     "webpack-cli": "^2.1.3"
@@ -39,6 +39,9 @@
   "babel": {
     "presets": [
       "es2015"
+    ],
+    "plugins": [
+      "transform-object-rest-spread"
     ]
   }
 }

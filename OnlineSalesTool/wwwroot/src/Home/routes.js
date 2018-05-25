@@ -4,8 +4,7 @@ import AssignerView from './Component/AssignerView.vue'
 import CaseView from './Component/CaseView.vue'
 import AdminView from './Component/AdminView.vue'
 import LoginView from './Component/LoginView.vue'
-import PosManagerView from './Component/PosManagerView.vue'
-
+import adminRoutes from './Component/adminRoutes'
 
 function requireAuth(to, from, next) {
     if (!store.getters.IsAuthenticated) {
@@ -59,11 +58,7 @@ const routes = [
         beforeEnter: requireAuth,
         //Nested route
         children: [
-            {
-                path: 'POS',
-                name: 'POS',
-                component: PosManagerView
-            }
+           ...adminRoutes
         ]
     },
     //No auth

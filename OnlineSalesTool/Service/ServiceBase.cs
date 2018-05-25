@@ -6,15 +6,16 @@ using System.Globalization;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.AppEnum;
 using System.Linq;
+using OnlineSalesTool.Service;
 
-namespace OnlineSalesTool.Repository
+namespace OnlineSalesTool.Service
 {
     /// <summary>
     /// Shared base of all repos, common utilities of repo placed here
     /// </summary>
-    public abstract class BaseRepo : IDisposable
+    public class ServiceBase : IService, IDisposable
     {
-        protected int UserId
+        public int UserId
         {
             get
             {
@@ -26,7 +27,7 @@ namespace OnlineSalesTool.Repository
                 return userId;
             }
         }
-        protected string Username
+        public string Username
         {
             get
             {
@@ -38,7 +39,7 @@ namespace OnlineSalesTool.Repository
                 return name;
             }
         }
-        protected RoleEnum Role
+        public RoleEnum Role
         {
             get
             {
@@ -56,11 +57,16 @@ namespace OnlineSalesTool.Repository
         //        return DbContext.AppUser.First(u => u.UserId == UserId);
         //    }
         //}
-        protected ClaimsPrincipal UserPrincipal { get; private set; }
+        public ClaimsPrincipal UserPrincipal { get; private set; }
 
-        protected OnlineSalesContext DbContext { get; private set; }
+        public OnlineSalesContext DbContext { get; private set; }
 
-        public BaseRepo(ClaimsPrincipal principal, OnlineSalesContext context)
+        public ServiceBase(OnlineSalesContext context, IUserResolver userResolver) : this(userResolver.GetPrincipal(), context)
+        {
+            
+        }
+
+        public ServiceBase(ClaimsPrincipal principal, OnlineSalesContext context)
         {
             UserPrincipal = principal;
             DbContext = context;

@@ -1,0 +1,856 @@
+﻿USE [OnlineSales]
+GO
+/****** Object:  Table [dbo].[Ability]    Script Date: 5/21/2018 4:29:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Ability](
+	[AbilityId] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](20) NOT NULL,
+	[Description] [nvarchar](50) NULL,
+ CONSTRAINT [PK_Ability] PRIMARY KEY CLUSTERED 
+(
+	[AbilityId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[AppUser]    Script Date: 5/21/2018 4:29:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AppUser](
+	[UserId] [int] IDENTITY(1,1) NOT NULL,
+	[RoleId] [int] NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	[Username] [nvarchar](50) NOT NULL,
+	[Active] [bit] NOT NULL,
+	[HR] [nvarchar](20) NULL,
+	[Email] [nvarchar](60) NOT NULL,
+	[Phone] [nvarchar](20) NULL,
+	[Phone2] [nvarchar](20) NULL,
+	[LastLogin] [datetime] NULL,
+	[ManagerId] [int] NULL,
+ CONSTRAINT [PK_AppUser] PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Logs]    Script Date: 5/21/2018 4:29:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Logs](
+	[LogId] [int] IDENTITY(1,1) NOT NULL,
+	[Class] [nvarchar](50) NULL,
+	[Method] [nvarchar](50) NULL,
+	[Message] [nvarchar](200) NULL,
+	[Trace] [nvarchar](max) NULL,
+	[IsSent] [bit] NOT NULL,
+	[Timestamp] [datetime] NOT NULL,
+	[Type] [nvarchar](10) NOT NULL,
+ CONSTRAINT [PK_Logs] PRIMARY KEY CLUSTERED 
+(
+	[LogId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[OnlineOrder]    Script Date: 5/21/2018 4:29:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[OnlineOrder](
+	[OrderId] [int] IDENTITY(1,1) NOT NULL,
+	[OrderGUID] [nvarchar](32) NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+	[NatId] [nvarchar](20) NOT NULL,
+	[Phone] [nvarchar](20) NOT NULL,
+	[Address] [nvarchar](70) NOT NULL,
+	[PosCode] [nvarchar](10) NOT NULL,
+	[Product] [nvarchar](50) NOT NULL,
+	[Amount] [int] NOT NULL,
+	[Paid] [int] NOT NULL,
+	[LoanAmount] [int] NOT NULL,
+	[Term] [int] NOT NULL,
+	[Received] [datetime] NOT NULL,
+	[INDUSContract] [nvarchar](20) NULL,
+	[INDUSStatus] [nvarchar](20) NULL,
+	[StageId] [int] NOT NULL,
+	[AssignUserId] [int] NULL,
+	[IsDirty] [bit] NOT NULL,
+	[OrderNumber] [nvarchar](10) NULL,
+ CONSTRAINT [PK_OnlineOrder] PRIMARY KEY CLUSTERED 
+(
+	[OrderId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Pos]    Script Date: 5/21/2018 4:29:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Pos](
+	[PosId] [int] IDENTITY(1,1) NOT NULL,
+	[PosName] [nvarchar](50) NOT NULL,
+	[PosCode] [nvarchar](20) NOT NULL,
+	[Address] [nvarchar](100) NOT NULL,
+	[Phone] [nvarchar](20) NULL,
+	[UserId] [int] NOT NULL,
+ CONSTRAINT [PK_Pos] PRIMARY KEY CLUSTERED 
+(
+	[PosId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PosSchedule]    Script Date: 5/21/2018 4:29:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PosSchedule](
+	[PosScheduleId] [int] IDENTITY(1,1) NOT NULL,
+	[MonthYear] [date] NOT NULL,
+	[PosId] [int] NOT NULL,
+ CONSTRAINT [PK_PosSchedule_1] PRIMARY KEY CLUSTERED 
+(
+	[PosScheduleId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[PosShift]    Script Date: 5/21/2018 4:29:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[PosShift](
+	[PosId] [int] NOT NULL,
+	[ShiftId] [int] NOT NULL,
+ CONSTRAINT [PK_PosShift] PRIMARY KEY CLUSTERED 
+(
+	[PosId] ASC,
+	[ShiftId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ProcessStage]    Script Date: 5/21/2018 4:29:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ProcessStage](
+	[StageId] [int] NOT NULL,
+	[Stage] [nvarchar](20) NOT NULL,
+	[StageNumber] [int] NOT NULL,
+	[Description] [nvarchar](150) NULL,
+ CONSTRAINT [PK_ProcessStage] PRIMARY KEY CLUSTERED 
+(
+	[StageId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ScheduleDetail]    Script Date: 5/21/2018 4:29:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ScheduleDetail](
+	[Day] [int] NOT NULL,
+	[PosScheduleId] [int] NOT NULL,
+	[UserId] [int] NOT NULL,
+	[ShiftId] [int] NOT NULL,
+ CONSTRAINT [PK_ShiftSchedule] PRIMARY KEY CLUSTERED 
+(
+	[Day] ASC,
+	[PosScheduleId] ASC,
+	[UserId] ASC,
+	[ShiftId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Shift]    Script Date: 5/21/2018 4:29:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Shift](
+	[ShiftId] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_Shift] PRIMARY KEY CLUSTERED 
+(
+	[ShiftId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ShiftDetail]    Script Date: 5/21/2018 4:29:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ShiftDetail](
+	[ShiftDetailId] [int] IDENTITY(1,1) NOT NULL,
+	[ShiftId] [int] NOT NULL,
+	[StartAt] [time](0) NOT NULL,
+	[EndAt] [time](0) NOT NULL,
+ CONSTRAINT [PK_ShiftDetail] PRIMARY KEY CLUSTERED 
+(
+	[ShiftDetailId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[UserAbility]    Script Date: 5/21/2018 4:29:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[UserAbility](
+	[UserId] [int] NOT NULL,
+	[AbilityId] [int] NOT NULL,
+ CONSTRAINT [PK_UserAbility] PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC,
+	[AbilityId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[UserRole]    Script Date: 5/21/2018 4:29:55 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[UserRole](
+	[RoleId] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [nvarchar](20) NOT NULL,
+	[Description] [nvarchar](100) NULL,
+ CONSTRAINT [PK_UserRole] PRIMARY KEY CLUSTERED 
+(
+	[RoleId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET IDENTITY_INSERT [dbo].[Ability] ON 
+GO
+INSERT [dbo].[Ability] ([AbilityId], [Name], [Description]) VALUES (1, N'NYI_Ability', N'NYI')
+GO
+INSERT [dbo].[Ability] ([AbilityId], [Name], [Description]) VALUES (6, N'NYI_Ability2', N'NYI')
+GO
+SET IDENTITY_INSERT [dbo].[Ability] OFF
+GO
+SET IDENTITY_INSERT [dbo].[AppUser] ON 
+GO
+INSERT [dbo].[AppUser] ([UserId], [RoleId], [Name], [Username], [Active], [HR], [Email], [Phone], [Phone2], [LastLogin], [ManagerId]) VALUES (1, 4, N'admin', N'admin', 1, N'E12345', N'luu.nhat-hong@hdsaison.com.vn', N'0903167570', NULL, CAST(N'2018-05-21T09:45:35.750' AS DateTime), NULL)
+GO
+INSERT [dbo].[AppUser] ([UserId], [RoleId], [Name], [Username], [Active], [HR], [Email], [Phone], [Phone2], [LastLogin], [ManagerId]) VALUES (3, 1, N'Nguyen Van A1', N'nguyen.van-a1', 1, N'E1', N'ca1@hdsaison.com.vn', N'123', NULL, NULL, NULL)
+GO
+INSERT [dbo].[AppUser] ([UserId], [RoleId], [Name], [Username], [Active], [HR], [Email], [Phone], [Phone2], [LastLogin], [ManagerId]) VALUES (4, 1, N'Nguyen Van A2', N'nguyen.van-a2', 1, N'E2', N'ca2@hdsaison.com.vn', N'123', NULL, NULL, 1)
+GO
+INSERT [dbo].[AppUser] ([UserId], [RoleId], [Name], [Username], [Active], [HR], [Email], [Phone], [Phone2], [LastLogin], [ManagerId]) VALUES (6, 1, N'Nguyen Van A3', N'nguyen.van-a3', 1, N'E3', N'ca3@hdsaison.com.vn', NULL, NULL, NULL, 1)
+GO
+INSERT [dbo].[AppUser] ([UserId], [RoleId], [Name], [Username], [Active], [HR], [Email], [Phone], [Phone2], [LastLogin], [ManagerId]) VALUES (7, 1, N'Nguyen Van A4', N'nguyen.van-a4', 1, N'E43444', N'ca4@hdsaison.com.vn', N'123', NULL, NULL, 1)
+GO
+INSERT [dbo].[AppUser] ([UserId], [RoleId], [Name], [Username], [Active], [HR], [Email], [Phone], [Phone2], [LastLogin], [ManagerId]) VALUES (1002, 1, N'Nguyen Van B1', N'nguyen.van-a5', 1, N'E5', N'ca5@hdsaison.com.vn', N'123', NULL, NULL, 1005)
+GO
+INSERT [dbo].[AppUser] ([UserId], [RoleId], [Name], [Username], [Active], [HR], [Email], [Phone], [Phone2], [LastLogin], [ManagerId]) VALUES (1003, 1, N'Nguyen Thi AA1', N'nguyen.thi-a1', 1, N'E6', N'ca11@hdsaison.com.vn', N'122432535', NULL, NULL, 1)
+GO
+INSERT [dbo].[AppUser] ([UserId], [RoleId], [Name], [Username], [Active], [HR], [Email], [Phone], [Phone2], [LastLogin], [ManagerId]) VALUES (1004, 1, N'CA', N'ca', 1, N'E1644', N'ca@hdsaison.com.vn', N'23434', NULL, CAST(N'2018-05-20T14:20:01.927' AS DateTime), 1005)
+GO
+INSERT [dbo].[AppUser] ([UserId], [RoleId], [Name], [Username], [Active], [HR], [Email], [Phone], [Phone2], [LastLogin], [ManagerId]) VALUES (1005, 2, N'bds', N'bds', 1, N'E8575', N'bds@hdsaicon.com.vn', N'45235', NULL, CAST(N'2018-05-20T14:18:26.370' AS DateTime), NULL)
+GO
+SET IDENTITY_INSERT [dbo].[AppUser] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Pos] ON 
+GO
+INSERT [dbo].[Pos] ([PosId], [PosName], [PosCode], [Address], [Phone], [UserId]) VALUES (2, N'Honda 1', N'POS12345', N'123', N'123', 1)
+GO
+INSERT [dbo].[Pos] ([PosId], [PosName], [PosCode], [Address], [Phone], [UserId]) VALUES (5, N'Yamaha 2', N'POS12346', N'123', N'123', 1)
+GO
+INSERT [dbo].[Pos] ([PosId], [PosName], [PosCode], [Address], [Phone], [UserId]) VALUES (1004, N'SYM Store', N'POS3333', N'1234', N'32534', 1)
+GO
+INSERT [dbo].[Pos] ([PosId], [PosName], [PosCode], [Address], [Phone], [UserId]) VALUES (2004, N'Dien May Xanh', N'POS4455', N'Somewhere', N'8435784', 1005)
+GO
+SET IDENTITY_INSERT [dbo].[Pos] OFF
+GO
+SET IDENTITY_INSERT [dbo].[PosSchedule] ON 
+GO
+INSERT [dbo].[PosSchedule] ([PosScheduleId], [MonthYear], [PosId]) VALUES (1, CAST(N'2018-05-01' AS Date), 2)
+GO
+INSERT [dbo].[PosSchedule] ([PosScheduleId], [MonthYear], [PosId]) VALUES (2, CAST(N'2018-05-01' AS Date), 5)
+GO
+INSERT [dbo].[PosSchedule] ([PosScheduleId], [MonthYear], [PosId]) VALUES (1002, CAST(N'2018-05-01' AS Date), 2004)
+GO
+SET IDENTITY_INSERT [dbo].[PosSchedule] OFF
+GO
+INSERT [dbo].[PosShift] ([PosId], [ShiftId]) VALUES (2, 2)
+GO
+INSERT [dbo].[PosShift] ([PosId], [ShiftId]) VALUES (2, 3)
+GO
+INSERT [dbo].[PosShift] ([PosId], [ShiftId]) VALUES (5, 2)
+GO
+INSERT [dbo].[PosShift] ([PosId], [ShiftId]) VALUES (5, 3)
+GO
+INSERT [dbo].[PosShift] ([PosId], [ShiftId]) VALUES (5, 4)
+GO
+INSERT [dbo].[PosShift] ([PosId], [ShiftId]) VALUES (1004, 1)
+GO
+INSERT [dbo].[PosShift] ([PosId], [ShiftId]) VALUES (1004, 4)
+GO
+INSERT [dbo].[PosShift] ([PosId], [ShiftId]) VALUES (2004, 3)
+GO
+INSERT [dbo].[ProcessStage] ([StageId], [Stage], [StageNumber], [Description]) VALUES (0, N'NotAssigned', 0, N'Newly received case, fallback to this in case cant assign case')
+GO
+INSERT [dbo].[ProcessStage] ([StageId], [Stage], [StageNumber], [Description]) VALUES (1, N'CustomerConfirm', 1, N'Assigned CA will ask customer for confirmation')
+GO
+INSERT [dbo].[ProcessStage] ([StageId], [Stage], [StageNumber], [Description]) VALUES (2, N'EnterContractNumber', 2, N'Customer confirmed, waiting for INDUS contract number')
+GO
+INSERT [dbo].[ProcessStage] ([StageId], [Stage], [StageNumber], [Description]) VALUES (3, N'WaitForFinalStatus', 3, N'Tracking contract status, waits for final status')
+GO
+INSERT [dbo].[ProcessStage] ([StageId], [Stage], [StageNumber], [Description]) VALUES (4, N'WaitForDealerNumber', 4, N'Waiting for dealer to generate online order number')
+GO
+INSERT [dbo].[ProcessStage] ([StageId], [Stage], [StageNumber], [Description]) VALUES (5, N'Approved', 4, N'INDUS final status: Contract printing')
+GO
+INSERT [dbo].[ProcessStage] ([StageId], [Stage], [StageNumber], [Description]) VALUES (6, N'Reject', 5, N'Customer reject, INDUS reject all goes here')
+GO
+INSERT [dbo].[ProcessStage] ([StageId], [Stage], [StageNumber], [Description]) VALUES (7, N'NotAssignable', 7, N'No CA to assign this case to')
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (1, 1, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (1, 1, 6, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (1, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (1, 2, 6, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (1, 2, 7, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (1, 1002, 1004, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (2, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (2, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (2, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (2, 2, 6, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (2, 2, 7, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (2, 1002, 1004, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (3, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (3, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (3, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (3, 2, 6, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (3, 2, 1003, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (3, 1002, 1004, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (4, 1, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (4, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (4, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (4, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (4, 2, 1003, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (4, 1002, 1004, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (5, 1, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (5, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (5, 2, 4, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (5, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (5, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (5, 1002, 1004, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (6, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (6, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (6, 2, 4, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (6, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (6, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (6, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (7, 1, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (7, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (7, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (7, 2, 6, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (7, 2, 7, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (7, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (8, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (8, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (8, 2, 4, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (8, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (8, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (8, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (9, 1, 4, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (9, 1, 7, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (9, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (9, 2, 6, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (9, 2, 1003, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (9, 1002, 1004, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (10, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (10, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (10, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (10, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (10, 2, 1003, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (10, 1002, 1004, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (11, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (11, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (11, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (11, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (11, 2, 1003, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (11, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (12, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (12, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (12, 2, 4, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (12, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (12, 2, 7, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (12, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (13, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (13, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (13, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (13, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (13, 2, 1003, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (13, 1002, 1004, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (14, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (14, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (14, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (14, 2, 6, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (14, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (14, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (15, 1, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (15, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (15, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (15, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (15, 2, 1003, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (15, 1002, 1004, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (16, 1, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (16, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (16, 2, 4, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (16, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (16, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (16, 1002, 1004, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (17, 1, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (17, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (17, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (17, 2, 6, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (17, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (17, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (18, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (18, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (18, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (18, 2, 6, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (18, 2, 1003, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (18, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (19, 1, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (19, 1, 6, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (19, 2, 4, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (19, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (19, 2, 7, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (19, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (20, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (20, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (20, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (20, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (20, 2, 1003, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (20, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (21, 1, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (21, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (21, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (21, 2, 6, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (21, 2, 7, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (21, 1002, 1004, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (22, 1, 6, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (22, 1, 1003, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (22, 2, 4, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (22, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (22, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (22, 1002, 1004, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (23, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (23, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (23, 2, 4, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (23, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (23, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (23, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (24, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (24, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (24, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (24, 2, 6, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (24, 2, 7, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (24, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (25, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (25, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (25, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (25, 2, 6, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (25, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (25, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (26, 1, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (26, 1, 1003, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (26, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (26, 2, 6, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (26, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (26, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (27, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (27, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (27, 2, 4, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (27, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (27, 2, 7, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (27, 1002, 1004, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (28, 1, 6, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (28, 1, 7, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (28, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (28, 2, 6, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (28, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (28, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (29, 1, 4, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (29, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (29, 2, 4, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (29, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (29, 2, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (29, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (30, 1, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (30, 1, 7, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (30, 2, 4, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (30, 2, 6, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (30, 2, 7, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (30, 1002, 1002, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (31, 1, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (31, 1, 6, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (31, 2, 4, 2)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (31, 2, 6, 3)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (31, 2, 7, 4)
+GO
+INSERT [dbo].[ScheduleDetail] ([Day], [PosScheduleId], [UserId], [ShiftId]) VALUES (31, 1002, 1002, 3)
+GO
+SET IDENTITY_INSERT [dbo].[Shift] ON 
+GO
+INSERT [dbo].[Shift] ([ShiftId], [Name]) VALUES (1, N'Ca1 (8h-13h30)')
+GO
+INSERT [dbo].[Shift] ([ShiftId], [Name]) VALUES (2, N'Ca2 (1h30-17h30)')
+GO
+INSERT [dbo].[Shift] ([ShiftId], [Name]) VALUES (3, N'Ca3 (17h30-21h)')
+GO
+INSERT [dbo].[Shift] ([ShiftId], [Name]) VALUES (4, N'Ca4 (8h30-17h30)')
+GO
+SET IDENTITY_INSERT [dbo].[Shift] OFF
+GO
+SET IDENTITY_INSERT [dbo].[ShiftDetail] ON 
+GO
+INSERT [dbo].[ShiftDetail] ([ShiftDetailId], [ShiftId], [StartAt], [EndAt]) VALUES (1, 1, CAST(N'08:30:00' AS Time), CAST(N'13:30:00' AS Time))
+GO
+INSERT [dbo].[ShiftDetail] ([ShiftDetailId], [ShiftId], [StartAt], [EndAt]) VALUES (2, 2, CAST(N'13:30:00' AS Time), CAST(N'17:30:00' AS Time))
+GO
+INSERT [dbo].[ShiftDetail] ([ShiftDetailId], [ShiftId], [StartAt], [EndAt]) VALUES (3, 3, CAST(N'17:30:00' AS Time), CAST(N'21:00:00' AS Time))
+GO
+INSERT [dbo].[ShiftDetail] ([ShiftDetailId], [ShiftId], [StartAt], [EndAt]) VALUES (4, 4, CAST(N'15:00:00' AS Time), CAST(N'20:00:00' AS Time))
+GO
+SET IDENTITY_INSERT [dbo].[ShiftDetail] OFF
+GO
+INSERT [dbo].[UserAbility] ([UserId], [AbilityId]) VALUES (1, 1)
+GO
+INSERT [dbo].[UserAbility] ([UserId], [AbilityId]) VALUES (1, 6)
+GO
+SET IDENTITY_INSERT [dbo].[UserRole] ON 
+GO
+INSERT [dbo].[UserRole] ([RoleId], [Name], [Description]) VALUES (1, N'CA', NULL)
+GO
+INSERT [dbo].[UserRole] ([RoleId], [Name], [Description]) VALUES (2, N'BDS', N'See all cases of CA')
+GO
+INSERT [dbo].[UserRole] ([RoleId], [Name], [Description]) VALUES (3, N'ASM', N'NYI')
+GO
+INSERT [dbo].[UserRole] ([RoleId], [Name], [Description]) VALUES (4, N'ADMIN', N'Advanced function')
+GO
+SET IDENTITY_INSERT [dbo].[UserRole] OFF
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [U_Ability]    Script Date: 5/21/2018 4:29:55 PM ******/
+ALTER TABLE [dbo].[Ability] ADD  CONSTRAINT [U_Ability] UNIQUE NONCLUSTERED 
+(
+	[Name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [U_Username_AppUser]    Script Date: 5/21/2018 4:29:55 PM ******/
+ALTER TABLE [dbo].[AppUser] ADD  CONSTRAINT [U_Username_AppUser] UNIQUE NONCLUSTERED 
+(
+	[Username] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [U_TrackingNumber_OnlineOrder]    Script Date: 5/21/2018 4:29:55 PM ******/
+ALTER TABLE [dbo].[OnlineOrder] ADD  CONSTRAINT [U_TrackingNumber_OnlineOrder] UNIQUE NONCLUSTERED 
+(
+	[OrderGUID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [U_Pos]    Script Date: 5/21/2018 4:29:55 PM ******/
+ALTER TABLE [dbo].[Pos] ADD  CONSTRAINT [U_Pos] UNIQUE NONCLUSTERED 
+(
+	[PosCode] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [U_StageName_ProcessStage]    Script Date: 5/21/2018 4:29:55 PM ******/
+ALTER TABLE [dbo].[ProcessStage] ADD  CONSTRAINT [U_StageName_ProcessStage] UNIQUE NONCLUSTERED 
+(
+	[Stage] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [U_ShiftName_Shift]    Script Date: 5/21/2018 4:29:55 PM ******/
+ALTER TABLE [dbo].[Shift] ADD  CONSTRAINT [U_ShiftName_Shift] UNIQUE NONCLUSTERED 
+(
+	[Name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[AppUser]  WITH CHECK ADD  CONSTRAINT [FK_AppUser_AppUser] FOREIGN KEY([ManagerId])
+REFERENCES [dbo].[AppUser] ([UserId])
+GO
+ALTER TABLE [dbo].[AppUser] CHECK CONSTRAINT [FK_AppUser_AppUser]
+GO
+ALTER TABLE [dbo].[AppUser]  WITH CHECK ADD  CONSTRAINT [FK_AppUser_UserRole] FOREIGN KEY([RoleId])
+REFERENCES [dbo].[UserRole] ([RoleId])
+GO
+ALTER TABLE [dbo].[AppUser] CHECK CONSTRAINT [FK_AppUser_UserRole]
+GO
+ALTER TABLE [dbo].[OnlineOrder]  WITH CHECK ADD  CONSTRAINT [FK_OnlineOrder_AppUser] FOREIGN KEY([AssignUserId])
+REFERENCES [dbo].[AppUser] ([UserId])
+GO
+ALTER TABLE [dbo].[OnlineOrder] CHECK CONSTRAINT [FK_OnlineOrder_AppUser]
+GO
+ALTER TABLE [dbo].[OnlineOrder]  WITH CHECK ADD  CONSTRAINT [FK_OnlineOrder_ProcessStage] FOREIGN KEY([StageId])
+REFERENCES [dbo].[ProcessStage] ([StageId])
+GO
+ALTER TABLE [dbo].[OnlineOrder] CHECK CONSTRAINT [FK_OnlineOrder_ProcessStage]
+GO
+ALTER TABLE [dbo].[Pos]  WITH CHECK ADD  CONSTRAINT [FK_Pos_AppUser] FOREIGN KEY([UserId])
+REFERENCES [dbo].[AppUser] ([UserId])
+GO
+ALTER TABLE [dbo].[Pos] CHECK CONSTRAINT [FK_Pos_AppUser]
+GO
+ALTER TABLE [dbo].[PosSchedule]  WITH CHECK ADD  CONSTRAINT [FK_PosSchedule_Pos] FOREIGN KEY([PosId])
+REFERENCES [dbo].[Pos] ([PosId])
+GO
+ALTER TABLE [dbo].[PosSchedule] CHECK CONSTRAINT [FK_PosSchedule_Pos]
+GO
+ALTER TABLE [dbo].[PosShift]  WITH CHECK ADD  CONSTRAINT [FK_PosShift_Pos] FOREIGN KEY([PosId])
+REFERENCES [dbo].[Pos] ([PosId])
+GO
+ALTER TABLE [dbo].[PosShift] CHECK CONSTRAINT [FK_PosShift_Pos]
+GO
+ALTER TABLE [dbo].[PosShift]  WITH CHECK ADD  CONSTRAINT [FK_PosShift_Shift] FOREIGN KEY([ShiftId])
+REFERENCES [dbo].[Shift] ([ShiftId])
+GO
+ALTER TABLE [dbo].[PosShift] CHECK CONSTRAINT [FK_PosShift_Shift]
+GO
+ALTER TABLE [dbo].[ScheduleDetail]  WITH CHECK ADD  CONSTRAINT [FK_ScheduleDetail_PosSchedule] FOREIGN KEY([PosScheduleId])
+REFERENCES [dbo].[PosSchedule] ([PosScheduleId])
+GO
+ALTER TABLE [dbo].[ScheduleDetail] CHECK CONSTRAINT [FK_ScheduleDetail_PosSchedule]
+GO
+ALTER TABLE [dbo].[ScheduleDetail]  WITH CHECK ADD  CONSTRAINT [FK_ShiftSchedule_AppUser] FOREIGN KEY([UserId])
+REFERENCES [dbo].[AppUser] ([UserId])
+GO
+ALTER TABLE [dbo].[ScheduleDetail] CHECK CONSTRAINT [FK_ShiftSchedule_AppUser]
+GO
+ALTER TABLE [dbo].[ScheduleDetail]  WITH CHECK ADD  CONSTRAINT [FK_ShiftSchedule_Shift1] FOREIGN KEY([ShiftId])
+REFERENCES [dbo].[Shift] ([ShiftId])
+GO
+ALTER TABLE [dbo].[ScheduleDetail] CHECK CONSTRAINT [FK_ShiftSchedule_Shift1]
+GO
+ALTER TABLE [dbo].[ShiftDetail]  WITH CHECK ADD  CONSTRAINT [FK_ShiftDetail_Shift] FOREIGN KEY([ShiftId])
+REFERENCES [dbo].[Shift] ([ShiftId])
+GO
+ALTER TABLE [dbo].[ShiftDetail] CHECK CONSTRAINT [FK_ShiftDetail_Shift]
+GO
+ALTER TABLE [dbo].[UserAbility]  WITH CHECK ADD  CONSTRAINT [FK_UserAbility_Ability] FOREIGN KEY([AbilityId])
+REFERENCES [dbo].[Ability] ([AbilityId])
+GO
+ALTER TABLE [dbo].[UserAbility] CHECK CONSTRAINT [FK_UserAbility_Ability]
+GO
+ALTER TABLE [dbo].[UserAbility]  WITH CHECK ADD  CONSTRAINT [FK_UserAbility_AppUser] FOREIGN KEY([UserId])
+REFERENCES [dbo].[AppUser] ([UserId])
+GO
+ALTER TABLE [dbo].[UserAbility] CHECK CONSTRAINT [FK_UserAbility_AppUser]
+GO
+ALTER TABLE [dbo].[PosSchedule]  WITH CHECK ADD  CONSTRAINT [CK_PosSchedule_MonthYearMustBeOne] CHECK  ((datepart(day,[MonthYear])=(1)))
+GO
+ALTER TABLE [dbo].[PosSchedule] CHECK CONSTRAINT [CK_PosSchedule_MonthYearMustBeOne]
+GO
+ALTER TABLE [dbo].[ScheduleDetail]  WITH CHECK ADD  CONSTRAINT [CK_ScheduleDetail_Day_Limit] CHECK  (([Day]>(0) AND [Day]<=(31)))
+GO
+ALTER TABLE [dbo].[ScheduleDetail] CHECK CONSTRAINT [CK_ScheduleDetail_Day_Limit]
+GO

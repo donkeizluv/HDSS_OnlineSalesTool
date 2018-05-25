@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace OnlineSalesTool.ViewModels
 {
+    /// <summary>
+    /// Shift assigner special VM
+    /// </summary>
     public class ShiftAssignerViewModel
     {
         private DateTime _systemMonthYear;

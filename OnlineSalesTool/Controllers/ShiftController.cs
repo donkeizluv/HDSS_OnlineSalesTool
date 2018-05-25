@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using NLog;
 using OnlineSalesTool.CustomException;
 using OnlineSalesTool.Logic;
-using OnlineSalesTool.Repository;
+using OnlineSalesTool.Service;
 using OnlineSalesTool.Service;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
@@ -17,9 +17,9 @@ namespace OnlineSalesTool.Controllers
     public class ShiftController : Controller
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly IScheduleRepository _repo;
+        private readonly IScheduleService _repo;
 
-        public ShiftController(IScheduleRepository repo)
+        public ShiftController(IScheduleService repo)
         {
             _repo = repo;
         }

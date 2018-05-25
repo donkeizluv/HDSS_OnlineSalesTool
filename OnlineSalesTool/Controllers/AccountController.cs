@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 using OnlineSalesTool.Logic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using OnlineSalesTool.Repository;
+using OnlineSalesTool.Service;
 using OnlineSalesTool.EFModel;
 using System;
 using System.Collections.Generic;
@@ -24,18 +24,16 @@ namespace OnlineSalesTool.Controllers
     {
         private readonly IJwtFactory _jwtFactory;
         private readonly JwtIssuerOptions _jwtOptions;
-        private readonly AuthenticationOptions _authOption;
-        private readonly IUserRepository _repo;
+        
+        private readonly IAuthService _repo;
 
         public AccountController(IConfiguration config,
             IJwtFactory jwtFactory,
             IOptions<JwtIssuerOptions> jwtOptions,
-            IOptions<AuthenticationOptions> authOptions,
-            IUserRepository repo)
+            IAuthService repo)
         {
             _jwtFactory = jwtFactory;
             _jwtOptions = jwtOptions.Value;
-            _authOption = authOptions.Value;
             _repo = repo;
         }
 
@@ -52,10 +50,10 @@ namespace OnlineSalesTool.Controllers
         public async Task<IActionResult> Login([FromForm]string username = "", [FromForm]string pwd = "")
         {
             //Check against db or whatever here
-            (LoginResult level, AppUser user) = await GetLoginLevel(username, pwd);
-            if (level == LoginResult.Error) return Unauthorized();
-            if (level == LoginResult.NoPermission) return Unauthorized();
-            if (level == LoginResult.NotActive) return Unauthorized();
+            (LoginResult level, AppUser user) = await _repo.Authenticate(username, pwd);
+            if (level == LoginResult.Error) return Forbid();
+            if (level == LoginResult.NoPermission) return Forbid();
+            if (level == LoginResult.NotActive) return Forbid();
             //OK proceed
             //add claims to identity
             var userIdentity = new ClaimsIdentity();
@@ -91,25 +89,6 @@ namespace OnlineSalesTool.Controllers
             claims.AddRange(user.UserAbility.Select(a => new Claim(CustomClaims.Ability, a.Ability.Name)));
             return claims;
         }
-        
-        private async Task<(LoginResult, AppUser)> GetLoginLevel(string userName, string pwd)
-        {
-            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(pwd))
-                return (LoginResult.Error, null);
-            //Validate against AD
-            if (!Validate(userName, pwd)) return (LoginResult.Error, null);
-            var user = await _repo.GetUser(userName);
-            if (user == null)
-                return (LoginResult.NoPermission, null); //no permission
-            if (!user.Active)
-                return (LoginResult.NotActive, null);
-            return (LoginResult.OK, user);
-        }
-
-        private bool Validate(string userName, string pwd)
-        {
-            if (_authOption.NoPwdCheck) return true;
-            return WindowsAuth.Validate_Principal2(userName, pwd, _authOption.Domain);
-        }
+     
     }
 }

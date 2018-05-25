@@ -10,8 +10,8 @@ import API from './API'
 import router from './router'
 
 
-import { LOGIN, LOGOUT, RELOAD_TOKEN, SET_LOADING, CHECK_TOKEN_EXPIRE, CLEAR_LOCALSTORE, CLEAR_VM } from './actions'
-import { IDENTITY, EXPIRE, TOKEN, LOADING, ABILITY, ROLE, VM_ASSIGNER, VM_POSMAN } from './mutations'
+import { LOGIN, LOGOUT, RELOAD_TOKEN, CHECK_TOKEN_EXPIRE, CLEAR_LOCALSTORE, CLEAR_VM } from './actions'
+import { IDENTITY, EXPIRE, TOKEN, LOADING, ABILITY, ROLE, VM_ASSIGNER, VM_POSMAN, VM_USER } from './mutations'
 //import * as mutationType from './mutations'
 
 Vue.use(Vuex)
@@ -32,8 +32,9 @@ export default new Vuex.Store({
         //VM
         vm_assigner: null,
         vm_posman: null,
+        vm_user: null,
         //Loading
-        Loading: false
+        isLoading: false
 
     },
     getters: {
@@ -60,8 +61,9 @@ export default new Vuex.Store({
         //VM
         vm_assigner: state => state.vm_assigner,
         vm_posman: state => state.vm_posman,
+        vm_user: state => state.vm_user,
         //App wide loading
-        Loading: state => state.isLoading
+        isLoading: state => state.isLoading
     },
     mutations: {
         //Auth
@@ -87,6 +89,9 @@ export default new Vuex.Store({
         [VM_POSMAN](state, vm) {
             this.state.vm_posman = vm;
         },
+        [VM_USER](state, vm) {
+            this.state.vm_user = vm;
+        },
         //App wide loading
         [LOADING](state, value) {
             this.state.isLoading = value;
@@ -95,26 +100,26 @@ export default new Vuex.Store({
     },
     actions: {
         [LOGIN]: async ({ commit, dispatch }, cred) => {
-                await dispatch(SET_LOADING, true);
+                commit(LOADING, true);
                 try {
+                    let { username, pwd } = cred;
                     let form = new FormData();
-                    form.append('username', cred.username);
-                    form.append('pwd', cred.pwd);
-                    let response = await axios.post(API.Login, form);
-                    let token = response.data.auth_token;
-                    //console.log(response);
+                    form.append('username', username);
+                    form.append('pwd', pwd);
+                    let { data } = await axios.post(API.Login, form);
+                    let token = data.auth_token;
                     //Store token & not in token info
                     localStorage.setItem(ConstStorage.TokenStorage, token);
-                    localStorage.setItem(ConstStorage.IdentityStorage, cred.username);
-                    localStorage.setItem(ConstStorage.ExpireStorage, response.data.expires_in);
+                    localStorage.setItem(ConstStorage.IdentityStorage, username);
+                    localStorage.setItem(ConstStorage.ExpireStorage, data.expires_in);
                     //init states
                     await dispatch(RELOAD_TOKEN);
                     //Go
                     router.push('/Home');
-                    await dispatch(SET_LOADING, false);
+                    commit(LOADING, false);
                 } catch (e) {
                     //console.log(e);
-                    await dispatch(SET_LOADING, false);
+                    commit(LOADING, false);
                     await dispatch(CLEAR_LOCALSTORE);
                     throw e;
                 }
@@ -129,18 +134,14 @@ export default new Vuex.Store({
                 //Check
                 if (token == undefined || identity == undefined || exp < 1)
                     throw new Error('Fail to load token from storage');
-                let decode = jwt(token);
-                //Check decode
-                if (decode.Role == undefined) throw new 'Missing properties in token';
-                let ability = [];
-                if (decode.hasOwnProperty('Ability'))
-                    ability = decode.Ability;
+                let { Role, Ability, sub } = jwt(token);
+                if (!Role) throw new 'Missing properties in token';
                 //init states
                 commit(TOKEN, token);
                 commit(EXPIRE, exp);
-                commit(IDENTITY, decode.sub);
-                commit(ROLE, decode.Role);
-                commit(ABILITY, ability);
+                commit(IDENTITY, sub);
+                commit(ROLE, Role);
+                commit(ABILITY, Ability || []);
                 //Set token to axios
                 axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
         },
@@ -166,9 +167,9 @@ export default new Vuex.Store({
             localStorage.removeItem(ConstStorage.AbilityStoreage);
             localStorage.removeItem(ConstStorage.RoleStoreage);
         },
-        [SET_LOADING]: async ({ commit }, value) => {
-            commit(LOADING, value);
-        },
+        //[SET_LOADING]: async ({ commit }, value) => {
+        //    commit(LOADING, value);
+        //},
         [CHECK_TOKEN_EXPIRE]: async ({ state, dispatch }) => {
             try {
                 await axios({

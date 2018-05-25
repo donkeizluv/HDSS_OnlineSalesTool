@@ -3,9 +3,9 @@ using OnlineSalesTool.POCO;
 using OnlineSalesTool.ViewModels;
 using System.Threading.Tasks;
 
-namespace OnlineSalesTool.Repository
+namespace OnlineSalesTool.Service
 {
-    public interface IPosRepository
+    public interface IPosService
     {
         Task<PosListingVM> Get(ListingParams param);
         Task Create(PosPOCO pos);

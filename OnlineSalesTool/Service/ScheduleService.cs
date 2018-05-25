@@ -10,15 +10,15 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OnlineSalesTool.Repository
+namespace OnlineSalesTool.Service
 {
-    public class ScheduleRepository : BaseRepo, IScheduleRepository
+    public class ScheduleService : ServiceBase, IScheduleService
     {
         //Number of prev sche to return in VM
         public const int NearestMonthScheduleTake = 3;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public ScheduleRepository(OnlineSalesContext context, IUserResolver userResolver)
+        public ScheduleService(OnlineSalesContext context, IUserResolver userResolver)
             : base(userResolver.GetPrincipal(), context) { }
 
         public async Task<ShiftAssignerViewModel> Get()
@@ -42,16 +42,16 @@ namespace OnlineSalesTool.Repository
         {
             //CA can see his manager POSs' schedules
             var now = DateTime.Now;
-            var man = DbContext.AppUser
-                .Include(u => u.Manager)
-                .First(u => u.UserId == UserId).Manager;
-            if (man == null) return null;
+            var manId = await DbContext.AppUser
+                .Where(u => u.UserId == UserId)
+                .Select(u => u.ManagerId ?? -1).FirstOrDefaultAsync();
+            //manId == 1 results in empty POSs, prev schedules vm
             var vm = new ShiftAssignerViewModel()
             {
-                //Since CA cant create schedule, just return his own name
-                Users = new[] { new AppUserPOCO() { DisplayName = Username } },
+                //CA cant have anyone under his management
+                Users = new AppUserPOCO[] { },
                 //Get all POS under management
-                POSs = await DbContext.Pos.Where(u => u.UserId == man.UserId)
+                POSs = await DbContext.Pos.Where(u => u.UserId == manId)
                 .Select(p => new PosPOCO(p) {
                     Shifts = p.PosShift
                             .Select(ps => ps.Shift)
@@ -105,11 +105,7 @@ namespace OnlineSalesTool.Repository
                             {
                                 Day = gg.Day,
                                 Shift = new ShiftPOCO() { Name = gg.Shift.Name, ShiftId = gg.ShiftId },
-                                User = new AppUserPOCO()
-                                {
-                                    UserId = gg.User.UserId,
-                                    DisplayName = $"{gg.User.Name} - {gg.User.Hr}"
-                                }
+                                User = new AppUserPOCO(gg.User)
                             }), new DateTime(g.MonthYear.Year, g.MonthYear.Month, 1))),
                     HasCurrentMonthSchedule = p.PosSchedule.Any(ps => ps.MonthYear.Year == now.Year && ps.MonthYear.Month == now.Month)
                 }).AsNoTracking().ToListAsync(),

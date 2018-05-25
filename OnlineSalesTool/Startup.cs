@@ -12,10 +12,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Service;
-using OnlineSalesTool.Repository;
 using System;
 using System.Text;
 using OnlineSalesTool.Options;
+using OnlineSalesTool.Query;
+using OnlineSalesTool.POCO;
 
 namespace OnlineSalesTool
 {
@@ -38,18 +39,21 @@ namespace OnlineSalesTool
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public void InjectDependency(IServiceCollection services)
         {
             //Inject db context
             services.AddDbContext<OnlineSalesContext>(o => o.UseSqlServer(Configuration.GetConnectionString("Default")));
             //Inject JWT factory
             services.AddSingleton<IJwtFactory, JwtFactory>();
-            //Inject config
-            //services.AddSingleton(Configuration); //Define specific option then inject use IOptions
-            //Inject repos
-            services.AddTransient<IScheduleRepository, ScheduleRepository>();
-            services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<IPosRepository, PosRepository>();
+            //Inject service
+            services.AddTransient<IService, ServiceBase>();
+            services.AddTransient<IScheduleService, ScheduleService>();
+            services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IPosService, PosService>();
+            services.AddTransient<IUserService, UserService>();
+            //Inject query
+            services.AddTransient<ListQuery<Pos, PosPOCO>, PosListQuery>();
+            services.AddTransient<ListQuery<AppUser, AppUserPOCO>, UserListQuery>();
             //Inject INDUS
             //services.AddSingleton<IIndusAdapter>(IndusFactory.GetIndusInstance(Configuration,
             //    File.ReadAllText($"{Program.ExeDir}\\{Configuration.GetSection("Indus").GetValue<string>("QueryFileName")}")));
@@ -58,9 +62,13 @@ namespace OnlineSalesTool
             //Inject resolver service
             services.AddTransient<IUserResolver, UserResolver>();
 
+        }
+        public void ConfigureServices(IServiceCollection services)
+        {
+            InjectDependency(services);
             //Get setting section
             var jwtSetting = Configuration.GetSection(nameof(JwtIssuerOptions));
-            var authSetting = Configuration.GetSection(nameof(AuthenticationOptions));
+            var authSetting = Configuration.GetSection(nameof(WindowsAuthOptions));
             //Inject options
             //JWT option
             services.Configure<JwtIssuerOptions>(o =>
@@ -70,11 +78,11 @@ namespace OnlineSalesTool
                 o.SigningCredentials = new SigningCredentials(_signingKey, SecurityAlgorithms.HmacSha256);
             });
             //Auth option
-            services.Configure<AuthenticationOptions>(o =>
+            services.Configure<WindowsAuthOptions>(o =>
             {
-                o.NoPwdCheck = authSetting[nameof(AuthenticationOptions.NoPwdCheck)] == "1";
-                o.Issuer = authSetting[nameof(AuthenticationOptions.Issuer)];
-                o.Domain = authSetting[nameof(AuthenticationOptions.Domain)];
+                o.NoPwdCheck = authSetting[nameof(WindowsAuthOptions.NoPwdCheck)] == "1";
+                o.Issuer = authSetting[nameof(WindowsAuthOptions.Issuer)];
+                o.Domain = authSetting[nameof(WindowsAuthOptions.Domain)];
             });
 
             var tokenValidationParameters = new TokenValidationParameters
@@ -177,8 +185,6 @@ namespace OnlineSalesTool
                 routes.MapRoute(
                    name: "api",
                    template: "API/{controller}/{action}");
-                //Use this to fallback route in case of using vue router heavily
-                //Install - Package Microsoft.AspNetCore.SpaServices
                 routes.MapSpaFallbackRoute(
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "Index" });

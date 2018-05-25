@@ -9,3 +9,4 @@ export const LOADING = 'LOADING'
 //VM
 export const VM_ASSIGNER = 'VM_ASSIGNER'
 export const VM_POSMAN = 'VM_POSMAN'
+export const VM_USER = 'VM_USER'

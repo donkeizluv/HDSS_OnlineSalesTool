@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesTool.Options
 {
-    public class AuthenticationOptions
+    public class WindowsAuthOptions
     {
         public bool NoPwdCheck { get; set; }
         public string Domain { get; set; }

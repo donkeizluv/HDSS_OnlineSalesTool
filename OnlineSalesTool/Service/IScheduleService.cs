@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OnlineSalesTool.Repository
+namespace OnlineSalesTool.Service
 {
-    public interface IScheduleRepository
+    public interface IScheduleService
     {
         Task<ShiftAssignerViewModel> Get();
         Task Create(ScheduleContainer schedule);
