@@ -11,59 +11,151 @@
         <div class="row">
             <div class="col-12">
                 <div class="table-responsive">
-                    <table class="table table-hover no-top-border">
+                    <table class="table table-hover">
                         <thead>
-                            <tr>
+                            <tr class="th-text-center th-no-top-border">
                                 <th>
-                                    <button class="btn btn-link" v-on:click="orderByClicked('PosName')">
-                                        <span v-html="headerOrderState('PosName')"></span>Username
+                                    <button class="btn btn-link" v-on:click="orderByClicked('Username')">
+                                        <span v-html="headerOrderState('Username')"></span>Username
                                     </button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" v-on:click="orderByClicked('PosCode')">
-                                        <span v-html="headerOrderState('PosCode')"></span>Họ tên
+                                    <button class="btn btn-link" v-on:click="orderByClicked('Name')">
+                                        <span v-html="headerOrderState('Name')"></span>Họ tên
                                     </button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" v-on:click="orderByClicked('PosCode')">
-                                        <span v-html="headerOrderState('PosCode')"></span>Loại
+                                    <button class="btn btn-link" v-on:click="orderByClicked('Role')">
+                                        <span v-html="headerOrderState('Role')"></span>Loại
                                     </button>
                                 </th>
                                 <th>
-                                    <span class="text-primary">HR</span>
-                                </th>
-                                <th>
-                                    <span class="text-primary">SĐT1</span>
-                                </th>
-                                <th>
-                                    <span class="text-primary">SĐT2</span>
-                                </th>
-                                <th>
-                                    <button class="btn btn-link" v-on:click="orderByClicked('BDS')">
-                                        <span v-html="headerOrderState('BDS')"></span>Quản lý
+                                    <button class="btn btn-link" v-on:click="orderByClicked('Active')">
+                                        <span v-html="headerOrderState('Active')"></span>Kích hoạt
                                     </button>
+                                </th>
+                                <th>
+                                    <button class="btn btn-link text-dark">HR</button>
+                                </th>
+                                <th>
+                                    <button class="btn btn-link text-dark">SĐT 1</button>
+                                </th>
+                                <th>
+                                    <button class="btn btn-link text-dark">SĐT 2</button>
+                                </th>
+                                <th>
+                                    <button class="btn btn-link" v-on:click="orderByClicked('Manager')">
+                                        <span v-html="headerOrderState('Manager')"></span>Quản lý
+                                    </button>
+                                </th>
+                                <th>
+                                    <div class="btn btn-link text-dark">Chỉnh sửa</div>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr v-for="item in items" v-bind:key="item.PosId">
-                                <td>
-                                    <span>{{item.Username}}</span>
+                        <tbody class="td-item-middle">
+                            <tr class="fixed-height" v-for="item in items" v-bind:key="item.UserId">
+                                <!--Username-->
+                                <td class="text-center" v-if="isEditMode(item.UserId)">
+                                    <input type="text"
+                                           class="form-control form-control-sm width-8 mx-auto"
+                                           v-model="item.Username"
+                                           v-bind:maxlength="maxFieldLength.username" />
                                 </td>
-                                <td>
-                                    <span>{{item.Role}}</span>
+                                <td class="text-center" v-else>
+                                    <div class="width-8 mx-auto">{{item.Username}}</div>
                                 </td>
-                                <td>
-                                    <span>{{item.HR}}</span>
+                                <!--Name-->
+                                <td class="text-center" v-if="isEditMode(item.UserId)">
+                                    <input type="text"
+                                           class="form-control form-control-sm width-8 mx-auto"
+                                           v-model="item.Name"
+                                           v-bind:maxlength="maxFieldLength.name" />
                                 </td>
-                                <td>
-                                    <span>{{item.Phone}}</span>
+                                <td class="text-center" v-else>
+                                    <div class="width-8 mx-auto">{{item.Name}}</div>
                                 </td>
-                                <td>
-                                    <span>{{item.Phone2}}</span>
+                                <!--Role-->
+                                <td class="text-center">
+                                    <div class="width-3 mx-auto">
+                                        {{item.Role}}
+                                    </div>
                                 </td>
+                                <!--Active-->
+                                <td class="text-center" v-if="isEditMode(item.UserId)">
+                                    <input class="width-3 mx-auto" type="checkbox" v-model="item.Active">
+                                </td>
+                                <td class="text-center" v-else>
+                                    <div class="width-3 mx-auto">
+                                        {{item.Active? 'Có' : 'Không'}}
+                                    </div>
+                                </td>
+                                <!--HR-->
+                                <td class="text-center" v-if="isEditMode(item.UserId)">
+                                    <input type="text"
+                                           class="form-control form-control-sm width-5"
+                                           v-model="item.HR"
+                                           v-bind:maxlength="maxFieldLength.hr" />
+                                </td>
+                                <td class="text-center" v-else>
+                                    <div class="width-5 mx-auto">
+                                        {{item.HR}}
+                                    </div>
+                                </td>
+                                <!--Phone-->
+                                <td class="text-center" v-if="isEditMode(item.UserId)">
+                                    <input type="text"
+                                           class="form-control form-control-sm width-8 mx-auto"
+                                           v-model="item.Phone"
+                                           v-bind:maxlength="maxFieldLength.phone" />
+                                </td>
+                                <td class="text-center" v-else>
+                                    <div class="width-8 mx-auto">{{item.Phone}}</div>
+                                </td>
+                                <!--Phone2-->
+                                <td class="text-center" v-if="isEditMode(item.UserId)">
+                                    <input type="text"
+                                           class="form-control form-control-sm width-8 mx-auto"
+                                           v-model="item.Phone2"
+                                           v-bind:maxlength="maxFieldLength.phone" />
+                                </td>
+                                <td class="text-center" v-else>
+                                    <div class="width-8 mx-auto">{{item.Phone}}</div>
+                                </td>
+                                <!--Manager-->
+                                <td v-if="isEditMode(item.UserId)">
+                                    <div class="width-14 mx-auto">
+                                        <d-select v-model="item.Manager"
+                                                  v-bind:api="searchSuggestAPI"></d-select>
+                                    </div>
+                                </td>
+                                <td class="text-center" v-else>
+                                    <div class="width-14 mx-auto">{{item.Manager? item.Manager.DisplayName : 'N/A'}}</div>
+                                </td>
+                                <!--CRUD-->
                                 <td>
-                                    <span>{{item.BDS.DisplayName}}</span>
+                                    <div class="d-inline">
+                                        <button v-if="isEditMode(item.UserId)"
+                                                class="btn btn-sm btn-outline-warning"
+                                                v-on:click="exitEditMode(item.UserId)">
+                                            <span class="fas fa-times"></span>
+                                        </button>
+                                        <!--Enter edit-->
+                                        <button v-else
+                                                v-bind:disabled="!canUpdate"
+                                                class="btn btn-sm btn-outline-primary"
+                                                v-on:click="enterEditMode(item.UserId)">
+                                            <span class="fas fa-pencil-alt"></span>
+                                        </button>
+                                        <!--Save changes-->
+                                        <button class="btn btn-sm mr-2 ml-2"
+                                                v-bind:class="{'btn-outline-success': canSaveItem(item.UserId),
+                                                        'btn-outline-secondary': !canSaveItem(item.UserId)}"
+                                                v-bind:disabled="!canSaveItem(item.UserId)"
+                                                v-on:click="updateItem(item.UserId)">
+                                            <span class="fas fa-save"></span>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -89,12 +181,11 @@
 </template>
 <script>
     import API from '../API'
-    //Actions
-    import { LOGOUT, CHECK_TOKEN_EXPIRE } from '../actions'
-    //Mutation
-    import { VM_USER } from '../mutations'
+    //Permission
+    import { Permission } from '../AppConst'
     //Components
     import SearchBar from './SearchBar.vue'
+    import DynamicSelect from './DynamicSelect.vue'
     import pagenav from 'vuejs-paginate'
     import axios from 'axios'
 
@@ -103,24 +194,29 @@
         template: 'usermanager',
         components: {
             'search-bar': SearchBar,
-            'page-nav': pagenav
+            'page-nav': pagenav,
+            'd-select': DynamicSelect
         },
-        beforeRouteEnter(to, from, next) {
-            //console.log('enter pos man');
-            next(async me => {
-                if (!me.vm)
-                    await me.init();
-            })
+        mounted: function () {
+            this.init();
         },
         computed: {
-            //VM
-            vm: function () {
-                return this.$store.getters.vm_user;
+            hasItems: function () {
+                return this.items.length > 0;
+            },
+            //Permission
+            canUpdate: function () {
+                return this.$store.getters.can(Permission.CanUpdateUser);
+            },
+            //API
+            searchSuggestAPI: function() {
+                return API.UserSearchSuggest.replace('{role}', 'BDS');
             }
         },
         data: function () {
             return {
                 items: [],
+                items_copy: [], //To revert cancel update
                 onPage: 1,
                 itemPerPage: 10,
                 filterBy: '',
@@ -130,19 +226,28 @@
                 items: [],
                 totalRows: 0,
                 totalPages: 0,
-
+                //Validate model field's length
+                maxFieldLength: {
+                    name: 50,
+                    username: 50,
+                    hr: 20,
+                    email: 60,
+                    phone: 20
+                },
                 searchFilters: [
-                    { name: 'Tên POS', value: 'PosName' },
-                    { name: 'Pos code', value: 'PosCode' },
+                    { name: 'Username', value: 'Username' },
+                    { name: 'Họ tên', value: 'Name' },
                     { name: 'SĐT', value: 'Phone' },
-                    { name: 'BDS', value: 'BDS' }
+                    { name: 'Manager', value: 'Manager' }
                 ]
             }
         },
         methods: { 
-            init: async function () {
-                await this.$store.dispatch(CHECK_TOKEN_EXPIRE);
-                await this.loadVM();
+            init: function () {
+                this.loadVM();
+            },
+            refreshCopy: function () {
+                this.items_copy = this.items.map(i => JSON.parse(JSON.stringify(i)));
             },
             loadVM: async function () {
                 try {
@@ -151,13 +256,33 @@
                     let { data } = await axios.get(API.UserVM, {
                         params
                     });
-                    this.$store.commit(VM_USER, data);
+                    //Add property 'value' to be as value for v-select
+                    //Do this b4 assign to VM so we dont need to call this.$set
+                    this.transformUsers(data.Items);
                     this.items = data.Items;
+                    this.refreshCopy(); //Refresh clones
                     this.updatePagination(data.TotalPages, data.TotalRows);
 
                 } catch (e) {
                     this.$emit('showerror', 'Tải dữ liệu thất bại, vui lòng liên hệ IT.');
                 }
+            },
+            transformUsers: function (users) {
+                if (!users) throw 'users is not defined';
+                //console.log(users);
+                users.forEach(i => {
+                    this.attachSelectProperties(i);
+                    if (i.Manager) {
+                        this.attachSelectProperties(i.Manager);
+                    }
+                    else {
+                        i.Manager = null;
+                    }
+                });
+            },
+            attachSelectProperties: function (user) {
+                user.label = user.DisplayName;
+                user.value = user.UserId;
             },
             updatePagination: function (totalPages, totalRows) {
                 this.totalPages = totalPages;
@@ -216,12 +341,75 @@
                 }
                 return '';
             },
+            //CRUD
+
+            //Edit
+            exitEditMode: function (id) {
+                let index = this.findItemIndex(id);
+                let revert = JSON.parse(JSON.stringify(this.items_copy[index]));
+                this.$set(this.items, index, revert);
+            },
+            //Edit mode
+            enterEditMode: function (id) {
+                let index = this.findItemIndex(id);
+                if (index == -1) {
+                    return;
+                }
+                this.$set(this.items[index], 'editMode', true)
+            },
+            isEditMode: function (id) {
+                var index = this.findItemIndex(id);
+                return !!this.items[index].editMode;
+            },
+            findItemIndex: function (id) {
+                let index = this.items.findIndex(x => x.UserId == id);
+                if (index == -1) throw 'Cant find items of id: ' + id;
+                return index;
+            },
+            canSaveItem(id) {
+                let index = this.findItemIndex(id);
+                //Must be in Edit mode to save
+                if (!this.items[index].editMode) return false;
+                //Values check
+                return this.checkUserValid(this.items[index]);
+            },
+            checkUserValid(user) {
+                if (!user) return false;
+
+
+            }
         }
     }
 </script>
 <style scoped>
-    
-    .no-top-border th{
-        border-top: none!important;
+    .td-text-center tr td{
+        text-align: center;
+    }
+    .td-item-middle tr td {
+        vertical-align: middle;
+    }
+    .th-no-top-border th {
+        border-top: none !important;
+    }
+    .th-text-center th{
+        text-align: center;
+    }
+    .width-14{
+        width: 14rem;
+    }
+    .width-10{
+        width: 10rem;
+    }
+    .width-8{
+        width: 8rem;
+    }
+    .width-5{
+        width: 5rem;
+    }
+    .width-3{
+        width: 3rem;
+    }
+    .fixed-height{
+        height: 61px;
     }
 </style>

@@ -24,9 +24,15 @@
     </div>
 </template>
 <script>
+    import vSelect from 'vue-select'
+    //const vSelect = () => import(/* webpackChunkName: "vselect" */'vue-select')
+
     export default {
         name: 'shiftdetail',
         template: '#shiftdetail',
+        components: {
+            'v-select': vSelect
+        },
         props: {
             users: {
                 type: Array

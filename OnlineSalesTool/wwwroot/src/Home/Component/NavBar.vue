@@ -51,10 +51,10 @@
         },
         computed: {
             isAuthenticated: function(){
-                return this.$store.getters.IsAuthenticated;
+                return this.$store.getters.isAuthenticated;
             },
             identity: function () {
-                return this.$store.getters.Identity;
+                return this.$store.getters.identity;
             },
             currentRouteName: function () {
                 return this.$route.name;

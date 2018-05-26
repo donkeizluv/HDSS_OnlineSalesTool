@@ -2,15 +2,22 @@
     <div>
         <v-dialog :clickToClose=false />
         <nav-bar :app-name="'Online Sales Tool'" :env="'DEV'"></nav-bar>
-        <div v-bind:class="{'bg-grey': !IsAuthenticated }">
-            <div class="container-fluid">
-                <keep-alive>
-                    <router-view class="top-margin"
-                                 v-on:showsuccess="ShowSuccessToast"
-                                 v-on:showinfo="ShowInfoToast"
-                                 v-on:showerror="ShowBlockingDialog"
-                                 v-on:showdialog="ShowDialog"></router-view>
-                </keep-alive>
+        <div v-bind:class="{'bg-grey': !isAuthenticated || !isAuthChecked }">
+            <!--Only render app when auth is valid & checked-->
+            <div v-if="!isAuthenticated || !isAuthChecked">
+                <!--Hide login when still checking to avoid ugly flash-->
+                <login v-show="isAuthChecked"></login>
+            </div>
+            <div v-else>
+                <div class="container-fluid">
+                    <keep-alive>
+                        <router-view class="top-margin"
+                                     v-on:showsuccess="showSuccessToast"
+                                     v-on:showinfo="showInfoToast"
+                                     v-on:showerror="showBlockingDialog"
+                                     v-on:showdialog="showDialog"></router-view>
+                    </keep-alive>
+                </div>
             </div>
         </div>
     </div>
@@ -19,16 +26,21 @@
     import Vue from 'vue'
     import navbar from './NavBar.vue'
     import axios from 'axios'
-    import { RELOAD_TOKEN, LOGOUT } from '../actions'
+    import { CHECK_AUTH, LOGOUT } from '../actions'
     import API from '../API'
+    import LoginView from './LoginView.vue'
 
     export default {
         components: {
-            'nav-bar': navbar
+            'nav-bar': navbar,
+            'login': LoginView
         },
         computed: {
-            IsAuthenticated: function () {
-                return this.$store.getters.IsAuthenticated;
+            isAuthenticated: function () {
+                return this.$store.getters.isAuthenticated;
+            },
+            isAuthChecked: function () {
+                return this.$store.getters.isAuthChecked;
             }
         },
         created: async function () {
@@ -40,16 +52,9 @@
                     await this.$store.dispatch(LOGOUT);
                 }
                 return Promise.reject(e);
-            });
-            //Reload state if has token
-            if (this.$store.getters.IsAuthenticated) {
-                try {
-                    await this.$store.dispatch(RELOAD_TOKEN);
-                } catch (e) {
-                    //Reload fail then logout
-                    await this.$store.dispatch(LOGOUT);
-                }
-            }
+                });
+            //Check auth expire/reload auth
+            await this.$store.dispatch(CHECK_AUTH);
         },
         data: function () {
             return {
@@ -57,20 +62,20 @@
             }
         },
         methods: {
-            ShowSuccessToast(mess) {
+            showSuccessToast(mess) {
                 //This has shitty support for specific icon & multiple style class
                 this.$toasted.success(mess, {
                     icon: 'fa-check-circle',
                     className: 'toast-font-size'
                 });
             },
-            ShowInfoToast(mess) {
+            showInfoToast(mess) {
                 this.$toasted.info(mess, {
                     icon: 'fa-exclamation-circle',
                     className: 'toast-font-size'
                 });
             },
-            ShowBlockingDialog(mess) {
+            showBlockingDialog(mess) {
                 this.blackBg = true;
                 this.$modal.show('dialog', {
                     title: 'Lỗi :(',
@@ -78,7 +83,7 @@
                     buttons: []
                 });
             },
-            ShowDialog(mess, t) {
+            showDialog(mess, t) {
                 this.$modal.show('dialog', {
                     title: t,
                     text: mess,

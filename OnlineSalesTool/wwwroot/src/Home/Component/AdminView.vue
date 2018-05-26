@@ -3,27 +3,24 @@
         <div class="row">
             <div class="col-lg-12 mx-auto">
                 <ul class="nav nav-tabs">
-                    <li class="nav-item" v-for="route in routes" >
-                        <router-link v-bind:class="[isActiveRoute(route.name)? 'active' : '', 'nav-link']" 
-                                     v-bind:to="route.path">{{route.display}}</router-link>
+                    <li class="nav-item" v-for="route in routes">
+                        <router-link v-if="can(route.permission)"
+                                     v-bind:class="[isActiveRoute(route.name)? 'active' : '', 'nav-link']"
+                                     v-bind:to="{ name: route.name }">{{route.display}}</router-link>
+                        <span v-else class="text-secondary nav-link">{{route.display}}</span>
                     </li>
-
-                    <!--<li class="nav-item">
-                        <router-link v-bind:class="[isActiveRoute('POS')? 'active' : '', 'nav-link']" to="/Manage/POS">POS</router-link>
-                    </li>
-                    <li v-bind:class="[isActiveRoute('User')? 'active' : '', 'nav-item']">
-                        <router-link class="nav-link" to="/Manage/User">Người dùng</router-link>
-                    </li>-->
                 </ul>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-12 mx-auto">
-                <router-view class="top-margin"
-                            v-on:showsuccess="ShowSuccessToast"
-                            v-on:showinfo="ShowInfoToast"
-                            v-on:showerror="ShowBlockingDialog"
-                            v-on:showdialog="ShowDialog"></router-view>
+                <keep-alive>
+                    <router-view class="top-margin"
+                                 v-on:showsuccess="ShowSuccessToast"
+                                 v-on:showinfo="ShowInfoToast"
+                                 v-on:showerror="ShowBlockingDialog"
+                                 v-on:showdialog="ShowDialog"></router-view>
+                </keep-alive>
             </div>
         </div>
     </div>
@@ -35,7 +32,13 @@
     export default {
         name: 'admin-view',
         template: '#adminview',
-        
+        activated: function() {
+            //Select a default view when no current child view is specified
+            if (this.routes.some(r => r.name == this.currentRouteName)) return;
+            let r = this.routes.find(r => this.can(r.permission));
+            if (!r) return;
+            this.$router.push({ name: r.name });
+        },
         computed: {
             currentRouteName: function () {
                 return this.$route.name;
@@ -46,10 +49,13 @@
         },
         data: function () {
             return {
-
             }
         },
         methods: {
+            can: function (p) {
+                if (!p) return true;
+                return this.$store.getters.can(p);
+            },
             isActiveRoute: function (name) {
                 //console.log(this.currentRouteName);
                 return this.currentRouteName === name;

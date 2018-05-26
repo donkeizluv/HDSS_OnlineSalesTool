@@ -25,17 +25,14 @@
                                     </button>
                                 </th>
                                 <th>
-                                    <span class="text-primary">Địa chỉ</span>
+                                    <button class="btn btn-link text-dark">Địa chỉ</button>
                                 </th>
                                 <th>
-                                    <!--<button class="btn btn-link" v-on:click="orderByClicked('Phone')">
-                                        <span v-html="headerOrderState('Phone')"></span>SĐT
-                                    </button>-->
-                                    <span class="text-primary">Phone</span>
+                                    <button class="btn btn-link text-dark">Phone</button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" v-on:click="orderByClicked('BDS')">
-                                        <span v-html="headerOrderState('BDS')"></span>Quản lý
+                                    <button class="btn btn-link" v-on:click="orderByClicked('Manager')">
+                                        <span v-html="headerOrderState('Manager')"></span>Quản lý
                                     </button>
                                 </th>
                             </tr>
@@ -81,10 +78,6 @@
 </template>
 <script>
     import API from '../API'
-    //Actions
-    import { LOGOUT, CHECK_TOKEN_EXPIRE } from '../actions'
-    //Mutation
-    import { VM_POSMAN } from '../mutations'
     //Components
     import SearchBar from './SearchBar.vue'
     import pagenav from 'vuejs-paginate'
@@ -97,17 +90,13 @@
             'search-bar': SearchBar,
             'page-nav': pagenav
         },
-        beforeRouteEnter(to, from, next) {
-            //console.log('enter pos man');
-            next(async me => {
-                if (!me.vm)
-                    await me.init();
-            })
+        mounted: function () {
+            this.init();
         },
         computed: {
             //VM
-            vm: function () {
-                return this.$store.getters.vm_posman;
+            hasItems: function () {
+                return this.items.length > 0;
             }
         },
         data: function () {
@@ -127,14 +116,13 @@
                     { name: 'Tên POS', value: 'PosName' },
                     { name: 'Pos code', value: 'PosCode' },
                     { name: 'SĐT', value: 'Phone' },
-                    { name: 'BDS', value: 'BDS' }
+                    { name: 'BDS', value: 'Manager' }
                 ]
             }
         },
         methods: { 
-            init: async function () {
-                await this.$store.dispatch(CHECK_TOKEN_EXPIRE);
-                await this.loadVM();
+            init: function () {
+                this.loadVM();
             },
             loadVM: async function () {
                 try {
@@ -143,7 +131,6 @@
                     let { data } = await axios.get(API.PosVM, {
                         params
                     });
-                    this.$store.commit(VM_POSMAN, data);
                     this.items = data.Items;
                     this.updatePagination(data.TotalPages, data.TotalRows);
 

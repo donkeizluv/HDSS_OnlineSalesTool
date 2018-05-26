@@ -78,6 +78,7 @@
         methods: {
             Login: async function () {
                 if (!this.CanSubmit) return;
+                this.status = ''; //Clear status
                 try {
                     await this.$store.dispatch(LOGIN, { username: this.username, pwd: this.pwd });
                 } catch (e) {

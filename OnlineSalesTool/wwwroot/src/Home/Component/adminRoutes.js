@@ -1,18 +1,21 @@
-﻿import PosManagerView from './PosManagerView.vue'
-import UserManagerView from './UserManagerView.vue'
+﻿//import PosManagerView from './PosManagerView.vue'
+//import UserManagerView from './UserManagerView.vue'
+import { Permission } from '../AppConst'
 
 const childRoutes = [
     {
-        path: '/POS',
+        path: 'POS',
         name: 'POS',
         display: 'POS',
-        component: PosManagerView
+        component: () => import(/* webpackChunkName: "posmanager" */'./PosManagerView.vue'),
+        permission: Permission.CanSeePosManager
     },
     {
-        path: '/User',
+        path: 'User',
         name: 'User',
         display: 'Người dùng',
-        component: UserManagerView
+        component: () => import(/* webpackChunkName: "usermanager" */'./UserManagerView.vue'),
+        permission: Permission.CanSeeUserManager
     }
    ]
 module.exports = childRoutes;

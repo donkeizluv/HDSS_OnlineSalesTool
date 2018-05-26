@@ -51,7 +51,7 @@
         methods: {
             init: function () {
                 //Load VM, check auth and stuff....
-                console.log('init case view');
+                //console.log('init case view');
             },
             submitSearch: function(model) {
                 console.log(that.searchProps);

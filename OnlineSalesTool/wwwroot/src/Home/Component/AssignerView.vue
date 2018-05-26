@@ -93,16 +93,13 @@
 <script>
     import axios from 'axios'
     import shiftdetail from './ShiftDetail.vue'
-    import moment from 'moment'
+    //import moment from 'moment'
+    import { setDate, format } from 'date-fns'
 
     //Api
     import API_Const from '../API'
-    //Actions
-    import { CHECK_TOKEN_EXPIRE, LOGOUT } from '../actions'
-    //Mutation
-    import { VM_ASSIGNER } from '../mutations'
     //Const
-    import { AppFunction } from '../AppConst'
+    import { Permission } from '../AppConst'
 
     export default {
         name: 'AssignerView',
@@ -112,15 +109,10 @@
         components: {
             'shift-detail': shiftdetail
         },
-
-        beforeRouteEnter(to, from, next) {
-            next(async me => {
-                //this component
-                if(!me.vm)
-                    await me.init();
-            })
+        mounted: function () {
+            //Init & load vm
+            this.init();
         },
-
         data: function() {
             return {
                 //Maybe store VM in vuex?
@@ -129,7 +121,6 @@
                 users: [],
                 //Sys
                 systemMonthYear: null,
-                systemMonthYearDisplay: null,
                 totalDaysOfMonth: null,
                 //Display bindings
                 currentPOS: null,
@@ -158,18 +149,14 @@
         },
 
         computed: {
-            //VM
-            vm: function () {
-                return this.$store.getters.vm_assigner;
-            },
             //Vuex permission
             canCreate: function () {
                 //Must have shifts to create schedule
                 if (this.currentShifts.length < 1) return false;
-                return this.$store.getters.Can(AppFunction.CreateShiftSchedule);
+                return this.$store.getters.can(Permission.CreateShiftSchedule);
             },
             canEdit: function () {
-                return this.$store.getters.Can(AppFunction.EditShiftSchedule);
+                return this.$store.getters.can(Permission.EditShiftSchedule);
             },
 
             isLoading: function () {
@@ -204,9 +191,7 @@
         },
 
         methods: {
-            //Call this on enter/create of this component
             init: async function () {
-                await this.$store.dispatch(CHECK_TOKEN_EXPIRE);
                 await this.loadVM();
                 //Display first prev schedule of 1st POS
                 if (this.poses.length > 0) {
@@ -218,6 +203,7 @@
                     }
                 
                 }
+                //console.log(setDate(this.systemMonthYear, 1));
             }, 
             loadVM: async function () {
                 //Fetch VM
@@ -225,15 +211,12 @@
                     //Get VM
                     let { data } = await axios.get(API_Const.AssignerVmAPI);
                     //console.log(data);
-                    //Commit VM
-                    this.$store.commit(VM_ASSIGNER, data);
                     //Set poses
                     this.poses = data.POSs;
                     //Set users
                     this.users = data.Users;
                     //Set sys ref
                     this.systemMonthYear = data.SystemMonthYear;
-                    this.systemMonthYearDisplay = data.SystemMonthYearDisplay;
                     this.totalDaysOfMonth = data.TotalDaysOfMonth;
                 } catch (e) {
                     this.$emit('showerror', 'Tải dữ liệu thất bại, vui lòng liên hệ IT.');
@@ -312,8 +295,7 @@
                     //Happens if selected pos changed without updating currentPOS
                     this.currentDays = emptyDays;
                 }
-                this.showModeText('Tạo ca trực mới: ', this.currentPOS.PosCode, this.systemMonthYearDisplay)
-                //this.ModeName = `Tạo ca trực mới: ${this.currentPOS.PosCode} ${this.systemMonthYearDisplay}`;
+                this.showModeText('Tạo ca trực mới: ', this.currentPOS.PosCode, format(this.systemMonthYear, 'MM-YYYY'))
             },
             saveSchedule: async function () {
                 if (!this.canSaveSchedule) return;
@@ -326,7 +308,9 @@
                     //Must be same default time of non specified time of C# Datetime in order to re-select after saved successfully
                     //MomentJS, C# default time if not specified is 12:00:00, 00:00:00 respectively
                     //TODO: Check if time can be omitted
-                    targetMonthYear: moment(this.systemMonthYear).date(1).format('YYYY-MM-DD[T00:00:00]'), //Target month of this schedule, day must be 1
+                    //Target month of this schedule, day must be 1
+                    targetMonthYear: format(setDate(this.systemMonthYear, 1), 'YYYY-MM-DD[T00:00:00]'),
+                    //targetMonthYear: moment(this.systemMonthYear).date(1).format('YYYY-MM-DD[T00:00:00]'),
                     schedules: []
                 };
                 let schedules = this.currentDays.reduce((acc, d) => {
@@ -351,12 +335,10 @@
                     this.$emit('showsuccess', 'Tạo lịch làm việc mới thành công!');
                     //Set current view to newly added schedule
                     //Reload VM
-                    let prevPos = this.selectedPos;
                     await this.loadVM();
                     //Back to view
                     this.cancelSchedule();
                     //Set pos then PrevSchedules
-                    this.selectedPos = prevPos;
                     this.selectedPosChanged();
                     this.selectedPrevSchedule = postObject.targetMonthYear;
                     this.loadPrevSchedule();
@@ -369,12 +351,12 @@
             },
             cancelSchedule: function () {
                 if (!this.createMode) return;
-                //Clean up ....
+                //Cancel create mode & reload prev schedule
                 this.createMode = false;
                 this.readOnly = true;
                 this.currentDays = [];
-                this.selectedPrevSchedule = null;
-                this.hideModeText();
+                //this.selectedPrevSchedule = null;
+                this.loadPrevSchedule();
             },
             //Internal use
             createEmptyDays: function (dayCount, shifts) {
@@ -398,6 +380,7 @@
                 if (this.createMode) return;
                 //If no prev sche selected, clear display
                 if (!this.selectedPrevSchedule) {
+                    this.hideModeText();
                     this.clearSchedule();
                     return;
                 }
