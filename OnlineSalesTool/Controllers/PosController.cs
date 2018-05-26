@@ -10,20 +10,19 @@ namespace OnlineSalesTool.Controllers
 {
     [LogExceptionFilterAttribute]
     [Authorize]
-    public class UserController : Controller
+    public class PosController : Controller
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IPosService _repo;
 
-        public UserController(IPosService repo)
+        public PosController(IPosService repo)
         {
             _repo = repo;
         }
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Get(
-            [FromQuery]int count = 10,
+        public async Task<IActionResult> Get([FromQuery]int count = 10,
             [FromQuery]int page = 1,
             [FromQuery]string type = "",
             [FromQuery]string contain = "",
@@ -38,6 +37,5 @@ namespace OnlineSalesTool.Controllers
                     .SetAsc(asc);
             return Ok(await _repo.Get(paramBuilder.Build()));
         }
-
     }
 }

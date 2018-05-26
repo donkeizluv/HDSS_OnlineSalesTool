@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using NLog;
 using OnlineSalesTool.ApiParameter;
 using OnlineSalesTool.EFModel;
-using OnlineSalesTool.Helper;
 using OnlineSalesTool.POCO;
 using OnlineSalesTool.Query;
-using OnlineSalesTool.Service;
 using OnlineSalesTool.ViewModels;
 
 namespace OnlineSalesTool.Service

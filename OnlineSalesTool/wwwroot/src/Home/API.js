@@ -12,5 +12,6 @@
     //User manager
     UserVM: '/API/User/Get',
     CreateUser: '/API/User/Create',
-    UpdateUser: '/API/User/Update'
+    UpdateUser: '/API/User/Update',
+    UserSearchSuggest: '/API/User/SearchSuggest?role={role}&q='
 }

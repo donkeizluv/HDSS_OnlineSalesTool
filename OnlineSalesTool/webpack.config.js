@@ -2,17 +2,18 @@
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
-//const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
 module.exports = {
     entry: {
         //Shared: './wwwroot/src/shared.js',
-        Home: './wwwroot/src/Home/app.js'
+        home: './wwwroot/src/Home/app.js'
     },
     output: {
         path: __dirname + "/wwwroot/dist/",
         //filename: "[name]_[chunkhash].js"
-        filename: "app.js"
+        filename: "app.js",
+        publicPath: '/dist/',
+        chunkFilename: '[name].chunk.js',
     },
     module: {
         rules: [
@@ -34,16 +35,10 @@ module.exports = {
         ]
     },
     plugins: [
-        //Very slow
-        //new webpack.optimize.UglifyJsPlugin({
-        //    output: {
-        //        comments: false //No comments
-        //    }
-        //}),
-        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), //Ignore locales to reduce bundled size
+        //Ignore locales to reduce bundled size
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), 
         new CleanWebpackPlugin(['wwwroot/dist'], []),
         new VueLoaderPlugin()
-        //new HardSourceWebpackPlugin()
     ],
     stats: {
         warnings: false

@@ -33,8 +33,8 @@ namespace OnlineSalesTool.Query
                     return q.Where(c => c.PosCode.Contains(param.Contain));
                 case nameof(Pos.Phone):
                     return q.Where(c => c.Phone.Contains(param.Contain));
-                case "BDS":
-                    return q.Where(c => c.User.Username.Contains(param.Contain));//Does this work?
+                case "Manager":
+                    return q.Where(c => c.User.Username.Contains(param.Contain));
                 case "":
                     return q;
                 default:
@@ -56,7 +56,7 @@ namespace OnlineSalesTool.Query
                     if (!param.Asc)
                         return q.OrderByDescending(r => r.PosCode);
                     return q.OrderBy(r => r.PosCode);
-                case "BDS":
+                case "Manager":
                     if (!param.Asc)
                         return q.OrderByDescending(r => r.User.Username);
                     return q.OrderBy(r => r.User.Username);

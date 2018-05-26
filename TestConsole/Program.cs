@@ -3,7 +3,7 @@ using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Logic;
 using OnlineSalesTool.Logic.Impl;
 using OnlineSalesTool.POCO;
-using OnlineSalesTool.Repository;
+using OnlineSalesTool.Service;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

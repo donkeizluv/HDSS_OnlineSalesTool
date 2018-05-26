@@ -37,8 +37,7 @@ namespace OnlineSalesTool
             Configuration = configuration;
             _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
         }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        
         public void InjectDependency(IServiceCollection services)
         {
             //Inject db context
@@ -63,6 +62,7 @@ namespace OnlineSalesTool
             services.AddTransient<IUserResolver, UserResolver>();
 
         }
+        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             InjectDependency(services);
@@ -84,23 +84,18 @@ namespace OnlineSalesTool
                 o.Issuer = authSetting[nameof(WindowsAuthOptions.Issuer)];
                 o.Domain = authSetting[nameof(WindowsAuthOptions.Domain)];
             });
-
             var tokenValidationParameters = new TokenValidationParameters
             {
                 //ValidateIssuer = true,
                 ValidIssuer = jwtSetting[nameof(JwtIssuerOptions.Issuer)],
-                
                 //ValidateAudience = true,
                 ValidAudience = jwtSetting[nameof(JwtIssuerOptions.Audience)],
-                
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = _signingKey,
-
                 RequireExpirationTime = false,
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.FromDays(1)
             };
-
             services.AddAuthentication(o =>
             {
                 o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

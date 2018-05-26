@@ -7,7 +7,10 @@
     //RoleStoreage: 'role'
 
 };
-export const AppFunction = {
+export const Permission = {
     CreateShiftSchedule: 'CreateShiftSchedule',
-    EditShiftSchedule: 'EditShiftSchedule'
+    EditShiftSchedule: 'EditShiftSchedule',
+    CanSeePosManager: 'CanSeePosManager',
+    CanSeeUserManager: 'CanSeeUserManager',
+    CanUpdateUser: 'CanUpdateUser'
 }

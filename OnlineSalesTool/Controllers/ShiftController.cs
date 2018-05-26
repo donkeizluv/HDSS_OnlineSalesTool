@@ -5,15 +5,14 @@ using NLog;
 using OnlineSalesTool.CustomException;
 using OnlineSalesTool.Logic;
 using OnlineSalesTool.Service;
-using OnlineSalesTool.Service;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System;
 
 namespace OnlineSalesTool.Controllers
 {
     [LogExceptionFilterAttribute]
-    [Authorize]
     public class ShiftController : Controller
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
@@ -28,7 +27,6 @@ namespace OnlineSalesTool.Controllers
         [Authorize]
         public async Task<IActionResult> Get()
         {
-            //return await Task.FromResult(BadRequest());
             return Ok(await _repo.Get());
         }
         [HttpPost]

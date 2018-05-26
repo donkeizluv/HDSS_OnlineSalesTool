@@ -1,8 +1,9 @@
 ﻿import Vue from 'vue'
 
 import VModal from 'vue-js-modal'
+//const VModal = () => import(/* webpackChunkName: "modal" */ 'vue-js-modal')
 import Toasted from 'vue-toasted'
-import vSelect from 'vue-select'
+
 import appConst from './AppConst'
 //import mixin from '../Home/mixin'
 import store from './store'
@@ -11,7 +12,6 @@ import App from './Component/AppRoot.vue'
 
 
 //Extend & reg
-Vue.component('v-select', vSelect)
 Vue.use(VModal, { dialog: true });
 Vue.use(Toasted,
     {

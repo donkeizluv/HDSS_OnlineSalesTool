@@ -5,29 +5,39 @@ import jwt from 'jwt-decode'
 
 import common from '../Home/Common'
 
-import { AppFunction, ConstStorage } from './AppConst'
+import { Permission, ConstStorage } from './AppConst'
 import API from './API'
-import router from './router'
 
-
-import { LOGIN, LOGOUT, RELOAD_TOKEN, CHECK_TOKEN_EXPIRE, CLEAR_LOCALSTORE, CLEAR_VM } from './actions'
-import { IDENTITY, EXPIRE, TOKEN, LOADING, ABILITY, ROLE, VM_ASSIGNER, VM_POSMAN, VM_USER } from './mutations'
-//import * as mutationType from './mutations'
+import { CHECK_AUTH, LOGIN, LOGOUT, RELOAD_TOKEN, CLEAR_LOCALSTORE } from './actions'
+import { AUTHENTICATED, AUTH_CHECKED, IDENTITY, EXPIRE, TOKEN, LOADING, ABILITY, ROLE } from './mutations'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
         //Auth
-        Token: localStorage.getItem(ConstStorage.TokenStorage) || null,
-        Identity: localStorage.getItem(ConstStorage.IdentityStorage) || null,
-        Expire: localStorage.getItem(ConstStorage.ExpireStorage) || 0,
-        Ability: [],
-        Role: null,
+        authChecked: false, //Auth check on app boot
+        authenticated: false,
+        token: localStorage.getItem(ConstStorage.TokenStorage) || null,
+        identity: localStorage.getItem(ConstStorage.IdentityStorage) || null,
+        expire: localStorage.getItem(ConstStorage.ExpireStorage) || 0,
+        ability: [],
+        role: null,
         //Roles & functionality dict
-        RoleFuncDict: [
-            { Role: 'BDS', Can: [AppFunction.CreateShiftSchedule] },
-            { Role: 'ADMIN', Can: [AppFunction.CreateShiftSchedule, AppFunction.EditShiftSchedule] }
+        roleDict: [
+            {
+                role: 'BDS',
+                can: [Permission.CreateShiftSchedule]
+            },
+            {
+                role: 'ADMIN',
+                can: [
+                    Permission.CreateShiftSchedule,
+                    Permission.EditShiftSchedule,
+                    Permission.CanSeePosManager,
+                    Permission.CanSeeUserManager,
+                    Permission.CanUpdateUser]
+            }
         ],
         //VM
         vm_assigner: null,
@@ -39,58 +49,49 @@ export default new Vuex.Store({
     },
     getters: {
         //Auth
-        AuthToken: state => state.Token,
-        IsAuthenticated: state => !!state.Token,
-        Identity: state => state.Identity,
-        Role: state => state.Role,
-        Ability: state => state.Ability,
-        HasAbility(state) {
-            //NYI
-            return name => state.Ability.some(i => {
-                return i == name;
-            });
-        },
-        Can(state) {
-            return can => {
+        isAuthenticated: state => state.authenticated,
+        isAuthChecked: state => state.authChecked,
+        identity: state => state.identity,
+        //Ability: state => state.Ability,
+        //HasAbility(state) {
+        //    //NYI
+        //    return name => state.Ability.some(i => {
+        //        return i == name;
+        //    });
+        //},
+        can(state) {
+            return permission => {
                 //Get role dict of current user
-                let role = state.RoleFuncDict.find(r => r.Role == state.Role)
+                let role = state.roleDict.find(r => r.role == state.role);
                 if (!role) return false;
-                return role.Can.some(c => c == can);
+                return role.can.some(c => c == permission);
             }
         },
-        //VM
-        vm_assigner: state => state.vm_assigner,
-        vm_posman: state => state.vm_posman,
-        vm_user: state => state.vm_user,
         //App wide loading
         isLoading: state => state.isLoading
     },
     mutations: {
         //Auth
+        [AUTHENTICATED](state, value) {
+            this.state.authenticated = value;
+        },
+        [AUTH_CHECKED](state, value) {
+            this.state.authChecked = value;
+        },
         [TOKEN](state, value) {
-            this.state.Token = value;
+            this.state.token = value;
         },
         [EXPIRE](state, value) {
-            this.state.Expire = value;
+            this.state.expire = value;
         },
         [IDENTITY] (state, value) {
-            this.state.Identity = value;
+            this.state.identity = value;
         },
         [ABILITY](state, value) {
-            this.state.Ability = value;
+            this.state.ability = value;
         },
         [ROLE](state, value) {
-            this.state.Role = value;
-        },
-        //VM
-        [VM_ASSIGNER](state, vm) {
-            this.state.vm_assigner = vm;
-        },
-        [VM_POSMAN](state, vm) {
-            this.state.vm_posman = vm;
-        },
-        [VM_USER](state, vm) {
-            this.state.vm_user = vm;
+            this.state.role = value;
         },
         //App wide loading
         [LOADING](state, value) {
@@ -99,6 +100,30 @@ export default new Vuex.Store({
         
     },
     actions: {
+        [CHECK_AUTH]: async ({ commit, dispatch, state }) => {
+            if (!state.token) {
+                //If no token then no need to ping
+                commit(AUTH_CHECKED, true);
+                commit(AUTHENTICATED, false);
+                return;
+            }
+            //Start checking
+            commit(AUTH_CHECKED, false);
+            try {
+                await axios({
+                    url: API.Ping,
+                    headers: { 'Authorization': `Bearer ${state.token}` }
+                });
+                //Reload auth states
+                await dispatch(RELOAD_TOKEN);
+            } catch (e) {
+                await dispatch(LOGOUT);
+            }
+            finally {
+                //Check done
+                commit(AUTH_CHECKED, true);
+            }
+        },
         [LOGIN]: async ({ commit, dispatch }, cred) => {
                 commit(LOADING, true);
                 try {
@@ -114,8 +139,6 @@ export default new Vuex.Store({
                     localStorage.setItem(ConstStorage.ExpireStorage, data.expires_in);
                     //init states
                     await dispatch(RELOAD_TOKEN);
-                    //Go
-                    router.push('/Home');
                     commit(LOADING, false);
                 } catch (e) {
                     //console.log(e);
@@ -144,6 +167,7 @@ export default new Vuex.Store({
                 commit(ABILITY, Ability || []);
                 //Set token to axios
                 axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+                commit(AUTHENTICATED, true);
         },
         [LOGOUT]: async ({ commit, dispatch }) => {
                 //Clear all state and storage
@@ -152,35 +176,15 @@ export default new Vuex.Store({
                 commit(IDENTITY, null);
                 commit(ROLE, null);
                 commit(ABILITY, []);
-                await dispatch(CLEAR_VM);
                 await dispatch(CLEAR_LOCALSTORE);
-                router.push('/Login');
-        },
-        [CLEAR_VM]: async ({ commit }) => {
-            commit(VM_ASSIGNER, null);
-            commit(VM_POSMAN, null);
+                commit(AUTHENTICATED);
         },
         [CLEAR_LOCALSTORE]: async () => {
             localStorage.removeItem(ConstStorage.TokenStorage);
-            localStorage.removeItem(ConstStorage.Identity);
+            localStorage.removeItem(ConstStorage.IdentityStorage);
             localStorage.removeItem(ConstStorage.ExpireStorage);
             localStorage.removeItem(ConstStorage.AbilityStoreage);
             localStorage.removeItem(ConstStorage.RoleStoreage);
-        },
-        //[SET_LOADING]: async ({ commit }, value) => {
-        //    commit(LOADING, value);
-        //},
-        [CHECK_TOKEN_EXPIRE]: async ({ state, dispatch }) => {
-            try {
-                await axios({
-                    url: API.Ping,
-                    headers: { 'Authorization': `Bearer ${state.Token}` }
-                });
-                //console.log('Token ok');
-            } catch (e) {
-                await dispatch(LOGOUT);
-            }
-            
         }
     }
 })
