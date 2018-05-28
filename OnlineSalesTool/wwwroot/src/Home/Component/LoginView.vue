@@ -18,9 +18,10 @@
                                             <i class="fas fa-user" aria-hidden="true" id="basic-addon1" />
                                         </div>
                                     </div>
-                                    <input v-bind:disabled="Loading"
+                                    <input v-bind:disabled="loading"
                                            v-model="username"
                                            type="text"
+                                           v-on:keyup.enter="login" 
                                            class="form-control"
                                            placeholder="Tên đăng nhập"
                                            aria-describedby="basic-addon1">
@@ -32,17 +33,17 @@
                                             <i class="fas fa-key" aria-hidden="true" id="basic-addon2" />
                                         </div>
                                     </div>
-                                    <input v-bind:disabled="Loading"
+                                    <input v-bind:disabled="loading"
                                            v-model="pwd" 
                                            type="password" 
                                            placeholder="Mật khẩu" 
-                                           v-on:keyup.enter="Login" 
+                                           v-on:keyup.enter="login" 
                                            class="form-control" 
                                            aria-describedby="basic-addon2">
                                 </div>
                                 <p id="status" class="text-center text-danger" style="height: 15px;">{{status}}</p>
-                                <button v-bind:disabled="!CanSubmit || Loading" v-on:click="Login" class="btn btn-primary btn-block">
-                                    <i v-if="Loading" class="fas fa-spinner fa-pulse"></i>
+                                <button v-bind:disabled="!canSubmit || loading" v-on:click="login" class="btn btn-primary btn-block">
+                                    <i v-if="loading" class="fas fa-spinner fa-pulse"></i>
                                     <span v-else>Login</span>
                                 </button>
                             </div>
@@ -59,13 +60,13 @@
         name: 'login',
         template: '#loginTemplate',
         computed: {
-            CanSubmit: function () {
+            canSubmit: function () {
                 if (this.username && this.pwd)
                     return true;
                 return false;
             },
-            Loading: function () {
-                return this.$store.getters.isLoading;
+            loading: function () {
+                return this.$store.getters.isloading;
             }
         },
         data: function () {
@@ -76,8 +77,8 @@
             }
         },
         methods: {
-            Login: async function () {
-                if (!this.CanSubmit) return;
+            login: async function () {
+                if (!this.canSubmit) return;
                 this.status = ''; //Clear status
                 try {
                     await this.$store.dispatch(LOGIN, { username: this.username, pwd: this.pwd });
