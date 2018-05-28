@@ -18,18 +18,6 @@ namespace OnlineSalesTool.POCO
             PosName = pos.PosName;
             Phone = pos.Phone;
             Address = pos.Address;
-            //Doesnt work well with IQueryable bc these nav properties are always null
-            //if (pos.User != null)
-            //    BDS = new AppUserPOCO(pos.User);
-            //if(pos.PosShift != null)
-            //{
-            //    Shifts = pos.PosShift
-            //                .Select(ps => ps.Shift)
-            //                .Select(s => new ShiftPOCO() {
-            //                    ShiftId = s.ShiftId,
-            //                    Name = s.Name
-            //                });
-            //}
         }
         public int PosId { get; set; }
         public string PosCode { get; set; }

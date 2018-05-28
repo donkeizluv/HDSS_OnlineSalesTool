@@ -55,12 +55,13 @@ const routes = [
         children: [
            ...adminRoutes
         ]
-    },
-    {
-        path: '/Test',
-        name: 'Test',
-        component: () => import(/* webpackChunkName: "testview" */'./Component/TestView.vue'),
-        display: 'Test',
-        navbar: true
-    }]
+    }
+    //{
+    //    path: '/Test',
+    //    name: 'Test',
+    //    component: () => import(/* webpackChunkName: "testview" */'./Component/TestView.vue'),
+    //    display: 'Test',
+    //    navbar: true
+    //}]
+    ]
 module.exports = routes;

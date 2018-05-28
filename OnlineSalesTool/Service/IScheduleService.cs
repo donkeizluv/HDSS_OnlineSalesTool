@@ -1,4 +1,5 @@
 ﻿using OnlineSalesTool.Logic;
+using OnlineSalesTool.POCO;
 using OnlineSalesTool.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace OnlineSalesTool.Service
     public interface IScheduleService
     {
         Task<ShiftAssignerViewModel> Get();
-        Task Create(ScheduleContainer schedule);
+        Task<IEnumerable<ScheduleDetailPOCO>> GetDetail(int posScheduleId);
+        Task<int> Create(ScheduleContainer schedule);
     }
 }

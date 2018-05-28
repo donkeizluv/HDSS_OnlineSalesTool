@@ -4,6 +4,7 @@
     Ping: '/Account/Ping',
     //Get Assigner VM
     AssignerVmAPI: '/API/Shift/Get',
+    ScheduleDetailAPI: '/API/Shift/GetDetails?id={id}',
     SaveScheduleAPI: '/API/Shift/Create',
     //POS manager
     PosVM: '/API/Pos/Get',
@@ -13,5 +14,5 @@
     UserVM: '/API/User/Get',
     CreateUser: '/API/User/Create',
     UpdateUser: '/API/User/Update',
-    UserSearchSuggest: '/API/User/SearchSuggest?role={role}&q='
+    UserSearchSuggest: '/API/User/Suggest?role={role}&q='
 }

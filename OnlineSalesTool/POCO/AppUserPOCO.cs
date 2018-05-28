@@ -8,6 +8,8 @@ namespace OnlineSalesTool.POCO
 {
     public class AppUserPOCO
     {
+        private string _username;
+
         public AppUserPOCO()
         {
 
@@ -16,7 +18,7 @@ namespace OnlineSalesTool.POCO
         {
             UserId = user.UserId;
             Name = user.Name;
-            Username = user.Username;
+            Username = user.Username.ToLower();
             HR = user.Hr;
             Phone = user.Phone;
             Phone2 = user.Phone2;
@@ -25,7 +27,7 @@ namespace OnlineSalesTool.POCO
         public int UserId { get; set; }
         public string DisplayName => $"{Username} - {HR}";
         public string Name { get; set; }
-        public string Username { get; set; }
+        public string Username { get => _username; set => _username = value.ToLower(); }
         public string HR { get; set; }
         public string Phone { get; set; }
         public string Phone2 { get; set; }

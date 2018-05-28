@@ -17,6 +17,7 @@ using System.Text;
 using OnlineSalesTool.Options;
 using OnlineSalesTool.Query;
 using OnlineSalesTool.POCO;
+using OnlineSalesTool.Cache;
 
 namespace OnlineSalesTool
 {
@@ -50,6 +51,7 @@ namespace OnlineSalesTool
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IPosService, PosService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IRoleCache, RoleCache>();
             //Inject query
             services.AddTransient<ListQuery<Pos, PosPOCO>, PosListQuery>();
             services.AddTransient<ListQuery<AppUser, AppUserPOCO>, UserListQuery>();
@@ -60,7 +62,8 @@ namespace OnlineSalesTool
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             //Inject resolver service
             services.AddTransient<IUserResolver, UserResolver>();
-
+            //https://stackoverflow.com/questions/40275195/how-to-setup-automapper-in-asp-net-core
+            //services.AddAutoMapper()
         }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -69,7 +72,13 @@ namespace OnlineSalesTool
             //Get setting section
             var jwtSetting = Configuration.GetSection(nameof(JwtIssuerOptions));
             var authSetting = Configuration.GetSection(nameof(WindowsAuthOptions));
+            var genOptions = Configuration.GetSection(nameof(GeneralOptions));
             //Inject options
+            //Gen option
+            services.Configure<GeneralOptions>(o =>
+            {
+                o.EmailSuffix = genOptions[nameof(GeneralOptions.EmailSuffix)];
+            });
             //JWT option
             services.Configure<JwtIssuerOptions>(o =>
             {

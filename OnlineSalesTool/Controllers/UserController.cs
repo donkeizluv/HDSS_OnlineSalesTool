@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
-using OnlineSalesTool.AppEnum;
+using OnlineSalesTool.Cache;
+using OnlineSalesTool.CustomException;
 using OnlineSalesTool.Filter;
+using OnlineSalesTool.POCO;
 using OnlineSalesTool.Service;
-using System;
 using System.Threading.Tasks;
 using static OnlineSalesTool.ApiParameter.ListingParams;
 
@@ -15,11 +16,12 @@ namespace OnlineSalesTool.Controllers
     public class UserController : Controller
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly IUserService _repo;
-
-        public UserController(IUserService repo)
+        private readonly IUserService _service;
+        private readonly IRoleCache _roleCache;
+        public UserController(IUserService service, IRoleCache roleCache)
         {
-            _repo = repo;
+            _service = service;
+            _roleCache = roleCache;
         }
 
         [HttpGet]
@@ -38,17 +40,57 @@ namespace OnlineSalesTool.Controllers
                     .SetType(type).SetContain(contain)
                     .SetOrderBy(order)
                     .SetAsc(asc);
-            return Ok(await _repo.Get(paramBuilder.Build()));
+            return Ok(await _service.Get(paramBuilder.Build()));
         }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Create([FromBody] AppUserPOCO user)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+            try
+            {
+                return Ok(await _service.Create(user));
+            }
+            catch (BussinessException ex)
+            {
+                Utility.LogException(ex, _logger);
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Update([FromBody] AppUserPOCO user)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+            try
+            {
+                await _service.Update(user);
+                return Ok();
+            }
+            catch (BussinessException ex)
+            {
+                Utility.LogException(ex, _logger);
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> SearchSuggest([FromQuery]string role, [FromQuery]string q = "")
+        public async Task<IActionResult> Suggest([FromQuery]string role, [FromQuery]string q = "")
         {
             if (string.IsNullOrEmpty(q) || string.IsNullOrEmpty(role))
                 return NoContent();
-            if (!Enum.TryParse<RoleEnum>(role, out RoleEnum userRole))
-                return BadRequest("Invalid role");
-            return Ok(await _repo.SearchSuggest(userRole, q));
+            try
+            {
+                _roleCache.GetRoleId(role, out int roleId, out var appRole);
+                return Ok(await _service.SearchSuggest(appRole, q));
+            }
+            catch (BussinessException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
     }
 }

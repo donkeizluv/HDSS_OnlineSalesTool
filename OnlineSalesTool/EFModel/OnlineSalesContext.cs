@@ -20,13 +20,14 @@ namespace OnlineSalesTool.EFModel
         public virtual DbSet<UserAbility> UserAbility { get; set; }
         public virtual DbSet<UserRole> UserRole { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(@"Server=(localdb)\local;Database=OnlineSales;Trusted_Connection=True;");
-            }
-        }
+//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//        {
+//            if (!optionsBuilder.IsConfigured)
+//            {
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+//                optionsBuilder.UseSqlServer(@"Server=(localdb)\local;Database=OnlineSales;Trusted_Connection=True;");
+//            }
+//        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -130,6 +131,11 @@ namespace OnlineSalesTool.EFModel
                     .IsRequired()
                     .HasMaxLength(20);
 
+                entity.Property(e => e.OrderGuid)
+                    .IsRequired()
+                    .HasColumnName("OrderGUID")
+                    .HasMaxLength(32);
+
                 entity.Property(e => e.OrderNumber).HasMaxLength(10);
 
                 entity.Property(e => e.Phone)
@@ -145,10 +151,6 @@ namespace OnlineSalesTool.EFModel
                     .HasMaxLength(50);
 
                 entity.Property(e => e.Received).HasColumnType("datetime");
-
-                entity.Property(e => e.OrderGuid)
-                    .IsRequired()
-                    .HasMaxLength(32);
 
                 entity.HasOne(d => d.AssignUser)
                     .WithMany(p => p.OnlineOrder)

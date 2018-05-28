@@ -8,11 +8,15 @@
                 <input v-on:keyup.enter="submitSearch"
                        v-model="model.text"
                        class="form-control"
-                       placeholder="Từ khóa..."
                        v-bind:disabled="disabled"
                        type="search">
-                <span class="input-group-btn">
-                    <button class="btn btn-link"
+                <!--Clear button-->
+                <span v-show="showClear"
+                      v-on:click="clear"
+                      class="searchclear fas fa-times"/>
+                <!--Submit-->
+                <span class="input-group-append">
+                    <button class="btn input-group-text"
                             type="button"
                             v-on:click="submitSearch">
                         <i class="fa fa-search"></i>
@@ -35,6 +39,10 @@
             'items': { //value, name
                 type: Array,
                 required: true
+            },
+            'submitOnClear': {
+                type: Boolean,
+                default: true
             }
             //'search': {
             //    type: Object,
@@ -45,6 +53,15 @@
             //Default value
             if(this.items)
                 this.model.filter = this.items[0].value;
+        },
+        computed: {
+            showClear: function () {
+                //Cant use if(this.filter) cuz "0" will cause false
+                //return this.filter != null && this.filter != undefined;
+                if (this.model.text)
+                    return true;
+                return false;
+            }
         },
         data: function () {
             return {
@@ -58,6 +75,11 @@
             submitSearch: function () {
                 if (this.disabled) return;
                 this.$emit('submit', this.model);
+            },
+            clear: function () {
+                this.model.text = '';
+                if(this.submitOnClear)
+                    this.$emit('submit', this.model);
             }
         }
     }
@@ -69,5 +91,16 @@
 
     .no-padding {
         padding: 0;
+    }
+    .searchclear {
+        position: absolute;
+        right: 3rem;
+        top: 0;
+        bottom: 0;
+        height: 1rem;
+        margin: auto;
+        font-size: 1rem;
+        cursor: pointer;
+        color: #ccc;
     }
 </style>

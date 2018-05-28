@@ -10,8 +10,8 @@ namespace OnlineSalesTool.Service
     public interface IUserService
     {
         Task<UserListingVM> Get(ListingParams param);
-        Task Create(AppUserPOCO pos);
-        Task Update(AppUserPOCO pos);
+        Task<int> Create(AppUserPOCO user);
+        Task Update(AppUserPOCO user);
         Task<IEnumerable<SelectOptionPOCO>> SearchSuggest(RoleEnum role, string q);
     }
 }

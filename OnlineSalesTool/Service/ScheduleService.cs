@@ -4,9 +4,9 @@ using OnlineSalesTool.CustomException;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Logic;
 using OnlineSalesTool.POCO;
-using OnlineSalesTool.Service;
 using OnlineSalesTool.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +15,7 @@ namespace OnlineSalesTool.Service
     public class ScheduleService : ServiceBase, IScheduleService
     {
         //Number of prev sche to return in VM
-        public const int NearestMonthScheduleTake = 3;
+        public const int NearestMonthScheduleTake = 5;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         public ScheduleService(OnlineSalesContext context, IUserResolver userResolver)
@@ -63,14 +63,12 @@ namespace OnlineSalesTool.Service
                     .OrderByDescending(g => g.MonthYear.Year)
                     .ThenByDescending(g => g.MonthYear.Month)
                     .Take(NearestMonthScheduleTake)
-                    .Select(g => new PosSchedulePOCO(
-                            g.ScheduleDetail.Select(gg => new ScheduleDetailPOCO()
-                            {
-                                Day = gg.Day,
-                                Shift = new ShiftPOCO() { Name = gg.Shift.Name, ShiftId = gg.ShiftId },
-                                User = new AppUserPOCO(gg.User)
-                            }), new DateTime(g.MonthYear.Year, g.MonthYear.Month, 1))),
-                    HasCurrentMonthSchedule = p.PosSchedule.Any(ps => ps.MonthYear.Year == now.Year && ps.MonthYear.Month == now.Month)
+                    .Select(g => new PosSchedulePOCO() {
+                        PosScheduleId = g.PosScheduleId,
+                        MonthYear = g.MonthYear
+                    }),
+                    HasCurrentMonthSchedule = p.PosSchedule.Any(ps => ps.MonthYear.Year == now.Year 
+                                                && ps.MonthYear.Month == now.Month)
                 }).ToListAsync(),
                 //Current SYS Month/Year
                 SystemMonthYear = now
@@ -100,13 +98,10 @@ namespace OnlineSalesTool.Service
                     .OrderByDescending(g => g.MonthYear.Year)
                     .ThenByDescending(g => g.MonthYear.Month)
                     .Take(NearestMonthScheduleTake)
-                    .Select(g => new PosSchedulePOCO(
-                            g.ScheduleDetail.Select(gg => new ScheduleDetailPOCO()
-                            {
-                                Day = gg.Day,
-                                Shift = new ShiftPOCO() { Name = gg.Shift.Name, ShiftId = gg.ShiftId },
-                                User = new AppUserPOCO(gg.User)
-                            }), new DateTime(g.MonthYear.Year, g.MonthYear.Month, 1))),
+                     .Select(g => new PosSchedulePOCO() {
+                         PosScheduleId = g.PosScheduleId,
+                         MonthYear = g.MonthYear
+                     }),
                     HasCurrentMonthSchedule = p.PosSchedule.Any(ps => ps.MonthYear.Year == now.Year && ps.MonthYear.Month == now.Month)
                 }).AsNoTracking().ToListAsync(),
                 //Current SYS Month/Year
@@ -212,12 +207,33 @@ namespace OnlineSalesTool.Service
             //Clean
         }
 
-        public async Task Create(ScheduleContainer schedule)
+        public async Task<int> Create(ScheduleContainer schedule)
         {
             if (schedule == null) throw new ArgumentNullException();
             await ThrowIfCheckFail(schedule);
-            await DbContext.PosSchedule.AddAsync(schedule.ToPosSchedule());
+            var posSchedule = schedule.ToPosSchedule();
+            await DbContext.PosSchedule.AddAsync(posSchedule);
             await DbContext.SaveChangesAsync();
+            return posSchedule.PosScheduleId;
+        }
+
+        public async Task<IEnumerable<ScheduleDetailPOCO>> GetDetail(int posScheduleId)
+        {
+            var posSchedule = await (DbContext.PosSchedule
+                .Where(ps => ps.PosScheduleId == posScheduleId)
+                .Include(ps => ps.ScheduleDetail)
+                    .ThenInclude(sd => sd.Shift)
+                .Include(ps => ps.ScheduleDetail)
+                    .ThenInclude(ps => ps.User)
+                .SingleOrDefaultAsync());
+            return posSchedule.ScheduleDetail
+                .OrderBy(sd => sd.Shift.DisplayOrder)
+                .Select(sd => new ScheduleDetailPOCO() {
+                    Day = sd.Day,
+                    Shift = new ShiftPOCO() { Name = sd.Shift.Name, ShiftId = sd.ShiftId },
+                    User = new AppUserPOCO(sd.User)
+                }
+            );
         }
     }
 }

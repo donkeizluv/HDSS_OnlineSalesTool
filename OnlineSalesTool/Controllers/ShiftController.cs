@@ -29,6 +29,13 @@ namespace OnlineSalesTool.Controllers
         {
             return Ok(await _repo.Get());
         }
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetDetails(int? id)
+        {
+            if (id == null) return BadRequest();
+            return Ok(await _repo.GetDetail(id ?? -1));
+        }
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Create([FromBody]ScheduleContainer schedule)
@@ -36,8 +43,8 @@ namespace OnlineSalesTool.Controllers
             if (!ModelState.IsValid || schedule == null) return BadRequest("Invalid post data");
             try
             {
-                await _repo.Create(schedule);
-                return Ok();
+                var id = await _repo.Create(schedule);
+                return Ok(id);
             }
             catch (BussinessException ex) //Fail bussiness check
             {
