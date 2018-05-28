@@ -7,8 +7,12 @@
         </button>
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
-                <li v-bind:class="[isActiveRoute(route.name)? 'active font-italic' : '' , 'nav-item']" v-for="route in routes">
-                    <router-link v-show="route.navbar" class="nav-link" v-bind:to="route.path">{{route.display}}</router-link>
+                <!--v-bind:class="[isActiveRoute(route.name)? 'active font-italic' : '' , 'nav-item']"-->
+                <li v-for="route in routes" v-bind:key="route.path">
+                    <router-link active-class="active font-italic"
+                                 v-show="route.navbar"
+                                 class="nav-link"
+                                 v-bind:to="route.path">{{route.display}}</router-link>
                 </li>
             </ul>
             <!--Account-->

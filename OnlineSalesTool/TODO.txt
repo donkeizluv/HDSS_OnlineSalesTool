@@ -1,2 +1,10 @@
-﻿Lazy load prev schedules
-Generic & fluent for creating VM in repo - DONE generic
+﻿URGENT:
+-Lazy load prev schedules
+**ADMIN role can see all POSs, if no lazy load then prev schedules * POSs  would be very huge
+
+TODO:
+Default child handling for admin view nested route
+**Cant programmatically set default child view for admin view based on user role's permission
+
+DONE:
+-Generic & fluent for creating VM in repo - DONE generic

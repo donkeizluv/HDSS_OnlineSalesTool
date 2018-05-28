@@ -28,7 +28,6 @@ const routes = [
         path: '/',
         redirect: '/Home'
     },
-    //Auth
     {
         path: '/Home',
         name: 'Home',
@@ -52,7 +51,7 @@ const routes = [
         display: 'Quản lý',
         navbar: true,
         //beforeEnter: requireAuth,
-        //Nested route
+        //Nested routes
         children: [
            ...adminRoutes
         ]

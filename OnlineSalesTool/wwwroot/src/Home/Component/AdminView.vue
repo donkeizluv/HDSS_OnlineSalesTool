@@ -3,11 +3,16 @@
         <div class="row">
             <div class="col-lg-12 mx-auto">
                 <ul class="nav nav-tabs">
-                    <li class="nav-item" v-for="route in routes">
-                        <router-link v-if="can(route.permission)"
-                                     v-bind:class="[isActiveRoute(route.name)? 'active' : '', 'nav-link']"
-                                     v-bind:to="{ name: route.name }">{{route.display}}</router-link>
-                        <span v-else class="text-secondary nav-link">{{route.display}}</span>
+                    <li class="nav-item" v-for="route in computedRoutes">
+                        <template v-if="route.navbar">
+                            <router-link class="nav-link"
+                                         active-class="active"
+                                         v-if="can(route.permission)"
+                                         v-bind:to="{ name: route.name }"
+                                         exact>{{route.display}}</router-link>
+                            <!--Show only name if not permitted-->
+                            <span v-else class="text-secondary nav-link">{{route.display}}</span>
+                        </template>
                     </li>
                 </ul>
             </div>
@@ -26,31 +31,40 @@
     </div>
 </template>
 <script>
-    //https://github.com/cristijora/vue-tabs/issues/44
     import adminRoutes from './adminRoutes'
 
     export default {
         name: 'admin-view',
         template: '#adminview',
-        activated: function() {
-            //Select a default view when no current child view is specified
-            if (this.routes.some(r => r.name == this.currentRouteName)) return;
-            let r = this.routes.find(r => this.can(r.permission));
-            if (!r) return;
-            this.$router.push({ name: r.name });
-        },
         computed: {
-            currentRouteName: function () {
-                return this.$route.name;
-            },
-            routes: function () {
+            computedRoutes: function () {
+                //Cant get this working ever, no idea why
+                //Allow routes based on this user's role
+                //let routes = [...adminRoutes];
+                //let allowRoute = routes.find(c => this.can(c.permission) && c.name != 'default');
+                //console.log(allowRoute);
+                //if (allowRoute) {
+                    //Default route is first allow route
+                    //No fucking idea why this doesnt work
+                    //return [{
+                    //    path: '',
+                    //    name: 'default',
+                    //    navbar: false,
+                    //    redirect: { name: allowRoute.name }
+                    //}, ...routes];
+                    //Doesnt work
+                    //let defaultRoute = routes.find(r => r.name == 'default');
+                    //defaultRoute.redirect = { name: allowRoute.name };
+                //}
+                //return routes;
                 return adminRoutes;
             }
         },
-        data: function () {
-            return {
-            }
-        },
+        //data: function () {
+        //    return {
+        //        //routes: []
+        //    }
+        //},
         methods: {
             can: function (p) {
                 if (!p) return true;
@@ -60,6 +74,10 @@
                 //console.log(this.currentRouteName);
                 return this.currentRouteName === name;
             },
+            //Select 1st allow view
+            //setDefaultView() {
+
+            //},
             //Bubbling up
             ShowSuccessToast(mess) {
                 this.$emit('showsuccess', mess);

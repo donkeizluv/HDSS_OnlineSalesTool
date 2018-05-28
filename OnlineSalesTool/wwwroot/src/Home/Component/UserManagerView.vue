@@ -54,106 +54,202 @@
                             </tr>
                         </thead>
                         <tbody class="td-item-middle">
-                            <tr class="fixed-height" v-for="item in items" v-bind:key="item.UserId">
+                            <template v-if="hasItems">
+                                <tr class="fixed-height" v-for="item in items" v-bind:key="item.UserId">
+                                    <!--Username-->
+                                    <td class="text-center" v-if="isEditMode(item.UserId)">
+                                        <input type="text"
+                                               class="form-control form-control-sm width-8 mx-auto"
+                                               v-model="item.Username"
+                                               v-bind:maxlength="maxFieldLength.username" />
+                                    </td>
+                                    <td class="text-center" v-else>
+                                        <div class="width-8 mx-auto">{{item.Username}}</div>
+                                    </td>
+                                    <!--Name-->
+                                    <td class="text-center" v-if="isEditMode(item.UserId)">
+                                        <input type="text"
+                                               class="form-control form-control-sm width-10 mx-auto"
+                                               v-model="item.Name"
+                                               v-bind:maxlength="maxFieldLength.name" />
+                                    </td>
+                                    <td class="text-center" v-else>
+                                        <div class="width-10 mx-auto">{{item.Name}}</div>
+                                    </td>
+                                    <!--Role-->
+                                    <td class="text-center">
+                                        <div class="width-3 mx-auto">
+                                            {{item.Role}}
+                                        </div>
+                                    </td>
+                                    <!--Active-->
+                                    <td class="text-center" v-if="isEditMode(item.UserId)">
+                                        <input class="width-3 mx-auto" type="checkbox" v-model="item.Active">
+                                    </td>
+                                    <td class="text-center" v-else>
+                                        <div class="width-3 mx-auto">
+                                            {{item.Active? 'Có' : 'Không'}}
+                                        </div>
+                                    </td>
+                                    <!--HR-->
+                                    <td class="text-center" v-if="isEditMode(item.UserId)">
+                                        <input type="text"
+                                               class="form-control form-control-sm width-5"
+                                               v-model="item.HR"
+                                               v-bind:maxlength="maxFieldLength.hr" />
+                                    </td>
+                                    <td class="text-center" v-else>
+                                        <div class="width-5 mx-auto">
+                                            {{item.HR}}
+                                        </div>
+                                    </td>
+                                    <!--Phone-->
+                                    <td class="text-center" v-if="isEditMode(item.UserId)">
+                                        <input type="text"
+                                               class="form-control form-control-sm width-8 mx-auto"
+                                               v-model="item.Phone"
+                                               v-bind:maxlength="maxFieldLength.phone" />
+                                    </td>
+                                    <td class="text-center" v-else>
+                                        <div class="width-8 mx-auto">{{item.Phone}}</div>
+                                    </td>
+                                    <!--Phone2-->
+                                    <td class="text-center" v-if="isEditMode(item.UserId)">
+                                        <input type="text"
+                                               class="form-control form-control-sm width-8 mx-auto"
+                                               v-model="item.Phone2"
+                                               v-bind:maxlength="maxFieldLength.phone" />
+                                    </td>
+                                    <td class="text-center" v-else>
+                                        <div class="width-8 mx-auto">{{item.Phone}}</div>
+                                    </td>
+                                    <!--Manager-->
+                                    <td v-if="isEditMode(item.UserId)">
+                                        <div class="width-14 mx-auto">
+                                            <d-select v-model="item.Manager"
+                                                      v-bind:api="searchSuggestAPI"></d-select>
+                                        </div>
+                                    </td>
+                                    <td class="text-center" v-else>
+                                        <div class="width-14 mx-auto">{{item.Manager? item.Manager.DisplayName : 'N/A'}}</div>
+                                    </td>
+                                    <!--CRUD-->
+                                    <td class="text-center">
+                                        <div class="d-inline">
+                                            <button v-if="isEditMode(item.UserId)"
+                                                    class="btn btn-sm btn-outline-warning"
+                                                    v-on:click="exitEditMode(item.UserId)">
+                                                <span class="fas fa-times"></span>
+                                            </button>
+                                            <!--Enter edit-->
+                                            <button v-else
+                                                    v-bind:disabled="!canUpdate"
+                                                    class="btn btn-sm btn-outline-primary"
+                                                    v-on:click="enterEditMode(item.UserId)">
+                                                <span class="fas fa-pencil-alt"></span>
+                                            </button>
+                                            <!--Save changes-->
+                                            <button class="btn btn-sm ml-2"
+                                                    v-bind:class="{'btn-outline-success': canSaveItem(item.UserId),
+                                                        'btn-outline-secondary': !canSaveItem(item.UserId)}"
+                                                    v-bind:disabled="!canSaveItem(item.UserId)"
+                                                    v-on:click="updateItem(item.UserId)">
+                                                <span class="fas fa-save"></span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template v-else>
+                                <tr>
+                                    <td class="text-center font-weight-bold" colspan="9">
+                                        <span>Chưa có dữ liệu :(</span>
+                                    </td>
+                                </tr>
+                            </template>
+                            <!--New item-->
+                            <tr>
                                 <!--Username-->
-                                <td class="text-center" v-if="isEditMode(item.UserId)">
-                                    <input type="text"
-                                           class="form-control form-control-sm width-8 mx-auto"
-                                           v-model="item.Username"
-                                           v-bind:maxlength="maxFieldLength.username" />
-                                </td>
-                                <td class="text-center" v-else>
-                                    <div class="width-8 mx-auto">{{item.Username}}</div>
+                                <td class="text-center">
+                                    <div>
+                                        <input type="text"
+                                               class="form-control form-control-sm width-8 mx-auto"
+                                               v-model="newItem.Username"
+                                               v-bind:maxlength="maxFieldLength.username" />
+                                    </div>
                                 </td>
                                 <!--Name-->
-                                <td class="text-center" v-if="isEditMode(item.UserId)">
-                                    <input type="text"
-                                           class="form-control form-control-sm width-8 mx-auto"
-                                           v-model="item.Name"
-                                           v-bind:maxlength="maxFieldLength.name" />
-                                </td>
-                                <td class="text-center" v-else>
-                                    <div class="width-8 mx-auto">{{item.Name}}</div>
+                                <td class="text-center">
+                                    <div>
+                                        <input type="text"
+                                               class="form-control form-control-sm width-10 mx-auto"
+                                               v-model="newItem.Name"
+                                               v-bind:maxlength="maxFieldLength.name" />
+                                    </div>
                                 </td>
                                 <!--Role-->
                                 <td class="text-center">
-                                    <div class="width-3 mx-auto">
-                                        {{item.Role}}
+                                    <div class="width-5 mx-auto">
+                                        <v-select v-model="newItem.Manager"
+                                                  v-bind:options="roles"></v-select>
                                     </div>
                                 </td>
                                 <!--Active-->
-                                <td class="text-center" v-if="isEditMode(item.UserId)">
-                                    <input class="width-3 mx-auto" type="checkbox" v-model="item.Active">
-                                </td>
-                                <td class="text-center" v-else>
-                                    <div class="width-3 mx-auto">
-                                        {{item.Active? 'Có' : 'Không'}}
+                                <td class="text-center">
+                                    <!--New user must be activated-->
+                                    <div>
+                                        <input class="width-3 mx-auto" type="checkbox" disabled checked>
                                     </div>
                                 </td>
                                 <!--HR-->
-                                <td class="text-center" v-if="isEditMode(item.UserId)">
-                                    <input type="text"
-                                           class="form-control form-control-sm width-5"
-                                           v-model="item.HR"
-                                           v-bind:maxlength="maxFieldLength.hr" />
-                                </td>
-                                <td class="text-center" v-else>
-                                    <div class="width-5 mx-auto">
-                                        {{item.HR}}
+                                <td class="text-center">
+                                    <div>
+                                        <input type="text"
+                                               class="form-control form-control-sm width-5 mx-auto"
+                                               v-model="newItem.HR"
+                                               v-bind:maxlength="maxFieldLength.hr" />
                                     </div>
                                 </td>
                                 <!--Phone-->
-                                <td class="text-center" v-if="isEditMode(item.UserId)">
-                                    <input type="text"
-                                           class="form-control form-control-sm width-8 mx-auto"
-                                           v-model="item.Phone"
-                                           v-bind:maxlength="maxFieldLength.phone" />
+                                <td class="text-center">
+                                    <div>
+                                        <input type="text"
+                                               class="form-control form-control-sm width-5 mx-auto"
+                                               v-model="newItem.Phone"
+                                               v-bind:maxlength="maxFieldLength.phone" />
+                                    </div>
                                 </td>
-                                <td class="text-center" v-else>
-                                    <div class="width-8 mx-auto">{{item.Phone}}</div>
-                                </td>
-                                <!--Phone2-->
-                                <td class="text-center" v-if="isEditMode(item.UserId)">
-                                    <input type="text"
-                                           class="form-control form-control-sm width-8 mx-auto"
-                                           v-model="item.Phone2"
-                                           v-bind:maxlength="maxFieldLength.phone" />
-                                </td>
-                                <td class="text-center" v-else>
-                                    <div class="width-8 mx-auto">{{item.Phone}}</div>
+                                <!--Phone-->
+                                <td class="text-center">
+                                    <div>
+                                        <input type="text"
+                                               class="form-control form-control-sm width-5 mx-auto"
+                                               v-model="newItem.Phone2"
+                                               v-bind:maxlength="maxFieldLength.phone" />
+                                    </div>
                                 </td>
                                 <!--Manager-->
-                                <td v-if="isEditMode(item.UserId)">
+                                <td>
                                     <div class="width-14 mx-auto">
-                                        <d-select v-model="item.Manager"
+                                        <d-select v-model="newItem.Manager"
                                                   v-bind:api="searchSuggestAPI"></d-select>
                                     </div>
                                 </td>
-                                <td class="text-center" v-else>
-                                    <div class="width-14 mx-auto">{{item.Manager? item.Manager.DisplayName : 'N/A'}}</div>
-                                </td>
-                                <!--CRUD-->
-                                <td>
+                                <!--Actions-->
+                                <td class="text-center">
                                     <div class="d-inline">
-                                        <button v-if="isEditMode(item.UserId)"
-                                                class="btn btn-sm btn-outline-warning"
-                                                v-on:click="exitEditMode(item.UserId)">
+                                        <!--Create-->
+                                        <button class="btn btn-sm"
+                                                v-bind:class="{'btn-outline-success': canCreateItem,
+                                                        'btn-outline-secondary': !canCreateItem}"
+                                                v-bind:disabled="!canCreateItem"
+                                                v-on:click="createItem">
+                                            <span class="fas fa-plus"></span>
+                                        </button>
+                                        <!--Clear-->
+                                        <button class="btn btn-sm btn-outline-warning ml-2"
+                                                v-on:click="clearNewItem">
                                             <span class="fas fa-times"></span>
-                                        </button>
-                                        <!--Enter edit-->
-                                        <button v-else
-                                                v-bind:disabled="!canUpdate"
-                                                class="btn btn-sm btn-outline-primary"
-                                                v-on:click="enterEditMode(item.UserId)">
-                                            <span class="fas fa-pencil-alt"></span>
-                                        </button>
-                                        <!--Save changes-->
-                                        <button class="btn btn-sm mr-2 ml-2"
-                                                v-bind:class="{'btn-outline-success': canSaveItem(item.UserId),
-                                                        'btn-outline-secondary': !canSaveItem(item.UserId)}"
-                                                v-bind:disabled="!canSaveItem(item.UserId)"
-                                                v-on:click="updateItem(item.UserId)">
-                                            <span class="fas fa-save"></span>
                                         </button>
                                     </div>
                                 </td>
@@ -185,6 +281,7 @@
     import { Permission } from '../AppConst'
     //Components
     import SearchBar from './SearchBar.vue'
+    import vSelect from 'vue-select'
     import DynamicSelect from './DynamicSelect.vue'
     import pagenav from 'vuejs-paginate'
     import axios from 'axios'
@@ -195,7 +292,8 @@
         components: {
             'search-bar': SearchBar,
             'page-nav': pagenav,
-            'd-select': DynamicSelect
+            'd-select': DynamicSelect,
+            'v-select': vSelect
         },
         mounted: function () {
             this.init();
@@ -211,6 +309,12 @@
             //API
             searchSuggestAPI: function() {
                 return API.UserSearchSuggest.replace('{role}', 'BDS');
+            },
+            //CRUD
+            canCreateItem: function () {
+                //use checkUserValid bc both basically have same validation
+                //return this.checkUserValid(this.newItem);
+                return false;
             }
         },
         data: function () {
@@ -221,11 +325,15 @@
                 itemPerPage: 10,
                 filterBy: '',
                 filterString: '',
-                orderBy: 'UserName',
+                orderBy: 'Username',
                 orderAsc: true,
                 items: [],
                 totalRows: 0,
                 totalPages: 0,
+
+                //New item
+                newItem: {},
+
                 //Validate model field's length
                 maxFieldLength: {
                     name: 50,
@@ -234,6 +342,11 @@
                     email: 60,
                     phone: 20
                 },
+                //User role dict
+                roles: [
+                    'CA',
+                    'BDS'
+                ],
                 searchFilters: [
                     { name: 'Username', value: 'Username' },
                     { name: 'Họ tên', value: 'Name' },
@@ -244,6 +357,7 @@
         },
         methods: { 
             init: function () {
+                this.clearNewItem();
                 this.loadVM();
             },
             refreshCopy: function () {
@@ -366,17 +480,34 @@
                 if (index == -1) throw 'Cant find items of id: ' + id;
                 return index;
             },
-            canSaveItem(id) {
+            canSaveItem: function(id) {
                 let index = this.findItemIndex(id);
                 //Must be in Edit mode to save
                 if (!this.items[index].editMode) return false;
                 //Values check
                 return this.checkUserValid(this.items[index]);
             },
-            checkUserValid(user) {
+            //NYI
+            createItem: function () {
+                if (!this.canCreateItem) return;
+            },
+            //NYI
+            checkUserValid: function(user) {
                 if (!user) return false;
 
-
+            },
+            //Init & clear item
+            clearNewItem: function () {
+                this.newItem = {
+                    Username: null,
+                    Name: null,
+                    Role: null,
+                    Active: true,
+                    HR: null,
+                    Phone: null,
+                    Phone2: null,
+                    Manager: null
+                };
             }
         }
     }

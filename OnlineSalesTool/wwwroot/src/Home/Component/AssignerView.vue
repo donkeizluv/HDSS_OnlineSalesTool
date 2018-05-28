@@ -1,35 +1,39 @@
 ﻿<!--Assigner view-->
 <template id="assignerview">
     <div>
-        <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <div class="form-group">
-                    <div class="form-inline">
-                        <!--Select pos-->
-                        <label>POS: </label>
-                        <select class="form-control m-2"
-                                v-model="selectedPos"
-                                v-on:change="selectedPosChanged"
-                                v-bind:disabled="createMode">
-                            <option disabled>pos...</option>
-                            <option v-for="pos in poses"
-                                    v-bind:key="pos.PosId"
-                                    v-bind:value="pos.PosId">
-                                {{composePOSLabel(pos)}}
-                            </option>
-                        </select>
-                        <!--Select prev month-->
-                        <label>Tháng: </label>
-                        <select class="form-control m-2"
-                                v-model="selectedPrevSchedule"
-                                v-on:change="loadPrevSchedule"
-                                v-bind:disabled="createMode">
-                            <option disabled>Tháng...</option>
-                            <option v-for="prev in currentPrevSchedules"
-                                    v-bind:key="prev.MonthYear" 
-                                    v-bind:value="prev.MonthYear">{{prev.DisplayMonthYear}}</option>
-                        </select>
-                        <form class="form-inline">
+        <div>
+            <div class="row">
+                <div class="col-lg-5 mx-auto">
+                    <div class="form-row">
+                        <div class="form-inline mx-auto">
+                            <!--Select pos-->
+                            <label>POS: </label>
+                            <select class="form-control m-2"
+                                    v-model="selectedPos"
+                                    v-on:change="selectedPosChanged"
+                                    v-bind:disabled="createMode">
+                                <option disabled>Pos...</option>
+                                <option v-for="pos in poses"
+                                        v-bind:key="pos.PosId"
+                                        v-bind:value="pos.PosId">
+                                    {{composePOSLabel(pos)}}
+                                </option>
+                            </select>
+                            <!--Select prev month-->
+                            <label>Tháng: </label>
+                            <select class="form-control m-2"
+                                    v-model="selectedPrevSchedule"
+                                    v-on:change="loadPrevSchedule"
+                                    v-bind:disabled="createMode">
+                                <option disabled>Tháng...</option>
+                                <option v-for="prev in currentPrevSchedules"
+                                        v-bind:key="prev.MonthYear"
+                                        v-bind:value="prev.MonthYear">
+                                    {{prev.DisplayMonthYear}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-inline mx-auto">
                             <!--<button class="btn m-2" type="button" v-on:click="loadPrevSchedule" v-bind:disabled="!CanLoadSchedule">
                                 <span>Xem</span>
                             </button>-->
@@ -56,7 +60,7 @@
                                     v-bind:disabled="!canCancelSchedule">
                                 <i class="fas fa-trash"></i>
                             </button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -64,7 +68,7 @@
         <div class="row">
             <div class="col">
                 <!--Title-->
-                <h4 v-show="isModeTextVisible" class="text-center mb-md-3">
+                <h4 v-show="isModeTextVisible" class="text-center mb-md-3 mt-md-3">
                     {{modeText.name}}
                     <span class="badge badge-success">
                         {{modeText.pos}}
@@ -113,7 +117,7 @@
             //Init & load vm
             this.init();
         },
-        data: function() {
+        data: function () {
             return {
                 //Maybe store VM in vuex?
                 //VM data
@@ -162,7 +166,7 @@
             isLoading: function () {
                 return this.$store.getters.Loading;
             },
-            
+
             canEditSchedule: function () {
                 if (!this.canEdit) return false;
                 if (this.createMode) return false;
@@ -201,10 +205,10 @@
                         this.selectedPrevSchedule = this.currentPrevSchedules[0].MonthYear;
                         this.loadPrevSchedule();
                     }
-                
+
                 }
                 //console.log(setDate(this.systemMonthYear, 1));
-            }, 
+            },
             loadVM: async function () {
                 //Fetch VM
                 try {
@@ -264,7 +268,7 @@
                     //Recontruct loaded day to current month array
                     let reconstruct = [];
                     //Replace empty days with loaded days if they are same day
-                    for(let d of emptyDays) {
+                    for (let d of emptyDays) {
                         //Refill values of empty days with loaded one
                         let loaded = this.currentDays.find(l => l.Day == d.Day);
                         if (loaded) {
@@ -286,7 +290,7 @@
                         }
                         else {
                             //No loaded found, use empty instead
-                            reconstruct.push(d) 
+                            reconstruct.push(d)
                         }
                     }
                     this.currentDays = reconstruct;
