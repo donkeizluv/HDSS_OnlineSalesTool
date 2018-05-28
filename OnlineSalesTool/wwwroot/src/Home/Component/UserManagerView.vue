@@ -126,7 +126,8 @@
                                     <!--Manager-->
                                     <td v-if="isEditMode(item.UserId)">
                                         <div class="width-14 mx-auto">
-                                            <d-select v-model="item.Manager"
+                                            <d-select v-bind:disabled="!canEditManager(item.UserId)"
+                                                      v-model="item.Manager"
                                                       v-bind:api="searchSuggestAPI"></d-select>
                                         </div>
                                     </td>
@@ -150,9 +151,9 @@
                                             </button>
                                             <!--Save changes-->
                                             <button class="btn btn-sm ml-2"
-                                                    v-bind:class="{'btn-outline-success': canSaveItem(item.UserId),
-                                                        'btn-outline-secondary': !canSaveItem(item.UserId)}"
-                                                    v-bind:disabled="!canSaveItem(item.UserId)"
+                                                    v-bind:class="{'btn-outline-success': canUpdateItem(item.UserId),
+                                                        'btn-outline-secondary': !canUpdateItem(item.UserId)}"
+                                                    v-bind:disabled="!canUpdateItem(item.UserId)"
                                                     v-on:click="updateItem(item.UserId)">
                                                 <span class="fas fa-save"></span>
                                             </button>
@@ -188,9 +189,9 @@
                                     </div>
                                 </td>
                                 <!--Role-->
-                                <td class="text-center">
-                                    <div class="width-5 mx-auto">
-                                        <v-select v-model="newItem.Manager"
+                                <td>
+                                    <div class="width-6 mx-auto">
+                                        <v-select v-model="newItem.Role"
                                                   v-bind:options="roles"></v-select>
                                     </div>
                                 </td>
@@ -238,18 +239,18 @@
                                 <!--Actions-->
                                 <td class="text-center">
                                     <div class="d-inline">
+                                        <!--Clear-->
+                                        <button class="btn btn-sm btn-outline-warning"
+                                                v-on:click="clearNewItem">
+                                            <span class="fas fa-times"></span>
+                                        </button>
                                         <!--Create-->
-                                        <button class="btn btn-sm"
+                                        <button class="btn btn-sm ml-2"
                                                 v-bind:class="{'btn-outline-success': canCreateItem,
                                                         'btn-outline-secondary': !canCreateItem}"
                                                 v-bind:disabled="!canCreateItem"
                                                 v-on:click="createItem">
                                             <span class="fas fa-plus"></span>
-                                        </button>
-                                        <!--Clear-->
-                                        <button class="btn btn-sm btn-outline-warning ml-2"
-                                                v-on:click="clearNewItem">
-                                            <span class="fas fa-times"></span>
                                         </button>
                                     </div>
                                 </td>
@@ -313,8 +314,8 @@
             //CRUD
             canCreateItem: function () {
                 //use checkUserValid bc both basically have same validation
-                //return this.checkUserValid(this.newItem);
-                return false;
+                return this.checkUserValid(this.newItem);
+                //return false;
             }
         },
         data: function () {
@@ -361,7 +362,10 @@
                 this.loadVM();
             },
             refreshCopy: function () {
-                this.items_copy = this.items.map(i => JSON.parse(JSON.stringify(i)));
+                this.items_copy = this.items.map(i => this.clone(i));
+            },
+            clone: function (o) {
+                return JSON.parse(JSON.stringify(o));
             },
             loadVM: async function () {
                 try {
@@ -372,7 +376,8 @@
                     });
                     //Add property 'value' to be as value for v-select
                     //Do this b4 assign to VM so we dont need to call this.$set
-                    this.transformUsers(data.Items);
+                    //What for?
+                    this.attachLabelToManager(data.Items);
                     this.items = data.Items;
                     this.refreshCopy(); //Refresh clones
                     this.updatePagination(data.TotalPages, data.TotalRows);
@@ -381,22 +386,22 @@
                     this.$emit('showerror', 'Tải dữ liệu thất bại, vui lòng liên hệ IT.');
                 }
             },
-            transformUsers: function (users) {
+            attachLabelToManager: function (users) {
                 if (!users) throw 'users is not defined';
                 //console.log(users);
                 users.forEach(i => {
-                    this.attachSelectProperties(i);
                     if (i.Manager) {
-                        this.attachSelectProperties(i.Manager);
-                    }
-                    else {
-                        i.Manager = null;
+                        this.userToDisplay(i.Manager);
                     }
                 });
             },
-            attachSelectProperties: function (user) {
+            userToDisplay: function (user) {
                 user.label = user.DisplayName;
                 user.value = user.UserId;
+            },
+            displayToDTO: function (user) {
+                user.UserId = user.value;
+                user.DisplayName = user.label;
             },
             updatePagination: function (totalPages, totalRows) {
                 this.totalPages = totalPages;
@@ -431,7 +436,7 @@
             },
             pageNavClicked: function (page) {
                 this.onPage = page;
-                this.loadItems();
+                this.loadVM();
             },
             //order methods
             orderByClicked: function (orderBy) {
@@ -470,9 +475,10 @@
                     return;
                 }
                 this.$set(this.items[index], 'editMode', true)
+                this.$forceUpdate();
             },
             isEditMode: function (id) {
-                var index = this.findItemIndex(id);
+                let index = this.findItemIndex(id);
                 return !!this.items[index].editMode;
             },
             findItemIndex: function (id) {
@@ -480,21 +486,77 @@
                 if (index == -1) throw 'Cant find items of id: ' + id;
                 return index;
             },
-            canSaveItem: function(id) {
+            canUpdateItem: function(id) {
                 let index = this.findItemIndex(id);
                 //Must be in Edit mode to save
                 if (!this.items[index].editMode) return false;
                 //Values check
                 return this.checkUserValid(this.items[index]);
             },
-            //NYI
-            createItem: function () {
-                if (!this.canCreateItem) return;
+            canEditManager: function (id) {
+                let index = this.findItemIndex(id);
+                //Only CA can have manager
+                return this.items[index].Role === 'CA';
             },
-            //NYI
+            //Call API
+            createItem: async function () {
+                if (!this.canCreateItem) return;
+                try {
+                    let newUser = this.clone(this.newItem);
+                    //Transform manager to DTO
+                    if (newUser.Manager) {
+                        newUser.Manager = {
+                            UserId: newUser.Manager.value
+                        }
+                    }
+                    console.log(newUser);
+                    await axios.post(API.CreateUser, newUser);
+                    //Clear new item
+                    this.$emit('showsuccess', 'Tạo người dùng mới thành công!');
+                } catch (e) {
+                    throw e;
+                    this.$emit('showinfo', 'Có lỗi trong quá trình tạo mới.');
+                } finally {
+                    //Clear this anyways
+                    this.newItem = {};
+                }
+            },
+            updateItem: async function (id) {
+                if (!this.canUpdateItem(id)) return;
+                try {
+                    let index = this.findItemIndex(id);
+                    let clone = this.clone(this.items[index]);
+                    //Transform manager to DTO
+                    if (clone.Manager) {
+                        this.displayToDTO(clone.Manager);
+                    }
+                    console.log(clone);
+                    await axios.post(API.UpdateUser, clone);
+                    //Replace with clone on update success
+                    this.$set(this.items, index, clone);
+                    //Exit edit mode
+                    clone.editMode = false;
+                    this.$emit('showsuccess', 'Chỉnh sửa người dùng thành công!');
+                } catch (e) {
+                    throw e;
+                    this.$emit('showinfo', 'Có lỗi trong quá trình chỉnh sửa.');
+                }
+            },
+            //User check
             checkUserValid: function(user) {
                 if (!user) return false;
-
+                if (!user.Username ||
+                    !user.Name ||
+                    !user.HR ||
+                    !user.Username) return false;
+                //CA must have manager
+                if (user.Role == 'CA') {
+                    if (!user.Manager) return false;
+                } else {
+                    //Non-CA must not have manager
+                    if (user.Manager) return false;
+                }
+                return true;
             },
             //Init & clear item
             clearNewItem: function () {
@@ -533,6 +595,9 @@
     }
     .width-8{
         width: 8rem;
+    }
+    .width-6 {
+        width: 6rem;
     }
     .width-5{
         width: 5rem;
