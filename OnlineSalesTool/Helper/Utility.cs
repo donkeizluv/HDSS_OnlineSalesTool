@@ -14,6 +14,8 @@ namespace OnlineSalesTool.Service
         //private static Logger _logger = LogManager.GetCurrentClassLogger();
         public static void LogException(Exception ex, Logger logger)
         {
+            if(ex == null)  throw new ArgumentNullException();
+            if(logger == null) throw new ArgumentNullException();
             logger.Error(ex.GetType().ToString());
             logger.Error(ex.Message);
             logger.Error(ex.StackTrace);

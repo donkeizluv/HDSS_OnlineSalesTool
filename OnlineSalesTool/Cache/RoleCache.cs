@@ -23,7 +23,7 @@ namespace OnlineSalesTool.Cache
         public void GetRoleId(string role, out int roleId, out RoleEnum appRole)
         {
             if (string.IsNullOrEmpty(role))
-                throw new ArgumentNullException();
+                throw new BussinessException($"No role is specified");
             if (!_roleDict.ContainsKey(role))
                 throw new BussinessException($"No such role found in database: {role}");
             if(!Enum.TryParse(role, true, out appRole))

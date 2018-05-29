@@ -4,17 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OnlineSalesTool.POCO
+namespace OnlineSalesTool.DTO
 {
-    public class AppUserPOCO
+    public class AppUserDTO
     {
         private string _username;
 
-        public AppUserPOCO()
+        public AppUserDTO()
         {
 
         }
-        public AppUserPOCO(AppUser user)
+        public AppUserDTO(AppUser user)
         {
             UserId = user.UserId;
             Name = user.Name;
@@ -32,7 +32,7 @@ namespace OnlineSalesTool.POCO
         public string Phone { get; set; }
         public string Phone2 { get; set; }
         public string Role { get; set; }
-        public AppUserPOCO Manager { get; set; }
+        public AppUserDTO Manager { get; set; }
         public bool Active { get; set; }
     }
 }

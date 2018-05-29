@@ -16,7 +16,7 @@ using System;
 using System.Text;
 using OnlineSalesTool.Options;
 using OnlineSalesTool.Query;
-using OnlineSalesTool.POCO;
+using OnlineSalesTool.DTO;
 using OnlineSalesTool.Cache;
 
 namespace OnlineSalesTool
@@ -53,8 +53,8 @@ namespace OnlineSalesTool
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRoleCache, RoleCache>();
             //Inject query
-            services.AddTransient<ListQuery<Pos, PosPOCO>, PosListQuery>();
-            services.AddTransient<ListQuery<AppUser, AppUserPOCO>, UserListQuery>();
+            services.AddTransient<ListQuery<Pos, PosDTO>, PosListQuery>();
+            services.AddTransient<ListQuery<AppUser, AppUserDTO>, UserListQuery>();
             //Inject INDUS
             //services.AddSingleton<IIndusAdapter>(IndusFactory.GetIndusInstance(Configuration,
             //    File.ReadAllText($"{Program.ExeDir}\\{Configuration.GetSection("Indus").GetValue<string>("QueryFileName")}")));

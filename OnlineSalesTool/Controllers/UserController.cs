@@ -4,7 +4,7 @@ using NLog;
 using OnlineSalesTool.Cache;
 using OnlineSalesTool.CustomException;
 using OnlineSalesTool.Filter;
-using OnlineSalesTool.POCO;
+using OnlineSalesTool.DTO;
 using OnlineSalesTool.Service;
 using System.Threading.Tasks;
 using static OnlineSalesTool.ApiParameter.ListingParams;
@@ -45,7 +45,7 @@ namespace OnlineSalesTool.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Create([FromBody] AppUserPOCO user)
+        public async Task<IActionResult> Create([FromBody] AppUserDTO user)
         {
             if (!ModelState.IsValid) return BadRequest();
             try
@@ -60,7 +60,7 @@ namespace OnlineSalesTool.Controllers
         }
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Update([FromBody] AppUserPOCO user)
+        public async Task<IActionResult> Update([FromBody] AppUserDTO user)
         {
             if (!ModelState.IsValid) return BadRequest();
             try

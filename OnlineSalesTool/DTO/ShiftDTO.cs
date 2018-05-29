@@ -1,11 +1,11 @@
 ﻿using OnlineSalesTool.EFModel;
 using System.Collections.Generic;
 
-namespace OnlineSalesTool.POCO
+namespace OnlineSalesTool.DTO
 {
-    public class ShiftPOCO
+    public class ShiftDTO
     {
-        public ShiftPOCO()
+        public ShiftDTO()
         {
 
         }

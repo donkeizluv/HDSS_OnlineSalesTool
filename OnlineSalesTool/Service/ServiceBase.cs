@@ -7,6 +7,9 @@ using OnlineSalesTool.EFModel;
 using OnlineSalesTool.AppEnum;
 using System.Linq;
 using OnlineSalesTool.Service;
+using System.Threading.Tasks;
+using OnlineSalesTool.CustomException;
+using Microsoft.EntityFrameworkCore;
 
 namespace OnlineSalesTool.Service
 {
@@ -65,11 +68,28 @@ namespace OnlineSalesTool.Service
         {
             
         }
-
+        /// <summary>
+        /// Check if user id match the role
+        /// </summary>
+        /// <param name="userId">id to check</param>
+        /// <param name="role">target role</param>
+        /// <param name="throwOnNullId">throw on null id</param>
+        /// <returns></returns>
+        protected virtual async Task CheckUser(int? userId, RoleEnum role, bool throwOnNullId = false)
+        {
+            if (throwOnNullId)
+            {
+                if (userId == null) throw new BussinessException($"Null user for role: {role.ToString()}");
+            }
+            if (!await DbContext.AppUser
+                .AnyAsync(u => u.UserId == userId && u.Role.Name == role.ToString()))
+                throw new BussinessException($"User id: {userId} is not exist or not in valid role: {role.ToString()}");
+        }
         public ServiceBase(ClaimsPrincipal principal, OnlineSalesContext context)
         {
-            UserPrincipal = principal;
-            DbContext = context;
+            
+            UserPrincipal = principal ?? throw new ArgumentNullException();
+            DbContext = context ?? throw new ArgumentNullException();
         }
         private bool TryGetContextValue<T>(HttpContext context, string claimType, out T value)
         {
@@ -79,6 +99,7 @@ namespace OnlineSalesTool.Service
         private bool TryGetContextValue<T>(ClaimsPrincipal principal, string claimType, out T value)
         {
             if (principal == null) throw new ArgumentNullException();
+            if(string.IsNullOrEmpty(claimType)) throw new ArgumentNullException();
             value = default(T);
             var claim = principal.FindFirst(claimType);
             if (claim == null) return false;

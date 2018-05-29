@@ -2,7 +2,7 @@
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Logic;
 using OnlineSalesTool.Logic.Impl;
-using OnlineSalesTool.POCO;
+using OnlineSalesTool.DTO;
 using OnlineSalesTool.Service;
 using System;
 using System.Collections.Generic;

@@ -4,7 +4,7 @@ using OnlineSalesTool.ApiParameter;
 using OnlineSalesTool.AppEnum;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Helper;
-using OnlineSalesTool.POCO;
+using OnlineSalesTool.DTO;
 using OnlineSalesTool.Service;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesTool.Query
 {
-    public class PosListQuery : ListQuery<Pos, PosPOCO>
+    public class PosListQuery : ListQuery<Pos, PosDTO>
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
@@ -138,10 +138,10 @@ namespace OnlineSalesTool.Query
                     .ThenInclude(ps => ps.Shift); ;
         }
         #endregion
-        protected override async Task<IEnumerable<PosPOCO>> ProjectToOutputAsync(IQueryable<Pos> q)
+        protected override async Task<IEnumerable<PosDTO>> ProjectToOutputAsync(IQueryable<Pos> q)
         {
             if (q == null) throw new ArgumentNullException();
-            var projection = q.Select(p => new PosPOCO(p) { BDS = new AppUserPOCO(p.User) });
+            var projection = q.Select(p => new PosDTO(p) { BDS = new AppUserDTO(p.User) });
             return (await projection.ToListAsyncSafe());
         }
     }

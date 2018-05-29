@@ -17,12 +17,15 @@ namespace OnlineSalesTool.Helper
 
         public JwtFactory(IOptions<JwtIssuerOptions> jwtOptions)
         {
+            if (jwtOptions == null) throw new ArgumentNullException();
             _jwtOptions = jwtOptions.Value; 
             ThrowIfInvalidOptions(_jwtOptions);
         }
 
         public async Task<string> GenerateEncodedToken(string userName, ClaimsIdentity identity)
         {
+            if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException();
+            if(identity == null) throw new ArgumentNullException();
             //Defailt claims for JWT
             var claims = new List<Claim>()
             {

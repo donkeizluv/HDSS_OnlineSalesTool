@@ -11,9 +11,9 @@
         <div class="row">
             <div class="col-12">
                 <div class="table-responsive">
-                    <table class="table table-hover no-top-border">
+                    <table class="table table-hover">
                         <thead>
-                            <tr>
+                            <tr class="th-text-center th-no-top-border">
                                 <th>
                                     <button class="btn btn-link" v-on:click="orderByClicked('PosName')">
                                         <span v-html="headerOrderState('PosName')"></span>Tên POS
@@ -37,22 +37,59 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="td-item-middle">
                             <tr v-for="item in items" v-bind:key="item.PosId">
-                                <td>
-                                    <span>{{item.PosName}}</span>
+                                <!--PosName-->
+                                <td class="text-center" v-if="isEditMode(item.PosId)">
+                                    <input type="text"
+                                           class="form-control form-control-sm width-8 mx-auto"
+                                           v-model="item.PosName"
+                                           v-bind:maxlength="maxFieldLength.posName" />
                                 </td>
-                                <td>
-                                    <span>{{item.PosCode}}</span>
+                                <td class="text-center" v-else>
+                                    <div class="width-8 mx-auto">{{item.PosName}}</div>
                                 </td>
-                                <td>
-                                    <span>{{item.Address}}</span>
+                                <!--PosCode-->
+                                <td class="text-center" v-if="isEditMode(item.PosId)">
+                                    <input type="text"
+                                           class="form-control form-control-sm width-8 mx-auto"
+                                           v-model="item.PosCode"
+                                           v-bind:maxlength="maxFieldLength.posCode" />
                                 </td>
-                                <td>
-                                    <span>{{item.Phone}}</span>
+                                <td class="text-center" v-else>
+                                    <div class="width-8 mx-auto">{{item.PosCode}}</div>
                                 </td>
-                                <td>
-                                    <span>{{item.BDS.DisplayName}}</span>
+                                <!--Address-->
+                                <td class="text-center" v-if="isEditMode(item.PosId)">
+                                    <input type="text"
+                                           class="form-control form-control-sm width-8 mx-auto"
+                                           v-model="item.Address"
+                                           v-bind:maxlength="maxFieldLength.address" />
+                                </td>
+                                <td class="text-center" v-else>
+                                    <div class="width-8 mx-auto">{{item.Address}}</div>
+                                </td>
+                                <!--Phone-->
+                                <td class="text-center" v-if="isEditMode(item.PosId)">
+                                    <input type="text"
+                                           class="form-control form-control-sm width-8 mx-auto"
+                                           v-model="item.Phone"
+                                           v-bind:maxlength="maxFieldLength.phone" />
+                                </td>
+                                <td class="text-center" v-else>
+                                    <div class="width-8 mx-auto">{{item.Phone}}</div>
+                                </td>
+                                <!--BDS-->
+                                <!--Manager-->
+                                <td v-if="isEditMode(item.PosId)">
+                                    <div class="width-14 mx-auto">
+                                        <d-select v-bind:disabled="!canEditManager(item.UserId)"
+                                                  v-model="item.BDS"
+                                                  v-bind:api="searchSuggestAPI"></d-select>
+                                    </div>
+                                </td>
+                                <td class="text-center" v-else>
+                                    <div class="width-14 mx-auto">{{item.BDS? item.BDS.DisplayName : 'N/A'}}</div>
                                 </td>
                             </tr>
                         </tbody>
@@ -82,10 +119,12 @@
     import SearchBar from './SearchBar.vue'
     import pagenav from 'vuejs-paginate'
     import axios from 'axios'
+    import listingMix from './Shared/listingViewMixins'
 
     export default {
         name: 'posManagerView',
         template: 'posmanager',
+        mixins: [listingMix],
         components: {
             'search-bar': SearchBar,
             'page-nav': pagenav
@@ -93,24 +132,18 @@
         mounted: function () {
             this.init();
         },
-        computed: {
-            //VM
-            hasItems: function () {
-                return this.items.length > 0;
-            }
-        },
         data: function () {
             return {
-                items: [],
-                onPage: 1,
-                itemPerPage: 10,
-                filterBy: '',
-                filterString: '',
+                //items: [],
+                //items_copy: [], //To revert cancel update
+                //onPage: 1,
+                //itemPerPage: 10,
+                //filterBy: '',
+                //filterString: '',
                 orderBy: 'PosName',
-                orderAsc: true,
-                items: [],
-                totalRows: 0,
-                totalPages: 0,
+                //orderAsc: true,
+                //totalRows: 0,
+                //totalPages: 0,
 
                 searchFilters: [
                     { name: 'Tên POS', value: 'PosName' },
@@ -138,69 +171,56 @@
                     this.$emit('showerror', 'Tải dữ liệu thất bại, vui lòng liên hệ IT.');
                 }
             },
-            updatePagination: function (totalPages, totalRows) {
-                this.totalPages = totalPages;
-                this.totalRows = totalRows;
-            },
-            getQuery: function () {
-                return {
-                    count: this.itemPerPage,
-                    page: this.onPage,
-                    type: this.filterBy,
-                    contain: this.filterString,
-                    order: this.orderBy,
-                    asc: this.orderAsc,
-                }
-            },
-            submitSearch: function (model) {
-                this.filterBy = model.filter;
-                this.filterString = model.text;
-                this.loadVM();
-            },
-            orderByClicked: function (orderBy) {
-                //Flip order by
-                if (this.orderBy === orderBy) {
-                    this.orderAsc = !this.orderAsc;
-                }
-                else {
-                    //Order this column
-                    this.orderBy = orderBy;
-                    this.orderAsc = true;
-                }
-                this.loadVM();
-            },
-            pageNavClicked: function (page) {
-                this.onPage = page;
-                this.loadItems();
-            },
-            //order methods
-            orderByClicked: function (orderBy) {
-                //Flip asc
-                if (this.orderBy === orderBy) {
-                    this.orderAsc = !this.orderAsc;
-                }
-                else {
-                    //Order this column
-                    this.orderBy = orderBy;
-                    this.orderAsc = true;
-                }
-                this.loadVM();
-            },
-            headerOrderState: function (orderBy) {
-                //console.log(orderBy);
-                if (orderBy === this.orderBy) {
-                    if (this.orderAsc)
-                        return '&utrif;';
-                    return '&dtrif;';
-                }
-                return '';
-            },
+            findItemIndex: function (id) {
+                let index = this.items.findIndex(x => x.PosId == id);
+                if (index == -1) throw 'Cant find POS of id: ' + id;
+                return index;
+            }
         }
     }
 </script>
 <style scoped>
-    
-    .no-top-border th{
-        border-top: none!important;
+    .td-text-center tr td {
+        text-align: center;
+    }
+
+    .td-item-middle tr td {
+        vertical-align: middle;
+    }
+
+    .th-no-top-border th {
+        border-top: none !important;
+    }
+
+    .th-text-center th {
+        text-align: center;
+    }
+
+    .width-14 {
+        width: 14rem;
+    }
+
+    .width-10 {
+        width: 10rem;
+    }
+
+    .width-8 {
+        width: 8rem;
+    }
+
+    .width-6 {
+        width: 6rem;
+    }
+
+    .width-5 {
+        width: 5rem;
+    }
+
+    .width-3 {
+        width: 3rem;
+    }
+
+    .fixed-height {
+        height: 61px;
     }
 </style>

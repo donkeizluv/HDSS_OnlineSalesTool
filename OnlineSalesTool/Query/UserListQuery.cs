@@ -2,7 +2,7 @@
 using NLog;
 using OnlineSalesTool.ApiParameter;using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Helper;
-using OnlineSalesTool.POCO;
+using OnlineSalesTool.DTO;
 using OnlineSalesTool.Service;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesTool.Query
 {
-    public class UserListQuery : ListQuery<AppUser, AppUserPOCO>
+    public class UserListQuery : ListQuery<AppUser, AppUserDTO>
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
@@ -88,11 +88,11 @@ namespace OnlineSalesTool.Query
             throw new NotImplementedException();
         }
        
-        protected override async Task<IEnumerable<AppUserPOCO>> ProjectToOutputAsync(IQueryable<AppUser> q)
+        protected override async Task<IEnumerable<AppUserDTO>> ProjectToOutputAsync(IQueryable<AppUser> q)
         {
             if (q == null) throw new ArgumentNullException();
-            var projection = q.Select(p => new AppUserPOCO(p) {
-                Manager = p.Manager == null? null : new AppUserPOCO(p.Manager),
+            var projection = q.Select(p => new AppUserDTO(p) {
+                Manager = p.Manager == null? null : new AppUserDTO(p.Manager),
                 Role = p.Role.Name });
             return (await projection.ToListAsyncSafe());
         }

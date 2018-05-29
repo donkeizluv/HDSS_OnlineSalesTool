@@ -1,7 +1,7 @@
 ﻿using MoreLinq;
 using Newtonsoft.Json;
 using OnlineSalesTool.EFModel;
-using OnlineSalesTool.POCO;
+using OnlineSalesTool.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,11 +25,11 @@ namespace OnlineSalesTool.Logic
         public IEnumerable<DateTime> DaysInMonthRange => Enumerable.Range(0, (int)(LastDate - FirstDate).TotalDays + 1)
                                                             .Select(i => FirstDate.AddDays(i));
         public DateTime MonthYear { get; private set; }
-        public IEnumerable<ScheduleDetailPOCO> Schedules { get; }
+        public IEnumerable<ScheduleDetailDTO> Schedules { get; }
         public int TargetPos { get; private set; }
 
         [JsonConstructor]
-        public ScheduleContainer(int targetPos, DateTime targetMonthYear, IEnumerable<ScheduleDetailPOCO> schedules)
+        public ScheduleContainer(int targetPos, DateTime targetMonthYear, IEnumerable<ScheduleDetailDTO> schedules)
         {
             MonthYear = targetMonthYear;
             Schedules = schedules;

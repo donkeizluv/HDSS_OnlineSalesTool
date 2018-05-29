@@ -3,7 +3,7 @@ using NLog;
 using OnlineSalesTool.CustomException;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Logic;
-using OnlineSalesTool.POCO;
+using OnlineSalesTool.DTO;
 using OnlineSalesTool.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -49,13 +49,13 @@ namespace OnlineSalesTool.Service
             var vm = new ShiftAssignerViewModel()
             {
                 //CA cant have anyone under his management
-                Users = new AppUserPOCO[] { },
+                Users = new AppUserDTO[] { },
                 //Get all POS under management
                 POSs = await DbContext.Pos.Where(u => u.UserId == manId)
-                .Select(p => new PosPOCO(p) {
+                .Select(p => new PosDTO(p) {
                     Shifts = p.PosShift
                             .Select(ps => ps.Shift)
-                            .Select(s => new ShiftPOCO() {
+                            .Select(s => new ShiftDTO() {
                                 ShiftId = s.ShiftId,
                                 Name = s.Name
                             }),
@@ -63,7 +63,7 @@ namespace OnlineSalesTool.Service
                     .OrderByDescending(g => g.MonthYear.Year)
                     .ThenByDescending(g => g.MonthYear.Month)
                     .Take(NearestMonthScheduleTake)
-                    .Select(g => new PosSchedulePOCO() {
+                    .Select(g => new PosScheduleDTO() {
                         PosScheduleId = g.PosScheduleId,
                         MonthYear = g.MonthYear
                     }),
@@ -84,13 +84,13 @@ namespace OnlineSalesTool.Service
                 //Get all ids under management
                 Users = await DbContext.AppUser
                 .Where(u => u.ManagerId == UserId)
-                .Select(u => new AppUserPOCO(u)).ToListAsync(),
+                .Select(u => new AppUserDTO(u)).ToListAsync(),
                 //Get all POS under management
                 POSs = await DbContext.Pos.Where(p => p.UserId == UserId)
-                .Select(p => new PosPOCO(p) {
+                .Select(p => new PosDTO(p) {
                     Shifts = p.PosShift
                             .Select(ps => ps.Shift)
-                            .Select(s => new ShiftPOCO() {
+                            .Select(s => new ShiftDTO() {
                                 ShiftId = s.ShiftId,
                                 Name = s.Name
                             }),
@@ -98,7 +98,7 @@ namespace OnlineSalesTool.Service
                     .OrderByDescending(g => g.MonthYear.Year)
                     .ThenByDescending(g => g.MonthYear.Month)
                     .Take(NearestMonthScheduleTake)
-                     .Select(g => new PosSchedulePOCO() {
+                     .Select(g => new PosScheduleDTO() {
                          PosScheduleId = g.PosScheduleId,
                          MonthYear = g.MonthYear
                      }),
@@ -198,9 +198,10 @@ namespace OnlineSalesTool.Service
                 throw new BussinessException($"User ids: {string.Concat(notUnderManaged.Select(u => u + " "))} are not managed by: {userId}");
             }
             //Check if this specific schedule Month/Year has been defined
-            if (DbContext.PosSchedule.Any(s => s.Pos.PosId == scheduleContainer.TargetPos &&
-            s.MonthYear.Month == scheduleContainer.MonthYear.Month &&
-            s.MonthYear.Year == scheduleContainer.MonthYear.Year))
+            if (DbContext.PosSchedule.Any(
+                s => s.Pos.PosId == scheduleContainer.TargetPos &&
+                s.MonthYear.Month == scheduleContainer.MonthYear.Month &&
+                s.MonthYear.Year == scheduleContainer.MonthYear.Year))
             {
                 throw new BussinessException($"Schedule: {scheduleContainer.MonthYear.ToString("MM/yyyy")} of POS: {scheduleContainer.TargetPos} has already been defined");
             }
@@ -217,7 +218,7 @@ namespace OnlineSalesTool.Service
             return posSchedule.PosScheduleId;
         }
 
-        public async Task<IEnumerable<ScheduleDetailPOCO>> GetDetail(int posScheduleId)
+        public async Task<IEnumerable<ScheduleDetailDTO>> GetDetail(int posScheduleId)
         {
             var posSchedule = await (DbContext.PosSchedule
                 .Where(ps => ps.PosScheduleId == posScheduleId)
@@ -228,10 +229,10 @@ namespace OnlineSalesTool.Service
                 .SingleOrDefaultAsync());
             return posSchedule.ScheduleDetail
                 .OrderBy(sd => sd.Shift.DisplayOrder)
-                .Select(sd => new ScheduleDetailPOCO() {
+                .Select(sd => new ScheduleDetailDTO() {
                     Day = sd.Day,
-                    Shift = new ShiftPOCO() { Name = sd.Shift.Name, ShiftId = sd.ShiftId },
-                    User = new AppUserPOCO(sd.User)
+                    Shift = new ShiftDTO() { Name = sd.Shift.Name, ShiftId = sd.ShiftId },
+                    User = new AppUserDTO(sd.User)
                 }
             );
         }

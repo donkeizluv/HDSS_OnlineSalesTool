@@ -3,15 +3,15 @@ using OnlineSalesTool.Logic;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OnlineSalesTool.POCO
+namespace OnlineSalesTool.DTO
 {
-    public class PosPOCO
+    public class PosDTO
     {
-        public PosPOCO()
+        public PosDTO()
         {
 
         }
-        public PosPOCO(Pos pos)
+        public PosDTO(Pos pos)
         {
             PosId = pos.PosId;
             PosCode = pos.PosCode;
@@ -24,11 +24,11 @@ namespace OnlineSalesTool.POCO
         public string PosName { get; set; }
         public string Phone { get; set; }
         public string Address { get; set; }
-        public AppUserPOCO BDS { get; set; }
-        public IEnumerable<ShiftPOCO> Shifts { get; set; }
+        public AppUserDTO BDS { get; set; }
+        public IEnumerable<ShiftDTO> Shifts { get; set; }
 
         //Assigner related stuff
-        public IEnumerable<PosSchedulePOCO> PreviousMonthSchedules { get; set; }
+        public IEnumerable<PosScheduleDTO> PreviousMonthSchedules { get; set; }
         public bool HasCurrentMonthSchedule { get; set; }
         
     }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OnlineSalesTool.POCO
+namespace OnlineSalesTool.DTO
 {
-    public class SelectOptionPOCO
+    public class SelectOptionDTO
     {
         public string label { get; set; }
         public int value { get; set; }

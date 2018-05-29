@@ -1,6 +1,6 @@
 ﻿using OnlineSalesTool.ApiParameter;
 using OnlineSalesTool.AppEnum;
-using OnlineSalesTool.POCO;
+using OnlineSalesTool.DTO;
 using OnlineSalesTool.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,8 +10,8 @@ namespace OnlineSalesTool.Service
     public interface IUserService
     {
         Task<UserListingVM> Get(ListingParams param);
-        Task<int> Create(AppUserPOCO user);
-        Task Update(AppUserPOCO user);
-        Task<IEnumerable<SelectOptionPOCO>> SearchSuggest(RoleEnum role, string q);
+        Task<int> Create(AppUserDTO user);
+        Task Update(AppUserDTO user);
+        Task<IEnumerable<SelectOptionDTO>> SearchSuggest(RoleEnum role, string q);
     }
 }

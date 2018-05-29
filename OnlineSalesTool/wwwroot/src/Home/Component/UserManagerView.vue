@@ -286,10 +286,11 @@
     import DynamicSelect from './DynamicSelect.vue'
     import pagenav from 'vuejs-paginate'
     import axios from 'axios'
-
+    import listingMix from './Shared/listingViewMixins'
     export default {
         name: 'userManagerView',
         template: 'usermanager',
+        mixins: [listingMix],
         components: {
             'search-bar': SearchBar,
             'page-nav': pagenav,
@@ -320,17 +321,17 @@
         },
         data: function () {
             return {
-                items: [],
-                items_copy: [], //To revert cancel update
-                onPage: 1,
-                itemPerPage: 10,
-                filterBy: '',
-                filterString: '',
+                //items: [],
+                //items_copy: [], //To revert cancel update
+                //onPage: 1,
+                //itemPerPage: 10,
+                //filterBy: '',
+                //filterString: '',
                 orderBy: 'Username',
-                orderAsc: true,
-                items: [],
-                totalRows: 0,
-                totalPages: 0,
+                //orderAsc: true,
+                //items: [],
+                //totalRows: 0,
+                //totalPages: 0,
 
                 //New item
                 newItem: {},
@@ -361,12 +362,7 @@
                 this.clearNewItem();
                 this.loadVM();
             },
-            refreshCopy: function () {
-                this.items_copy = this.items.map(i => this.clone(i));
-            },
-            clone: function (o) {
-                return JSON.parse(JSON.stringify(o));
-            },
+            //Overrides mixins
             loadVM: async function () {
                 try {
                     let params = { ...this.getQuery() };
@@ -386,16 +382,13 @@
                     this.$emit('showerror', 'Tải dữ liệu thất bại, vui lòng liên hệ IT.');
                 }
             },
-            attachLabelToManager: function (users) {
-                if (!users) throw 'users is not defined';
-                //console.log(users);
-                users.forEach(i => {
-                    if (i.Manager) {
-                        this.userToDisplay(i.Manager);
-                    }
-                });
+            findItemIndex: function (id) {
+                let index = this.items.findIndex(x => x.UserId == id);
+                if (index == -1) throw 'Cant find items of id: ' + id;
+                return index;
             },
-            userToDisplay: function (user) {
+            //UserDTO to display transform
+            itemToDisplay: function (user) {
                 user.label = user.DisplayName;
                 user.value = user.UserId;
             },
@@ -403,89 +396,18 @@
                 user.UserId = user.value;
                 user.DisplayName = user.label;
             },
-            updatePagination: function (totalPages, totalRows) {
-                this.totalPages = totalPages;
-                this.totalRows = totalRows;
-            },
-            getQuery: function () {
-                return {
-                    count: this.itemPerPage,
-                    page: this.onPage,
-                    type: this.filterBy,
-                    contain: this.filterString,
-                    order: this.orderBy,
-                    asc: this.orderAsc,
-                }
-            },
-            submitSearch: function (model) {
-                this.filterBy = model.filter;
-                this.filterString = model.text;
-                this.loadVM();
-            },
-            orderByClicked: function (orderBy) {
-                //Flip order by
-                if (this.orderBy === orderBy) {
-                    this.orderAsc = !this.orderAsc;
-                }
-                else {
-                    //Order this column
-                    this.orderBy = orderBy;
-                    this.orderAsc = true;
-                }
-                this.loadVM();
-            },
-            pageNavClicked: function (page) {
-                this.onPage = page;
-                this.loadVM();
-            },
-            //order methods
-            orderByClicked: function (orderBy) {
-                //Flip asc
-                if (this.orderBy === orderBy) {
-                    this.orderAsc = !this.orderAsc;
-                }
-                else {
-                    //Order this column
-                    this.orderBy = orderBy;
-                    this.orderAsc = true;
-                }
-                this.loadVM();
-            },
-            headerOrderState: function (orderBy) {
-                //console.log(orderBy);
-                if (orderBy === this.orderBy) {
-                    if (this.orderAsc)
-                        return '&utrif;';
-                    return '&dtrif;';
-                }
-                return '';
+            //End overrides
+            attachLabelToManager: function (users) {
+                if (!users) throw 'users is not defined';
+                //console.log(users);
+                users.forEach(i => {
+                    if (i.Manager) {
+                        this.itemToDisplay(i.Manager);
+                    }
+                });
             },
             //CRUD
-
-            //Edit
-            exitEditMode: function (id) {
-                let index = this.findItemIndex(id);
-                let revert = JSON.parse(JSON.stringify(this.items_copy[index]));
-                this.$set(this.items, index, revert);
-            },
-            //Edit mode
-            enterEditMode: function (id) {
-                let index = this.findItemIndex(id);
-                if (index == -1) {
-                    return;
-                }
-                this.$set(this.items[index], 'editMode', true)
-                this.$forceUpdate();
-            },
-            isEditMode: function (id) {
-                let index = this.findItemIndex(id);
-                return !!this.items[index].editMode;
-            },
-            findItemIndex: function (id) {
-                let index = this.items.findIndex(x => x.UserId == id);
-                if (index == -1) throw 'Cant find items of id: ' + id;
-                return index;
-            },
+            //control states
             canUpdateItem: function(id) {
                 let index = this.findItemIndex(id);
                 //Must be in Edit mode to save

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
+using OnlineSalesTool.CustomException;
+using OnlineSalesTool.DTO;
 using OnlineSalesTool.Filter;
 using OnlineSalesTool.Service;
 using System.Threading.Tasks;
@@ -13,11 +15,11 @@ namespace OnlineSalesTool.Controllers
     public class PosController : Controller
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly IPosService _repo;
+        private readonly IPosService _service;
 
-        public PosController(IPosService repo)
+        public PosController(IPosService service)
         {
-            _repo = repo;
+            _service = service;
         }
 
         [HttpGet]
@@ -35,7 +37,40 @@ namespace OnlineSalesTool.Controllers
                     .SetType(type).SetContain(contain)
                     .SetOrderBy(order)
                     .SetAsc(asc);
-            return Ok(await _repo.Get(paramBuilder.Build()));
+            return Ok(await _service.Get(paramBuilder.Build()));
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Create([FromBody] PosDTO user)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+            try
+            {
+                return Ok(await _service.Create(user));
+            }
+            catch (BussinessException ex)
+            {
+                Utility.LogException(ex, _logger);
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Update([FromBody] PosDTO user)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+            try
+            {
+                await _service.Update(user);
+                return Ok();
+            }
+            catch (BussinessException ex)
+            {
+                Utility.LogException(ex, _logger);
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

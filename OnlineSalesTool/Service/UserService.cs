@@ -11,7 +11,7 @@ using OnlineSalesTool.Cache;
 using OnlineSalesTool.CustomException;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Options;
-using OnlineSalesTool.POCO;
+using OnlineSalesTool.DTO;
 using OnlineSalesTool.Query;
 using OnlineSalesTool.ViewModels;
 
@@ -21,15 +21,15 @@ namespace OnlineSalesTool.Service
     {
         private const int SUGGEST_TAKE = 10;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly ListQuery<AppUser, AppUserPOCO> _query;
+        private readonly ListQuery<AppUser, AppUserDTO> _query;
         private readonly GeneralOptions _options;
         private readonly IRoleCache _roleCache;
 
         public UserService(OnlineSalesContext context,
             IUserResolver userResolver,
-            ListQuery<AppUser, AppUserPOCO> q,
             IOptions<GeneralOptions> options,
-            IRoleCache roleCache)
+            IRoleCache roleCache,
+            ListQuery<AppUser, AppUserDTO> q)
             : base(userResolver.GetPrincipal(), context)
         {
             _query = q;
@@ -37,13 +37,13 @@ namespace OnlineSalesTool.Service
             _roleCache = roleCache;
         }
 
-        public async Task<int> Create(AppUserPOCO user)
+        public async Task<int> Create(AppUserDTO user)
         {
-            if (user == null) throw new ArgumentNullException();
-            await DbContext.AppUser.AddAsync(await ToNewUser(user));
+            if(user == null) throw new ArgumentNullException();
+            await DbContext.AppUser.AddAsync(await ToNewUser(user ?? throw new ArgumentNullException()));
             return await DbContext.SaveChangesAsync();
         }
-        private void BasicCheck(AppUserPOCO user)
+        private void BasicCheck(AppUserDTO user)
         {
             if (user == null) throw new ArgumentNullException();
             //Check for null
@@ -52,16 +52,23 @@ namespace OnlineSalesTool.Service
             if (string.IsNullOrEmpty(user.HR)) throw new BussinessException("Missing value");
             if (string.IsNullOrEmpty(user.Role)) throw new BussinessException("Missing value");
         }
-        private async Task<AppUser> ToNewUser(AppUserPOCO user)
+        private async Task<AppUser> ToNewUser(AppUserDTO user)
         {
-            BasicCheck(user);
+            BasicCheck(user ?? throw new ArgumentNullException());
             //Check role & get role id
             _roleCache.GetRoleId(user.Role, out int roleId, out var appRole);
             //CA must have manager
             if(appRole == RoleEnum.CA)
-                if(user.Manager == null) throw new BussinessException("CA Role must have manager");
-            //Check if Manager is valid
-            await CheckManager(user);
+            {
+                //CA must have manager
+                await CheckUser(user.Manager?.UserId, RoleEnum.BDS, true);
+            }
+            if(appRole == RoleEnum.BDS)
+            {
+                //Currenly, only CA allow to have manager
+                if (user.Manager != null)
+                    throw new BussinessException($"Only CA can have manager(BDS)");
+            }
             return new AppUser()
             {
                 Name = user.Name,
@@ -75,23 +82,24 @@ namespace OnlineSalesTool.Service
                 ManagerId = user.Manager?.UserId
             };
         }
-        private async Task CheckManager(AppUserPOCO user)
+        private async Task<AppUser> ApplyUpdate(AppUserDTO user)
         {
-            if (user.Manager != null)
-            {
-                if (!await DbContext.AppUser
-                .AnyAsync(u => u.UserId == user.Manager.UserId && //Manager exists?
-                    u.Role.Name != RoleEnum.CA.ToString())) //CA cant be manager
-                    throw new BussinessException($"Manager id:{user.Manager.UserId} is not exist or not in valid roles");
-            }
-        }
-        private async Task<AppUser> ApplyUpdate(AppUserPOCO user)
-        {
-            BasicCheck(user);
-            await CheckManager(user);
+            BasicCheck(user ?? throw new ArgumentNullException());
             var appUser = await DbContext.AppUser.SingleOrDefaultAsync(u => u.UserId == user.UserId);
             if (appUser == null)
                 throw new BussinessException($"Invalid user id: {user.UserId}");
+            _roleCache.GetRoleId(user.Role, out int roleId, out var appRole);
+            if(appRole == RoleEnum.CA)
+            {
+                //CA must have manager
+                await CheckUser(user.Manager?.UserId, RoleEnum.BDS, true);
+            }
+            if(appRole == RoleEnum.BDS)
+            {
+                //Currenly, only CA allow to have manager
+                if(user.Manager != null)
+                    throw new BussinessException($"Only CA can have manager(BDS)");
+            }
             appUser.Name = user.Name;
             appUser.Username = user.Username;
             appUser.Hr = user.HR;
@@ -113,21 +121,19 @@ namespace OnlineSalesTool.Service
             return vm;
         }
 
-        public async Task<IEnumerable<SelectOptionPOCO>> SearchSuggest(RoleEnum role, string q)
+        public async Task<IEnumerable<SelectOptionDTO>> SearchSuggest(RoleEnum role, string q)
         {
             return await DbContext.AppUser
                 .Where(u => (u.Username.Contains(q) || u.Hr.Contains(q)) && u.Role.Name == role.ToString())
                 .Take(SUGGEST_TAKE)
-                .Select(u => new SelectOptionPOCO() {
+                .Select(u => new SelectOptionDTO() {
                     label = $"{u.Username} - {u.Hr}",
                     value = u.UserId
                 }).ToListAsync();
         }
-        //Currently, not allowing update user's role
-        public async Task Update(AppUserPOCO user)
+        public async Task Update(AppUserDTO user)
         {
-            if (user == null) throw new ArgumentNullException();
-            var appUser = await ApplyUpdate(user);
+            var appUser = await ApplyUpdate(user ?? throw new ArgumentNullException());
             await DbContext.SaveChangesAsync();
         }
     }

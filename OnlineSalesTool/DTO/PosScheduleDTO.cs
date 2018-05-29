@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OnlineSalesTool.POCO
+namespace OnlineSalesTool.DTO
 {
     /// <summary>
     /// For displaying in assigner
     /// </summary>
-    public class PosSchedulePOCO
+    public class PosScheduleDTO
     {
-        public PosSchedulePOCO()
+        public PosScheduleDTO()
         {
 
         }
