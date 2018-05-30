@@ -121,7 +121,7 @@
                                                v-bind:maxlength="maxFieldLength.phone" />
                                     </td>
                                     <td class="text-center" v-else>
-                                        <div class="width-8 mx-auto">{{item.Phone}}</div>
+                                        <div class="width-8 mx-auto">{{item.Phone2}}</div>
                                     </td>
                                     <!--Manager-->
                                     <td v-if="isEditMode(item.UserId)">

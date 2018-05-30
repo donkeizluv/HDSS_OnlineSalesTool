@@ -34,7 +34,7 @@
     "style-loader": "^0.21.0",
     "vue-loader": "^15.2.2",
     "vue-template-compiler": "^2.5.16",
-    "webpack": "^4.10.0",
+    "webpack": "^4.10.1",
     "webpack-cli": "^2.1.4"
   },
   "babel": {

@@ -213,6 +213,9 @@ namespace OnlineSalesTool.Service
             if (schedule == null) throw new ArgumentNullException();
             await ThrowIfCheckFail(schedule);
             var posSchedule = schedule.ToPosSchedule();
+            //User submited schedule
+            posSchedule.AutoFill = false;
+            posSchedule.SubmitTime = DateTime.Now;
             await DbContext.PosSchedule.AddAsync(posSchedule);
             await DbContext.SaveChangesAsync();
             return posSchedule.PosScheduleId;

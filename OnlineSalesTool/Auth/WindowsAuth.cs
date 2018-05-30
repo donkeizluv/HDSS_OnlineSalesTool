@@ -27,7 +27,7 @@ namespace OnlineSalesTool.Auth
                     return true;
                 }
             }
-            catch (LdapException e)
+            catch (LdapException)
             {
                 return false;
             }

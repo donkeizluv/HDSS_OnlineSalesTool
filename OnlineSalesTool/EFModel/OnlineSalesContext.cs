@@ -195,6 +195,8 @@ namespace OnlineSalesTool.EFModel
             {
                 entity.Property(e => e.MonthYear).HasColumnType("date");
 
+                entity.Property(e => e.SubmitTime).HasColumnType("datetime");
+
                 entity.HasOne(d => d.Pos)
                     .WithMany(p => p.PosSchedule)
                     .HasForeignKey(d => d.PosId)

@@ -1,5 +1,4 @@
-﻿using OnlineSalesTool.Auth;
-using OnlineSalesTool.Filter;
+﻿using OnlineSalesTool.Filter;
 using OnlineSalesTool.Helper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +10,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using OnlineSalesTool.Service;
 using OnlineSalesTool.EFModel;
-using System;
 using System.Collections.Generic;
-using OnlineSalesTool.Service;
 using System.Linq;
 using OnlineSalesTool.Options;
 

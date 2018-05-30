@@ -1,4 +1,5 @@
 ﻿URGENT:
+- Admin view can navigate to not permitted by entering the not permitted URL
 
 
 TODO:

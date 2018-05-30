@@ -179,7 +179,7 @@ namespace OnlineSalesTool
 
             app.UseResponseCompression();
             app.UseDeveloperExceptionPage();
-            app.UseBrowserLink();
+            // app.UseBrowserLink();
             app.UseStaticFiles();
             app.UseMvc(routes =>
             {

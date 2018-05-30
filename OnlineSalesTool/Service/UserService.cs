@@ -104,7 +104,7 @@ namespace OnlineSalesTool.Service
             appUser.Username = user.Username;
             appUser.Hr = user.HR;
             appUser.Active = user.Active;
-            appUser.ManagerId = user.Manager.UserId;
+            appUser.ManagerId = user.Manager?.UserId;
             //Currently, not allowing update user's role
             //appUser.Role = user.Role
             appUser.Phone = user.Phone;
