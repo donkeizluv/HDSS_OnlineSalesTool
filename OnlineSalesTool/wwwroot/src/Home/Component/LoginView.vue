@@ -82,6 +82,7 @@
                 this.status = ''; //Clear status
                 try {
                     await this.$store.dispatch(LOGIN, { username: this.username, pwd: this.pwd });
+                    this.$router.push('/');
                 } catch (e) {
                     //console.log(e);
                     this.status = 'Đăng nhập thất bại';

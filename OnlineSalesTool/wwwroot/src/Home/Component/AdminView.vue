@@ -3,11 +3,11 @@
         <div class="row">
             <div class="col-lg-12 mx-auto">
                 <ul class="nav nav-tabs">
-                    <li class="nav-item" v-for="route in computedRoutes">
+                    <li class="nav-item" v-for="route in computedRoutes" v-bind:key="route.name">
                         <template v-if="route.navbar">
                             <router-link class="nav-link"
                                          active-class="active"
-                                         v-if="can(route.permission)"
+                                         v-if="allow(route)"
                                          v-bind:to="{ name: route.name }"
                                          exact>{{route.display}}</router-link>
                             <!--Show only name if not permitted-->
@@ -21,10 +21,10 @@
             <div class="col-lg-12 mx-auto">
                 <keep-alive>
                     <router-view class="top-margin"
-                                 v-on:showsuccess="ShowSuccessToast"
-                                 v-on:showinfo="ShowInfoToast"
-                                 v-on:showerror="ShowBlockingDialog"
-                                 v-on:showdialog="ShowDialog"></router-view>
+                                 v-on:showsuccess="showSuccessToast"
+                                 v-on:showinfo="showInfoToast"
+                                 v-on:showerror="showBlockingDialog"
+                                 v-on:showdialog="showDialog"></router-view>
                 </keep-alive>
             </div>
         </div>
@@ -66,29 +66,20 @@
         //    }
         //},
         methods: {
-            can: function (p) {
-                if (!p) return true;
-                return this.$store.getters.can(p);
+            allow: function (route) {
+                return this.$store.getters.can(route.name);
             },
-            isActiveRoute: function (name) {
-                //console.log(this.currentRouteName);
-                return this.currentRouteName === name;
-            },
-            //Select 1st allow view
-            //setDefaultView() {
-
-            //},
             //Bubbling up
-            ShowSuccessToast(mess) {
+            showSuccessToast(mess) {
                 this.$emit('showsuccess', mess);
             },
-            ShowInfoToast(mess) {
+            showInfoToast(mess) {
                 this.$emit('showinfo',mess);
             },
-            ShowBlockingDialog(mess) {
+            showBlockingDialog(mess) {
                 this.$emit('showerror', mess);
             },
-            ShowDialog(mess, t) {
+            showDialog(mess, t) {
                 this.$emit('showdialog', mess, t);
             }
 

@@ -4,22 +4,11 @@ import CaseView from './Component/CaseView.vue'
 //import AdminView from './Component/AdminView.vue'
 import adminRoutes from './Component/adminRoutes'
 //import TestView from './Component/TestView.vue'
+import { Permission } from './AppConst'
+import permissionDict from './permissionDict';
 
-function requireAuth(to, from, next) {
-    if (!store.getters.isAuthenticated) {
-        next(false);
-    } else {
-        next();
-    }
-}
-
-function requireNoAuth(to, from, next) {
-    if (store.getters.isAuthenticated) {
-        //next(false);
-        next('Home');
-    } else {
-        next();
-    }
+function checkPermission(to, from, next) {
+    next(store.getters.can(to.name));
 }
 
 const routes = [
@@ -30,28 +19,27 @@ const routes = [
     },
     {
         path: '/Home',
-        name: 'Home',
+        name: Permission.CaseListing,
         component: CaseView,
         display: 'Trang chính',
         navbar: true, //Renders on nav bar if true
-        //beforeEnter: requireAuth
+        // beforeEnter: checkPermission
     },
     {
         path: '/Assign',
-        name: 'Assign',
+        name: Permission.ScheduleAssigner,
         component: () => import(/* webpackChunkName: "assignerview" */'./Component/AssignerView.vue'),
         display: 'Lịch trực',
         navbar: true,
-        //beforeEnter: requireAuth
+        beforeEnter: checkPermission
     },
     {
         path: '/Manage',
-        name: 'Manage',
+        name: Permission.Management,
         component: () => import(/* webpackChunkName: "adminview" */'./Component/AdminView.vue'),
         display: 'Quản lý',
         navbar: true,
-        //beforeEnter: requireAuth,
-        //Nested routes
+        beforeEnter: checkPermission,
         children: [
            ...adminRoutes
         ]

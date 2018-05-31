@@ -7,12 +7,15 @@
         </button>
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
-                <!--v-bind:class="[isActiveRoute(route.name)? 'active font-italic' : '' , 'nav-item']"-->
-                <li v-for="route in routes" v-bind:key="route.path">
-                    <router-link active-class="active font-italic"
-                                 v-show="route.navbar"
+                <li v-for="route in routes" v-bind:key="route.name">
+                    <template v-if="route.navbar">
+                        <router-link active-class="active font-italic"
+                                 v-if="canShow(route)"
                                  class="nav-link"
-                                 v-bind:to="route.path">{{route.display}}</router-link>
+                                 v-bind:to="{ name: route.name }">{{route.display}}</router-link>
+                        <span v-else class="text-secondary nav-link">{{route.display}}</span>
+                    </template>
+                    
                 </li>
             </ul>
             <!--Account-->
@@ -20,13 +23,12 @@
                 <li class="nav-item">
                     <router-link class="nav-link" to="Info">
                         <span>
-                            Xin chào!
-                            {{identity}}
+                            Xin chào! {{identity}}
                         </span>
                     </router-link>
                 </li>
                 <!--Dispatch log out action-->
-                <li class="nav-item"><a class="nav-link" v-on:click="logout">Logout</a></li>
+                <li class="nav-item"><a class="nav-link" v-on:click="logout">Thoát</a></li>
             </ul>
             <!--<ul v-else class="navbar-nav ml-auto">
                 <li class="nav-item">
@@ -40,6 +42,8 @@
 <script>
     import routes from '../routes'
     import { LOGOUT } from '../actions'
+    
+
     export default {
         name: 'NavBar',
         template: '#nav-bar',
@@ -70,6 +74,9 @@
             }
         },
         methods: {
+            canShow: function (route) {
+                return this.$store.getters.can(route.name);
+            },
             logout: function () {
                 this.$store.dispatch(LOGOUT);
             },
@@ -79,6 +86,3 @@
         }
     }
 </script>
-<style>
-
-</style>

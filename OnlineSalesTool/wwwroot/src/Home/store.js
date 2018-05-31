@@ -5,7 +5,9 @@ import jwt from 'jwt-decode'
 
 import common from '../Home/Common'
 
-import { Permission, ConstStorage } from './AppConst'
+import { ConstStorage } from './AppConst'
+import permissionDict from './permissionDict'
+
 import API from './API'
 
 import { CHECK_AUTH, LOGIN, LOGOUT, RELOAD_TOKEN, CLEAR_LOCALSTORE } from './actions'
@@ -24,21 +26,7 @@ export default new Vuex.Store({
         ability: [],
         role: null,
         //Roles & functionality dict
-        roleDict: [
-            {
-                role: 'BDS',
-                can: [Permission.CreateShiftSchedule]
-            },
-            {
-                role: 'ADMIN',
-                can: [
-                    Permission.CreateShiftSchedule,
-                    Permission.EditShiftSchedule,
-                    Permission.CanSeePosManager,
-                    Permission.CanSeeUserManager,
-                    Permission.CanUpdateUser]
-            }
-        ],
+        permissionDict,
         //VM
         vm_assigner: null,
         vm_posman: null,
@@ -61,10 +49,10 @@ export default new Vuex.Store({
         //},
         can(state) {
             return permission => {
-                //Get role dict of current user
-                let role = state.roleDict.find(r => r.role == state.role);
-                if (!role) return false;
-                return role.can.some(c => c == permission);
+                if(!permission) return false;
+                let dict = state.permissionDict.filter(d => d.role == state.role || d.role == '');
+                if(dict.length < 1) return false;
+                return dict.some(d => d.can.some(p => p == permission));
             }
         },
         //App wide loading

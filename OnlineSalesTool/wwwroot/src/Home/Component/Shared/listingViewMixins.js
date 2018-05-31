@@ -10,16 +10,27 @@ export default {
             items: [],
             items_copy: [], //To revert cancel update
             onPage: 1,
-            itemPerPage: 10,
+            
             filterBy: '',
             filterString: '',
             orderBy: '', //Overide this in components
             orderAsc: true,
+
+            //Only change these through update paging
+            itemPerPage: 10, //setting
             totalRows: 0,
             totalPages: 0,
         };
     },
     methods: {
+        //Ults
+        resetData: function(){
+            this.items = [];
+            this.items_copy = [];
+            this.onPage =  1;
+            this.filterBy = '',
+            this.filterString = '';
+        },
         //Edit mode methods
         //Requires items, items_copy to function properly
         enterEditMode: function (id) {
@@ -28,7 +39,6 @@ export default {
                 return;
             }
             this.$set(this.items[index], 'editMode', true)
-            this.$forceUpdate();
         },
         isEditMode: function (id) {
             let index = this.findItemIndex(id);
@@ -66,6 +76,7 @@ export default {
             }
         },
         submitSearch: function (model) {
+            this.resetData();
             this.filterBy = model.filter;
             this.filterString = model.text;
             this.loadVM();

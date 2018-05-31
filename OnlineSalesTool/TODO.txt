@@ -7,6 +7,7 @@ TODO:
 **Cant programmatically set default child view for admin view based on user role's permission
 -Clean up appsetting.json
 -Permission policies
+-Split frontend permission dict to view dict & action dict
 
 DONE:
 -Generic listing VM
