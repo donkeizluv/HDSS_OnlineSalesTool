@@ -14,7 +14,8 @@ namespace OnlineSalesTool.EFModel
 
         public int ShiftId { get; set; }
         public string Name { get; set; }
-        public int? DisplayOrder { get; set; }
+        public string ExtName { get; set; }
+        public int DisplayOrder { get; set; }
 
         public ICollection<PosShift> PosShift { get; set; }
         public ICollection<ScheduleDetail> ScheduleDetail { get; set; }

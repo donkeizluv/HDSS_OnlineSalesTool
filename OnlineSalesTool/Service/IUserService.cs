@@ -12,6 +12,6 @@ namespace OnlineSalesTool.Service
         Task<UserListingVM> Get(ListingParams param);
         Task<int> Create(AppUserDTO user);
         Task Update(AppUserDTO user);
-        Task<IEnumerable<SelectOptionDTO>> SearchSuggest(RoleEnum role, string q);
+        Task<IEnumerable<AppUserDTO>> SearchSuggest(RoleEnum role, string q);
     }
 }

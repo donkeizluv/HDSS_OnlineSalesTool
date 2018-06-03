@@ -1,15 +1,14 @@
 ﻿URGENT:
-- Admin view can navigate to not permitted by entering the not permitted URL
-
 
 TODO:
--Default child handling for admin view nested route
-**Cant programmatically set default child view for admin view based on user role's permission
 -Clean up appsetting.json
 -Permission policies
 -Split frontend permission dict to view dict & action dict
+-Check unique names in CRUD
 
 DONE:
 -Generic listing VM
 -Lazy load prev schedules
 **ADMIN role can see all POSs, if no lazy load then prev schedules * POSs  would be very huge
+- Admin view can navigate to not permitted by entering the not permitted URL
+-Default child handling for admin view nested route

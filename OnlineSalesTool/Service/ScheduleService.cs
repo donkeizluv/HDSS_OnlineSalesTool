@@ -55,10 +55,7 @@ namespace OnlineSalesTool.Service
                 .Select(p => new PosDTO(p) {
                     Shifts = p.PosShift
                             .Select(ps => ps.Shift)
-                            .Select(s => new ShiftDTO() {
-                                ShiftId = s.ShiftId,
-                                Name = s.Name
-                            }),
+                            .Select(s => new ShiftDTO(s)),
                     PreviousMonthSchedules = p.PosSchedule
                     .OrderByDescending(g => g.MonthYear.Year)
                     .ThenByDescending(g => g.MonthYear.Month)
@@ -90,10 +87,7 @@ namespace OnlineSalesTool.Service
                 .Select(p => new PosDTO(p) {
                     Shifts = p.PosShift
                             .Select(ps => ps.Shift)
-                            .Select(s => new ShiftDTO() {
-                                ShiftId = s.ShiftId,
-                                Name = s.Name
-                            }),
+                            .Select(s => new ShiftDTO(s)),
                     PreviousMonthSchedules = p.PosSchedule
                     .OrderByDescending(g => g.MonthYear.Year)
                     .ThenByDescending(g => g.MonthYear.Month)
@@ -234,7 +228,7 @@ namespace OnlineSalesTool.Service
                 .OrderBy(sd => sd.Shift.DisplayOrder)
                 .Select(sd => new ScheduleDetailDTO() {
                     Day = sd.Day,
-                    Shift = new ShiftDTO() { Name = sd.Shift.Name, ShiftId = sd.ShiftId },
+                    Shift = new ShiftDTO(sd.Shift),
                     User = new AppUserDTO(sd.User)
                 }
             );

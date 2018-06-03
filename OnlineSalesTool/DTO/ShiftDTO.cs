@@ -9,12 +9,14 @@ namespace OnlineSalesTool.DTO
         {
 
         }
-        //public ShiftPOCO(ScheduleDetail detail)
-        //{
-        //    ShiftId = detail.ShiftId;
-        //    Name = detail.Shift.Name;
-        //}
+        public ShiftDTO(Shift shift)
+        {
+            Name = shift.Name;
+            ExtName = shift.ExtName;
+            ShiftId = shift.ShiftId;
+        }
         public string Name { get; set; }
+        public string ExtName { get; set; }
         public int ShiftId { get; set; }
         //public IEnumerable<ShiftDetailPOCO> ShiftDetails { get; set; }
     }

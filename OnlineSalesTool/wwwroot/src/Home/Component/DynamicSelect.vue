@@ -79,7 +79,6 @@
             search: debounce(async (loading, search, vm) =>  {
                 let { data } = await axios.get(`${vm.api}${escape(search)}`)
                 vm.options = data;
-                //Stop loading
                 loading(false);
             }, 235),
            

@@ -6,6 +6,8 @@ export default [
         //Matches all
         role: '',
         can: [ 
+            Permission.Management,
+            Permission.SystemInfo,
             Permission.CaseListing,
             Permission.ScheduleAssigner
          ]

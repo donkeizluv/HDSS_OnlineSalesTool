@@ -81,10 +81,11 @@
                 <!--Schedule details-->
                 <div class="d-flex justify-content-around flex-wrap">
                     <template v-for="item in currentDays">
-                        <shift-detail v-bind:display="shiftDetailDisplay"
-                                      v-bind:users="users"
-                                      v-bind:readonly="readOnly"
-                                      v-bind:day.sync="item" />
+                        <shift-detail v-bind:key="item.Day"
+                                    v-bind:display="shiftDetailDisplay"
+                                    v-bind:users="users"
+                                    v-bind:readonly="readOnly"
+                                    v-bind:day.sync="item" />
                     </template>
                 </div>
             </div>
@@ -389,8 +390,8 @@
                         Shifts: shifts.map(s => {
                             return {
                                 Name: s.Name,
+                                ExtName: s.ExtName,
                                 ShiftId: s.ShiftId,
-                                //Assign: { label: null, value: null }
                                 Assign: null
                             }
                         })

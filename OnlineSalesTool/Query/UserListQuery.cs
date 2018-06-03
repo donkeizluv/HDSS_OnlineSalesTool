@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NLog;
-using OnlineSalesTool.ApiParameter;using OnlineSalesTool.EFModel;
+using OnlineSalesTool.ApiParameter;
+using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Helper;
 using OnlineSalesTool.DTO;
 using OnlineSalesTool.Service;

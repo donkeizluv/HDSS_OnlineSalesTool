@@ -128,6 +128,7 @@
                                         <div class="width-14 mx-auto">
                                             <d-select v-bind:disabled="!canEditManager(item.UserId)"
                                                       v-model="item.Manager"
+                                                      label="DisplayName"
                                                       v-bind:api="searchSuggestAPI"></d-select>
                                         </div>
                                     </td>
@@ -168,31 +169,33 @@
                                     </td>
                                 </tr>
                             </template>
-                            <!--New item-->
+                        </tbody>
+                        <!--New item-->
+                        <tfoot v-show="canCreate">
                             <tr>
                                 <!--Username-->
                                 <td class="text-center">
                                     <div>
                                         <input type="text"
-                                               class="form-control form-control-sm width-8 mx-auto"
-                                               v-model="newItem.Username"
-                                               v-bind:maxlength="maxFieldLength.username" />
+                                            class="form-control form-control-sm width-8 mx-auto"
+                                            v-model="newItem.Username"
+                                            v-bind:maxlength="maxFieldLength.username" />
                                     </div>
                                 </td>
                                 <!--Name-->
                                 <td class="text-center">
                                     <div>
                                         <input type="text"
-                                               class="form-control form-control-sm width-10 mx-auto"
-                                               v-model="newItem.Name"
-                                               v-bind:maxlength="maxFieldLength.name" />
+                                            class="form-control form-control-sm width-10 mx-auto"
+                                            v-model="newItem.Name"
+                                            v-bind:maxlength="maxFieldLength.name" />
                                     </div>
                                 </td>
                                 <!--Role-->
                                 <td>
                                     <div class="width-6 mx-auto">
                                         <v-select v-model="newItem.Role"
-                                                  v-bind:options="roles"></v-select>
+                                                v-bind:options="roles"></v-select>
                                     </div>
                                 </td>
                                 <!--Active-->
@@ -206,37 +209,38 @@
                                 <td class="text-center">
                                     <div>
                                         <input type="text"
-                                               class="form-control form-control-sm width-5 mx-auto"
-                                               v-model="newItem.HR"
-                                               v-bind:maxlength="maxFieldLength.hr" />
+                                            class="form-control form-control-sm width-5 mx-auto"
+                                            v-model="newItem.HR"
+                                            v-bind:maxlength="maxFieldLength.hr" />
                                     </div>
                                 </td>
                                 <!--Phone-->
                                 <td class="text-center">
                                     <div>
                                         <input type="text"
-                                               class="form-control form-control-sm width-5 mx-auto"
-                                               v-model="newItem.Phone"
-                                               v-bind:maxlength="maxFieldLength.phone" />
+                                            class="form-control form-control-sm width-5 mx-auto"
+                                            v-model="newItem.Phone"
+                                            v-bind:maxlength="maxFieldLength.phone" />
                                     </div>
                                 </td>
                                 <!--Phone-->
                                 <td class="text-center">
                                     <div>
                                         <input type="text"
-                                               class="form-control form-control-sm width-5 mx-auto"
-                                               v-model="newItem.Phone2"
-                                               v-bind:maxlength="maxFieldLength.phone" />
+                                            class="form-control form-control-sm width-5 mx-auto"
+                                            v-model="newItem.Phone2"
+                                            v-bind:maxlength="maxFieldLength.phone" />
                                     </div>
                                 </td>
                                 <!--Manager-->
                                 <td>
                                     <div class="width-14 mx-auto">
                                         <d-select v-model="newItem.Manager"
-                                                  v-bind:api="searchSuggestAPI"></d-select>
+                                                label="DisplayName"
+                                                v-bind:api="searchSuggestAPI"></d-select>
                                     </div>
                                 </td>
-                                <!--Actions-->
+                                <!--New item actions-->
                                 <td class="text-center">
                                     <div class="d-inline">
                                         <!--Clear-->
@@ -246,288 +250,255 @@
                                         </button>
                                         <!--Create-->
                                         <button class="btn btn-sm ml-2"
-                                                v-bind:class="{'btn-outline-success': canCreateItem,
-                                                        'btn-outline-secondary': !canCreateItem}"
-                                                v-bind:disabled="!canCreateItem"
+                                                v-bind:class="{'btn-outline-success': isNewItemValid,
+                                                        'btn-outline-secondary': !isNewItemValid}"
+                                                v-bind:disabled="!isNewItemValid"
                                                 v-on:click="createItem">
                                             <span class="fas fa-plus"></span>
                                         </button>
                                     </div>
                                 </td>
                             </tr>
-                        </tbody>
+                            <tr class="td-no-top-border">
+                                <td colspan=9 class="lastrow-padding">
+                                    <page-nav :page-count="totalPages"
+                                        :click-handler="pageNavClicked"
+                                        :page-range="2"
+                                        :prev-text="'Trước'"
+                                        :force-page="onPage - 1"
+                                        :next-text="'Sau'"
+                                        :page-class="'page-item'"
+                                        :page-link-class="'page-link'"
+                                        :prev-class="'page-item'"
+                                        :prev-link-class="'page-link'"
+                                        :next-class="'page-item'"
+                                        :next-link-class="'page-link'"
+                                        :container-class="'pagination pagination-sm no-bottom-margin justify-content-center'">
+                                    </page-nav>
+                                </td>
+                            </tr>
+                        </tfoot>
                     </table>
-                    <page-nav :page-count="totalPages"
-                              :click-handler="pageNavClicked"
-                              :page-range="2"
-                              :prev-text="'Trước'"
-                              :force-page="onPage - 1"
-                              :next-text="'Sau'"
-                              :page-class="'page-item'"
-                              :page-link-class="'page-link'"
-                              :prev-class="'page-item'"
-                              :prev-link-class="'page-link'"
-                              :next-class="'page-item'"
-                              :next-link-class="'page-link'"
-                              :container-class="'pagination pagination-sm no-bottom-margin justify-content-center'">
-                    </page-nav>
                 </div>
             </div>
         </div>
     </div>
 </template>
 <script>
-    import API from '../API'
-    //Permission
-    import { Permission } from '../AppConst'
-    //Components
-    import SearchBar from './SearchBar.vue'
-    import vSelect from 'vue-select'
-    import DynamicSelect from './DynamicSelect.vue'
-    import pagenav from 'vuejs-paginate'
-    import axios from 'axios'
-    import listingMix from './Shared/listingViewMixins'
-    export default {
-        name: 'userManagerView',
-        template: 'usermanager',
-        mixins: [listingMix],
-        components: {
-            'search-bar': SearchBar,
-            'page-nav': pagenav,
-            'd-select': DynamicSelect,
-            'v-select': vSelect
+import API from "../API";
+//Permission
+import { Permission } from "../AppConst";
+//Components
+import SearchBar from "./SearchBar.vue";
+import vSelect from "vue-select";
+import DynamicSelect from "./DynamicSelect.vue";
+import pagenav from "vuejs-paginate";
+import axios from "axios";
+import listingMix from "./Shared/listingViewMixins";
+export default {
+    name: "userManagerView",
+    template: "usermanager",
+    mixins: [listingMix],
+    components: {
+        "search-bar": SearchBar,
+        "page-nav": pagenav,
+        "d-select": DynamicSelect,
+        "v-select": vSelect
+    },
+    mounted: function() {
+        this.init();
+    },
+    computed: {
+        //Permission
+        canUpdate: function() {
+            return this.$store.getters.can(Permission.UpdateUser);
         },
-        mounted: function () {
-            this.init();
+        canCreate: function(){
+            return this.$store.getters.can(Permission.CreateUser);
         },
-        computed: {
-            hasItems: function () {
-                return this.items.length > 0;
-            },
-            //Permission
-            canUpdate: function () {
-                return this.$store.getters.can(Permission.CanUpdateUser);
-            },
-            //API
-            searchSuggestAPI: function() {
-                return API.UserSearchSuggest.replace('{role}', 'BDS');
-            },
-            //CRUD
-            canCreateItem: function () {
-                //use checkUserValid bc both basically have same validation
-                return this.checkUserValid(this.newItem);
-                //return false;
-            }
+        //API
+        searchSuggestAPI: function() {
+            return API.UserSearchSuggest.replace("{role}", "BDS");
         },
-        data: function () {
-            return {
-                //items: [],
-                //items_copy: [], //To revert cancel update
-                //onPage: 1,
-                //itemPerPage: 10,
-                //filterBy: '',
-                //filterString: '',
-                orderBy: 'Username',
-                //orderAsc: true,
-                //items: [],
-                //totalRows: 0,
-                //totalPages: 0,
+        //CRUD
+        isNewItemValid: function() {
+            if(!this.canCreate) return false;
+            //use checkItem bc both basically have same validation
+            return this.checkItem(this.newItem);
+            //return false;
+        }
+    },
+    data: function() {
+        return {
+            orderBy: "Username",
 
-                //New item
-                newItem: {},
+            //New item
+            newItem: {},
 
-                //Validate model field's length
-                maxFieldLength: {
-                    name: 50,
-                    username: 50,
-                    hr: 20,
-                    email: 60,
-                    phone: 20
-                },
-                //User role dict
-                roles: [
-                    'CA',
-                    'BDS'
-                ],
-                searchFilters: [
-                    { name: 'Username', value: 'Username' },
-                    { name: 'Họ tên', value: 'Name' },
-                    { name: 'SĐT', value: 'Phone' },
-                    { name: 'Manager', value: 'Manager' }
-                ]
-            }
+            //Validate model field's length
+            maxFieldLength: {
+                name: 50,
+                username: 50,
+                hr: 20,
+                email: 60,
+                phone: 20
+            },
+            //User role dict
+            roles: ["CA", "BDS"],
+            searchFilters: [
+                { name: "Username", value: "Username" },
+                { name: "Họ tên", value: "Name" },
+                { name: "SĐT", value: "Phone" },
+                { name: "Manager", value: "Manager" }
+            ]
+        };
+    },
+    methods: {
+        init: function() {
+            this.clearNewItem();
+            this.loadVM();
         },
-        methods: { 
-            init: function () {
-                this.clearNewItem();
-                this.loadVM();
-            },
-            //Overrides mixins
-            loadVM: async function () {
-                try {
-                    let params = { ...this.getQuery() };
-                    //console.log(params);
-                    let { data } = await axios.get(API.UserVM, {
-                        params
-                    });
-                    //Add property 'value' to be as value for v-select
-                    //Do this b4 assign to VM so we dont need to call this.$set
-                    //What for?
-                    this.attachLabelToManager(data.Items);
-                    this.items = data.Items;
-                    this.refreshCopy(); //Refresh clones
-                    this.updatePagination(data.TotalPages, data.TotalRows);
-
-                } catch (e) {
-                    this.$emit('showerror', 'Tải dữ liệu thất bại, vui lòng liên hệ IT.');
-                }
-            },
-            findItemIndex: function (id) {
-                let index = this.items.findIndex(x => x.UserId == id);
-                if (index == -1) throw 'Cant find items of id: ' + id;
-                return index;
-            },
-            //UserDTO to display transform
-            itemToDisplay: function (user) {
-                user.label = user.DisplayName;
-                user.value = user.UserId;
-            },
-            displayToDTO: function (user) {
-                user.UserId = user.value;
-                user.DisplayName = user.label;
-            },
-            //End overrides
-            attachLabelToManager: function (users) {
-                if (!users) throw 'users is not defined';
-                //console.log(users);
-                users.forEach(i => {
-                    if (i.Manager) {
-                        this.itemToDisplay(i.Manager);
-                    }
+        //Overrides mixins
+        loadVM: async function() {
+            try {
+                let params = { ...this.getQuery() };
+                //console.log(params);
+                let { data } = await axios.get(API.UserVM, {
+                    params
                 });
-            },
-            //CRUD
-            //control states
-            canUpdateItem: function(id) {
-                let index = this.findItemIndex(id);
-                //Must be in Edit mode to save
-                if (!this.items[index].editMode) return false;
-                //Values check
-                return this.checkUserValid(this.items[index]);
-            },
-            canEditManager: function (id) {
-                let index = this.findItemIndex(id);
-                //Only CA can have manager
-                return this.items[index].Role === 'CA';
-            },
-            //Call API
-            createItem: async function () {
-                if (!this.canCreateItem) return;
-                try {
-                    let newUser = this.clone(this.newItem);
-                    //Transform manager to DTO
-                    if (newUser.Manager) {
-                        newUser.Manager = {
-                            UserId: newUser.Manager.value
-                        }
-                    }
-                    console.log(newUser);
-                    await axios.post(API.CreateUser, newUser);
-                    //Clear new item
-                    this.$emit('showsuccess', 'Tạo người dùng mới thành công!');
-                } catch (e) {
-                    throw e;
-                    this.$emit('showinfo', 'Có lỗi trong quá trình tạo mới.');
-                } finally {
-                    //Clear this anyways
-                    this.newItem = {};
-                }
-            },
-            updateItem: async function (id) {
-                if (!this.canUpdateItem(id)) return;
-                try {
-                    let index = this.findItemIndex(id);
-                    let clone = this.clone(this.items[index]);
-                    //Transform manager to DTO
-                    if (clone.Manager) {
-                        this.displayToDTO(clone.Manager);
-                    }
-                    console.log(clone);
-                    await axios.post(API.UpdateUser, clone);
-                    //Replace with clone on update success
-                    this.$set(this.items, index, clone);
-                    //Exit edit mode
-                    clone.editMode = false;
-                    this.$emit('showsuccess', 'Chỉnh sửa người dùng thành công!');
-                } catch (e) {
-                    throw e;
-                    this.$emit('showinfo', 'Có lỗi trong quá trình chỉnh sửa.');
-                }
-            },
-            //User check
-            checkUserValid: function(user) {
-                if (!user) return false;
-                if (!user.Username ||
-                    !user.Name ||
-                    !user.HR ||
-                    !user.Username) return false;
-                //CA must have manager
-                if (user.Role == 'CA') {
-                    if (!user.Manager) return false;
-                } else {
-                    //Non-CA must not have manager
-                    if (user.Manager) return false;
-                }
-                return true;
-            },
-            //Init & clear item
-            clearNewItem: function () {
-                this.newItem = {
-                    Username: null,
-                    Name: null,
-                    Role: null,
-                    Active: true,
-                    HR: null,
-                    Phone: null,
-                    Phone2: null,
-                    Manager: null
-                };
+                this.items = data.Items;
+                this.refreshCopy(); //Refresh clones
+                this.updatePagination(data.TotalPages, data.TotalRows);
+            } catch (e) {
+                this.$emit(
+                    "showerror",
+                    "Tải dữ liệu thất bại, vui lòng liên hệ IT."
+                );
             }
+        },
+        findItemIndex: function(id) {
+            let index = this.items.findIndex(x => x.UserId == id);
+            if (index == -1) throw "Cant find items of id: " + id;
+            return index;
+        },
+        //End overrides
+        //CRUD
+        //control states
+        canUpdateItem: function(id) {
+            let index = this.findItemIndex(id);
+            //Must be in Edit mode to save
+            if (!this.items[index].editMode) return false;
+            //Values check
+            return this.checkItem(this.items[index]);
+        },
+        canEditManager: function(id) {
+            let index = this.findItemIndex(id);
+            //Only CA can have manager
+            return this.items[index].Role === "CA";
+        },
+        //Call API
+        createItem: async function() {
+            if (!this.isNewItemValid) return;
+            try {
+                let newUser = this.clone(this.newItem);
+                // console.log(newUser);
+                await axios.post(API.CreateUser, newUser);
+                //Clear new item
+                this.$emit("showsuccess", "Tạo người dùng mới thành công!");
+            } catch (e) {
+                throw e;
+                this.$emit("showinfo", "Có lỗi trong quá trình tạo mới.");
+            } finally {
+                //Clear this anyways
+                this.clearNewItem();
+            }
+        },
+        updateItem: async function(id) {
+            if (!this.canUpdateItem(id)) return;
+            try {
+                let index = this.findItemIndex(id);
+                let clone = this.clone(this.items[index]);
+                // console.log(clone);
+                await axios.post(API.UpdateUser, clone);
+                //Replace with clone on update success
+                this.$set(this.items, index, clone);
+                //Exit edit mode
+                clone.editMode = false;
+                this.$emit("showsuccess", "Chỉnh sửa người dùng thành công!");
+            } catch (e) {
+                throw e;
+                this.$emit("showinfo", "Có lỗi trong quá trình chỉnh sửa.");
+            }
+        },
+        //New item check
+        checkItem: function(item) {
+            if (!item) return false;
+            if (!item.Username || !item.Name || !item.HR)
+                return false;
+            //CA must have manager
+            if (item.Role == "CA") {
+                if (!item.Manager) return false;
+            } else {
+                //Non-CA must not have manager
+                if (item.Manager) return false;
+            }
+            return true;
+        },
+        //Init & clear item
+        clearNewItem: function() {
+            this.newItem = {
+                Username: null,
+                Name: null,
+                Role: null,
+                Active: true,
+                HR: null,
+                Phone: null,
+                Phone2: null,
+                Manager: null
+            };
         }
     }
+};
 </script>
 <style scoped>
-    .td-text-center tr td{
-        text-align: center;
-    }
-    .td-item-middle tr td {
-        vertical-align: middle;
-    }
-    .th-no-top-border th {
-        border-top: none !important;
-    }
-    .th-text-center th{
-        text-align: center;
-    }
-    .width-14{
-        width: 14rem;
-    }
-    .width-10{
-        width: 10rem;
-    }
-    .width-8{
-        width: 8rem;
-    }
-    .width-6 {
-        width: 6rem;
-    }
-    .width-5{
-        width: 5rem;
-    }
-    .width-3{
-        width: 3rem;
-    }
-    .fixed-height{
-        height: 61px;
-    }
+.td-text-center tr td {
+    text-align: center;
+}
+.td-item-middle tr td {
+    vertical-align: middle;
+}
+.th-no-top-border th {
+    border-top: none !important;
+}
+.td-no-top-border td {
+    border-top: none !important;
+}
+.th-text-center th {
+    text-align: center;
+}
+.width-14 {
+    width: 14rem;
+}
+.width-10 {
+    width: 10rem;
+}
+.width-8 {
+    width: 8rem;
+}
+.width-6 {
+    width: 6rem;
+}
+.width-5 {
+    width: 5rem;
+}
+.width-3 {
+    width: 3rem;
+}
+.fixed-height {
+    height: 61px;
+}
+/* Workaround for overflow y of datatable */
+.lastrow-padding{
+    height: 150px;
+}
 </style>

@@ -12,6 +12,7 @@ namespace OnlineSalesTool.ViewModels
     /// </summary>
     public class PosListingVM : ListingViewModel<PosDTO>
     {
+        public IEnumerable<ShiftDTO> Shifts { get; set; }
         public PosListingVM(ListingParams param) : base(param)
         {
         }

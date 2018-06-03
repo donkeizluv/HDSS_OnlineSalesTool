@@ -10,6 +10,8 @@
             </div>
             <div v-else>
                 <div class="container-fluid">
+                    <div v-if="isCurrentRouteAllowed">
+                    </div>
                     <keep-alive>
                         <router-view class="top-margin"
                                      v-on:showsuccess="showSuccessToast"
@@ -36,6 +38,12 @@
             'login': LoginView
         },
         computed: {
+            isCurrentRouteAllowed: function(){
+                return this.allow(this.currentRoute);
+            },
+            currentRoute: function(){
+                return this.$route;
+            },
             isAuthenticated: function () {
                 return this.$store.getters.isAuthenticated;
             },
@@ -54,7 +62,8 @@
                 return Promise.reject(e);
                 });
             //Check auth expire/reload auth
-            await this.$store.dispatch(CHECK_AUTH);
+            if(!this.$store.getters.isAuthChecked)
+                await this.$store.dispatch(CHECK_AUTH);
         },
         data: function () {
             return {
@@ -62,6 +71,9 @@
             }
         },
         methods: {
+            allow: function(route) {
+                return this.$store.getters.can(route.name);
+            },
             showSuccessToast(mess) {
                 //This has shitty support for specific icon & multiple style class
                 this.$toasted.success(mess, {

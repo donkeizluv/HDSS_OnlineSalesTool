@@ -81,7 +81,7 @@ namespace OnlineSalesTool.Query
             switch (userRole)
             {
                 case RoleEnum.UNKNOWN:
-                    return CA_Query();
+                    throw new InvalidOperationException();
                 case RoleEnum.CA:
                     return CA_Query();
                 case RoleEnum.BDS:
@@ -141,7 +141,10 @@ namespace OnlineSalesTool.Query
         protected override async Task<IEnumerable<PosDTO>> ProjectToOutputAsync(IQueryable<Pos> q)
         {
             if (q == null) throw new ArgumentNullException();
-            var projection = q.Select(p => new PosDTO(p) { BDS = new AppUserDTO(p.User) });
+            var projection = q.Select(p => new PosDTO(p) { 
+                BDS = new AppUserDTO(p.User),
+                Shifts = p.PosShift.Select(ps => new ShiftDTO(ps.Shift))
+             });
             return (await projection.ToListAsyncSafe());
         }
     }

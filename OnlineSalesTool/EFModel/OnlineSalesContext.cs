@@ -20,15 +20,6 @@ namespace OnlineSalesTool.EFModel
         public virtual DbSet<UserAbility> UserAbility { get; set; }
         public virtual DbSet<UserRole> UserRole { get; set; }
 
-//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//        {
-//            if (!optionsBuilder.IsConfigured)
-//            {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-//                optionsBuilder.UseSqlServer(@"Server=(localdb)\local;Database=OnlineSales;Trusted_Connection=True;");
-//            }
-//        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Ability>(entity =>
@@ -267,9 +258,13 @@ namespace OnlineSalesTool.EFModel
                     .HasName("U_ShiftName_Shift")
                     .IsUnique();
 
+                entity.Property(e => e.ExtName)
+                    .IsRequired()
+                    .HasMaxLength(30);
+
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(50);
+                    .HasMaxLength(10);
             });
 
             modelBuilder.Entity<ShiftDetail>(entity =>

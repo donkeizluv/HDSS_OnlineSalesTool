@@ -37,6 +37,8 @@ namespace OnlineSalesTool.Service
             var q = _query.CreateBaseQuery(Role.ToString());
             (var items, int total) = await _query.ApplyParameters(q, param);
             vm.SetItems(items, param.ItemPerPage, total);
+            //Availabe shifts
+            vm.Shifts = await DbContext.Shift.Select(s => new ShiftDTO(s)).ToListAsync();
             return vm;
         }
         

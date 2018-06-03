@@ -22,5 +22,7 @@ export const Permission = {
     //User manager
     UserManager: 'UserManager',
     CreateUser: 'CreateUser',
-    UpdateUser: 'UpdateUser'
+    UpdateUser: 'UpdateUser',
+    //Info
+    SystemInfo: 'SystemInfo'
 }

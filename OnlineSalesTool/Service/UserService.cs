@@ -19,7 +19,7 @@ namespace OnlineSalesTool.Service
 {
     public class UserService : ServiceBase, IUserService
     {
-        private const int SUGGEST_TAKE = 10;
+        private const int SUGGEST_TAKE = 5;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly ListQuery<AppUser, AppUserDTO> _query;
         private readonly GeneralOptions _options;
@@ -121,15 +121,12 @@ namespace OnlineSalesTool.Service
             return vm;
         }
 
-        public async Task<IEnumerable<SelectOptionDTO>> SearchSuggest(RoleEnum role, string q)
+        public async Task<IEnumerable<AppUserDTO>> SearchSuggest(RoleEnum role, string q)
         {
             return await DbContext.AppUser
                 .Where(u => (u.Username.Contains(q) || u.Hr.Contains(q)) && u.Role.Name == role.ToString())
                 .Take(SUGGEST_TAKE)
-                .Select(u => new SelectOptionDTO() {
-                    label = $"{u.Username} - {u.Hr}",
-                    value = u.UserId
-                }).ToListAsync();
+                .Select(u => new AppUserDTO(u) ).ToListAsync();
         }
         public async Task Update(AppUserDTO user)
         {

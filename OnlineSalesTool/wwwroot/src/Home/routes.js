@@ -1,48 +1,54 @@
-﻿import store from './store'
+﻿import store from "./store";
+import { CHECK_AUTH, LOGOUT } from './actions'
 //import AssignerView from './Component/AssignerView.vue'
-import CaseView from './Component/CaseView.vue'
+import CaseView from "./Component/CaseView.vue";
 //import AdminView from './Component/AdminView.vue'
-import adminRoutes from './Component/adminRoutes'
+import adminRoutes from "./Component/adminRoutes";
 //import TestView from './Component/TestView.vue'
-import { Permission } from './AppConst'
-import permissionDict from './permissionDict';
+import { Permission } from "./AppConst";
+import permissionDict from "./permissionDict";
 
-function checkPermission(to, from, next) {
+async function checkPermission(to, from, next) {
+    if(!store.getters.isAuthChecked)
+        await store.dispatch(CHECK_AUTH);
     next(store.getters.can(to.name));
 }
 
 const routes = [
     //Default
     {
-        path: '/',
-        redirect: '/Home'
+        path: "/",
+        redirect: "/Home"
     },
     {
-        path: '/Home',
+        path: "/Home",
         name: Permission.CaseListing,
         component: CaseView,
-        display: 'Trang chính',
+        display: "Trang chính",
         navbar: true, //Renders on nav bar if true
-        // beforeEnter: checkPermission
+        beforeEnter: checkPermission
     },
     {
-        path: '/Assign',
+        path: "/Assign",
         name: Permission.ScheduleAssigner,
-        component: () => import(/* webpackChunkName: "assignerview" */'./Component/AssignerView.vue'),
-        display: 'Lịch trực',
+        component: () =>
+            import(/* webpackChunkName: "assignerview" */ "./Component/AssignerView.vue"),
+        display: "Lịch trực",
         navbar: true,
         beforeEnter: checkPermission
     },
     {
-        path: '/Manage',
+        path: "/Manage",
         name: Permission.Management,
-        component: () => import(/* webpackChunkName: "adminview" */'./Component/AdminView.vue'),
-        display: 'Quản lý',
+        component: () =>
+            import(/* webpackChunkName: "adminview" */ "./Component/AdminView.vue"),
+        display: "Quản lý",
         navbar: true,
         beforeEnter: checkPermission,
-        children: [
-           ...adminRoutes
-        ]
+        children: [...adminRoutes],
+        redirect: {
+            name: Permission.SystemInfo //Default
+        }
     }
     //{
     //    path: '/Test',
@@ -51,5 +57,5 @@ const routes = [
     //    display: 'Test',
     //    navbar: true
     //}]
-    ]
+];
 module.exports = routes;

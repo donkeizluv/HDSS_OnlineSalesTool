@@ -10,7 +10,7 @@
                 <li v-for="route in routes" v-bind:key="route.name">
                     <template v-if="route.navbar">
                         <router-link active-class="active font-italic"
-                                 v-if="canShow(route)"
+                                 v-if="allow(route)"
                                  class="nav-link"
                                  v-bind:to="{ name: route.name }">{{route.display}}</router-link>
                         <span v-else class="text-secondary nav-link">{{route.display}}</span>
@@ -35,54 +35,52 @@
                     <router-link class="nav-link" to="Login">Login</router-link>
                 </li>
             </ul>-->
-
         </div>
     </nav>
 </template>
 <script>
-    import routes from '../routes'
-    import { LOGOUT } from '../actions'
-    
+import routes from "../routes";
+import { LOGOUT } from "../actions";
 
-    export default {
-        name: 'NavBar',
-        template: '#nav-bar',
-        props: {
-            appName: {
-                type: String,
-                default: 'VueJS SPA'
-            },
-            env: {
-                type: String,
-                default: 'DEV'
-            }
+export default {
+    name: "NavBar",
+    template: "#nav-bar",
+    props: {
+        appName: {
+            type: String,
+            default: "VueJS SPA"
         },
-        computed: {
-            isAuthenticated: function(){
-                return this.$store.getters.isAuthenticated;
-            },
-            identity: function () {
-                return this.$store.getters.identity;
-            },
-            currentRouteName: function () {
-                return this.$route.name;
-            }
+        env: {
+            type: String,
+            default: "DEV"
+        }
+    },
+    computed: {
+        isAuthenticated: function() {
+            return this.$store.getters.isAuthenticated;
         },
-        data: function () {
-            return {
-                routes
-            }
+        identity: function() {
+            return this.$store.getters.identity;
         },
-        methods: {
-            canShow: function (route) {
-                return this.$store.getters.can(route.name);
-            },
-            logout: function () {
-                this.$store.dispatch(LOGOUT);
-            },
-            isActiveRoute: function (name) {
-                return this.currentRouteName === name;
-            }
+        currentRouteName: function() {
+            return this.$route.name;
+        }
+    },
+    data: function() {
+        return {
+            routes
+        };
+    },
+    methods: {
+        allow: function(route) {
+            return this.$store.getters.can(route.name);
+        },
+        logout: function() {
+            this.$store.dispatch(LOGOUT);
+        },
+        isActiveRoute: function(name) {
+            return this.currentRouteName === name;
         }
     }
+};
 </script>
