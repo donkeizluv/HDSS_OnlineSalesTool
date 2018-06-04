@@ -17,6 +17,7 @@
     "vee-validate": "^2.0.9",
     "vue": "^2.5.16",
     "vue-js-modal": "^1.3.15",
+    "vue-popperjs": "^1.3.4",
     "vue-router": "^3.0.1",
     "vue-select": "^2.4.0",
     "vue-toasted": "^1.1.24",

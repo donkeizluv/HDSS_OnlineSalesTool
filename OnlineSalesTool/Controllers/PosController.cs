@@ -42,12 +42,12 @@ namespace OnlineSalesTool.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Create([FromBody] PosDTO user)
+        public async Task<IActionResult> Create([FromBody] PosDTO pos)
         {
             if (!ModelState.IsValid) return BadRequest();
             try
             {
-                return Ok(await _service.Create(user));
+                return Ok(await _service.Create(pos));
             }
             catch (BussinessException ex)
             {
@@ -58,12 +58,12 @@ namespace OnlineSalesTool.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Update([FromBody] PosDTO user)
+        public async Task<IActionResult> Update([FromBody] PosDTO pos)
         {
             if (!ModelState.IsValid) return BadRequest();
             try
             {
-                await _service.Update(user);
+                await _service.Update(pos);
                 return Ok();
             }
             catch (BussinessException ex)
@@ -71,6 +71,13 @@ namespace OnlineSalesTool.Controllers
                 Utility.LogException(ex, _logger);
                 return BadRequest(ex.Message);
             }
+        }
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Check([FromQuery] string q)
+        {
+            if(string.IsNullOrEmpty(q)) return BadRequest();
+            return Ok(await _service.CheckCode(q.ToUpper()));
         }
     }
 }

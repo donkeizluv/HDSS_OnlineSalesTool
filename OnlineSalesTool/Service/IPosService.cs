@@ -11,5 +11,6 @@ namespace OnlineSalesTool.Service
         Task<PosListingVM> Get(ListingParams param);
         Task<int> Create(PosDTO pos);
         Task Update(PosDTO pos);
+        Task<int> CheckCode(string posCode);
     }
 }

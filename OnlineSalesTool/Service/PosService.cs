@@ -38,7 +38,9 @@ namespace OnlineSalesTool.Service
             (var items, int total) = await _query.ApplyParameters(q, param);
             vm.SetItems(items, param.ItemPerPage, total);
             //Availabe shifts
-            vm.Shifts = await DbContext.Shift.Select(s => new ShiftDTO(s)).ToListAsync();
+            vm.Shifts = await DbContext.Shift
+                .OrderBy(s => s.DisplayOrder)
+                .Select(s => new ShiftDTO(s)).ToListAsync();
             return vm;
         }
         
@@ -49,7 +51,7 @@ namespace OnlineSalesTool.Service
             await CheckUser(pos.BDS?.UserId, RoleEnum.BDS, true);
             var newPos = new Pos()
             {
-                PosCode = pos.PosCode,
+                PosCode = pos.PosCode.ToUpper(),
                 PosName = pos.PosName,
                 Address = pos.Address,
                 UserId = pos.BDS.UserId,
@@ -61,22 +63,25 @@ namespace OnlineSalesTool.Service
             return newPos.PosId;
         }
 
-        public async Task Update(PosDTO pos)
+        public async Task Update(PosDTO posDto)
         {
-            BasicCheck(pos ?? throw new ArgumentNullException());
-            var updatePos = await DbContext.Pos.SingleOrDefaultAsync(p => p.PosId == pos.PosId);
-            if (updatePos == null) throw new BussinessException($"Cant find POS: {pos.PosId}");
-            //Check Manager
-            await CheckUser(pos.BDS?.UserId, RoleEnum.BDS, true);
-
-            updatePos.PosCode = pos.PosCode;
-            updatePos.PosName = pos.PosName;
-            updatePos.Address = pos.Address;
-            updatePos.UserId = pos.BDS.UserId;
-            updatePos.Phone = pos.Phone;
+            BasicCheck(posDto ?? throw new ArgumentNullException());
+            var updatePos = await DbContext.Pos
+                .Where(p => p.PosId == posDto.PosId)
+                .Include(p => p.PosShift)
+                .SingleOrDefaultAsync();
+            if (updatePos == null) throw new BussinessException($"Cant find POS: {posDto.PosId}");
+            //If changes BDS then check BDS
+            if(posDto.BDS.UserId != updatePos.UserId)
+                await CheckUser(posDto.BDS?.UserId, RoleEnum.BDS, true);
+            updatePos.PosCode = posDto.PosCode;
+            updatePos.PosName = posDto.PosName;
+            updatePos.Address = posDto.Address;
+            updatePos.UserId = posDto.BDS.UserId;
+            updatePos.Phone = posDto.Phone;
             //Replace with updated shifts
             updatePos.PosShift.Clear();
-            pos.Shifts.ForEach(s => updatePos.PosShift.Add(new PosShift() { ShiftId = s.ShiftId }));
+            posDto.Shifts.ForEach(s => updatePos.PosShift.Add(new PosShift() { ShiftId = s.ShiftId }));
             await DbContext.SaveChangesAsync();
         }
 
@@ -90,6 +95,12 @@ namespace OnlineSalesTool.Service
             if (string.IsNullOrEmpty(pos.Address)) throw new BussinessException($"Missing value: {nameof(Pos.Address)}");
             if (string.IsNullOrEmpty(pos.Phone)) throw new BussinessException($"Missing value: {nameof(Pos.Phone)}");
             if (pos.BDS == null) throw new BussinessException("Pos must have BDS");
+        }
+        public async Task<int> CheckCode(string posCode)
+        {
+            var pos = await DbContext.Pos.FirstOrDefaultAsync(p => p.PosCode == posCode);
+            if(pos == null) return -1;
+            return pos.PosId;
         }
     }
 }

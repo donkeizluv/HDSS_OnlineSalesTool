@@ -72,7 +72,7 @@ namespace OnlineSalesTool.Service
             return new AppUser()
             {
                 Name = user.Name,
-                Username = user.Username,
+                Username = user.Username.ToLower(),
                 Active = true,
                 Email = $"{user.Username}{_options.EmailSuffix}",
                 Hr = user.HR,
@@ -101,7 +101,7 @@ namespace OnlineSalesTool.Service
                     throw new BussinessException($"Only CA can have manager(BDS)");
             }
             appUser.Name = user.Name;
-            appUser.Username = user.Username;
+            appUser.Username = user.Username.ToLower();
             appUser.Hr = user.HR;
             appUser.Active = user.Active;
             appUser.ManagerId = user.Manager?.UserId;
@@ -115,7 +115,7 @@ namespace OnlineSalesTool.Service
         public async Task<UserListingVM> Get(ListingParams param)
         {
             var vm = new UserListingVM(param ?? throw new ArgumentNullException());
-            var q = _query.CreateBaseQuery();
+            var q = _query.CreateBaseQuery(Role.ToString());
             (var items, int total) = await _query.ApplyParameters(q, param);
             vm.SetItems(items, param.ItemPerPage, total);
             return vm;
@@ -124,7 +124,9 @@ namespace OnlineSalesTool.Service
         public async Task<IEnumerable<AppUserDTO>> SearchSuggest(RoleEnum role, string q)
         {
             return await DbContext.AppUser
-                .Where(u => (u.Username.Contains(q) || u.Hr.Contains(q)) && u.Role.Name == role.ToString())
+                .Where(u => (u.Username.Contains(q) || u.Hr.Contains(q)) 
+                    && u.Role.Name == role.ToString() 
+                    && u.Active)
                 .Take(SUGGEST_TAKE)
                 .Select(u => new AppUserDTO(u) ).ToListAsync();
         }
@@ -132,6 +134,13 @@ namespace OnlineSalesTool.Service
         {
             var appUser = await ApplyUpdate(user ?? throw new ArgumentNullException());
             await DbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> CheckUsername(string userName)
+        {
+            var user = await DbContext.AppUser.FirstOrDefaultAsync(p => p.Username == userName);
+            if(user == null) return -1;
+            return user.UserId;
         }
     }
 }

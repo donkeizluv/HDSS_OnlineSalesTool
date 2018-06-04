@@ -13,9 +13,15 @@ export default [
          ]
     },
     {
+        role: 'CA',
+        can: []
+    },
+    {
         role: 'BDS',
         can: [
-            Permission.CreateSchedule
+            Permission.CreateSchedule,
+            Permission.PosManager,
+            Permission.UserManager
         ]
     },
     {

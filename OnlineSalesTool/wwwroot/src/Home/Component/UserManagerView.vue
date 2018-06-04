@@ -59,9 +59,13 @@
                                     <!--Username-->
                                     <td class="text-center" v-if="isEditMode(item.UserId)">
                                         <input type="text"
-                                               class="form-control form-control-sm width-8 mx-auto"
-                                               v-model="item.Username"
-                                               v-bind:maxlength="maxFieldLength.username" />
+                                                class="form-control form-control-sm width-8 mx-auto"
+                                                v-bind:class="[{'border border-danger': !item.usernameChecked},
+                                                    {'border border-success': item.usernameChecked}]"
+                                                v-bind:value="item.Username.toLowerCase()"
+                                                v-on:input="item.Username = $event.target.value.toLowerCase().trim()"
+                                                v-on:keyup="checkUsername(item.UserId)"
+                                                v-bind:maxlength="maxFieldLength.username" />
                                     </td>
                                     <td class="text-center" v-else>
                                         <div class="width-8 mx-auto">{{item.Username}}</div>
@@ -70,7 +74,9 @@
                                     <td class="text-center" v-if="isEditMode(item.UserId)">
                                         <input type="text"
                                                class="form-control form-control-sm width-10 mx-auto"
-                                               v-model="item.Name"
+                                                v-bind:class="[{'border border-danger': !item.Name},
+                                                    {'border border-success': item.Name}]"
+                                               v-model.trim="item.Name"
                                                v-bind:maxlength="maxFieldLength.name" />
                                     </td>
                                     <td class="text-center" v-else>
@@ -95,7 +101,9 @@
                                     <td class="text-center" v-if="isEditMode(item.UserId)">
                                         <input type="text"
                                                class="form-control form-control-sm width-5"
-                                               v-model="item.HR"
+                                                v-bind:class="[{'border border-danger': !item.HR},
+                                                    {'border border-success': item.HR}]"
+                                               v-model.trim="item.HR"
                                                v-bind:maxlength="maxFieldLength.hr" />
                                     </td>
                                     <td class="text-center" v-else>
@@ -107,7 +115,7 @@
                                     <td class="text-center" v-if="isEditMode(item.UserId)">
                                         <input type="text"
                                                class="form-control form-control-sm width-8 mx-auto"
-                                               v-model="item.Phone"
+                                               v-model.trim="item.Phone"
                                                v-bind:maxlength="maxFieldLength.phone" />
                                     </td>
                                     <td class="text-center" v-else>
@@ -117,20 +125,23 @@
                                     <td class="text-center" v-if="isEditMode(item.UserId)">
                                         <input type="text"
                                                class="form-control form-control-sm width-8 mx-auto"
-                                               v-model="item.Phone2"
+                                               v-model.trim="item.Phone2"
                                                v-bind:maxlength="maxFieldLength.phone" />
                                     </td>
                                     <td class="text-center" v-else>
                                         <div class="width-8 mx-auto">{{item.Phone2}}</div>
                                     </td>
                                     <!--Manager-->
-                                    <td v-if="isEditMode(item.UserId)">
-                                        <div class="width-14 mx-auto">
-                                            <d-select v-bind:disabled="!canEditManager(item.UserId)"
-                                                      v-model="item.Manager"
-                                                      label="DisplayName"
-                                                      v-bind:api="searchSuggestAPI"></d-select>
-                                        </div>
+                                    <td v-if="isEditMode(item.UserId)" class="width-14">
+                                        <span class="d-inline-flex">
+                                            <d-select class="width-14"
+                                                    v-bind:disabled="!canEditManager(item.UserId)"
+                                                    v-model="item.Manager"
+                                                    label="DisplayName"
+                                                    v-bind:api="searchSuggestAPI"></d-select>
+                                            <light v-show="canEditManager(item.UserId)" 
+                                            v-bind:state="item.Manager? true : false"/>
+                                        </span>
                                     </td>
                                     <td class="text-center" v-else>
                                         <div class="width-14 mx-auto">{{item.Manager? item.Manager.DisplayName : 'N/A'}}</div>
@@ -178,7 +189,11 @@
                                     <div>
                                         <input type="text"
                                             class="form-control form-control-sm width-8 mx-auto"
-                                            v-model="newItem.Username"
+                                            v-bind:class="[{'border border-danger': !newItem.usernameChecked},
+                                                {'border border-success': newItem.usernameChecked}]"
+                                            v-bind:value="newItem.Username.toLowerCase()"
+                                            v-on:input="newItem.Username = $event.target.value.toLowerCase().trim()"
+                                            v-on:keyup="checkUsername(-1)"
                                             v-bind:maxlength="maxFieldLength.username" />
                                     </div>
                                 </td>
@@ -187,16 +202,20 @@
                                     <div>
                                         <input type="text"
                                             class="form-control form-control-sm width-10 mx-auto"
-                                            v-model="newItem.Name"
+                                            v-bind:class="[{'border border-danger': !newItem.Name},
+                                                {'border border-success': newItem.Name}]"
+                                            v-model.trim="newItem.Name"
                                             v-bind:maxlength="maxFieldLength.name" />
                                     </div>
                                 </td>
                                 <!--Role-->
-                                <td>
-                                    <div class="width-6 mx-auto">
-                                        <v-select v-model="newItem.Role"
-                                                v-bind:options="roles"></v-select>
-                                    </div>
+                                <td class="width-6">
+                                    <span class="d-inline-flex">
+                                        <v-select class="width-6"
+                                            v-model="newItem.Role"
+                                            v-bind:options="roles"></v-select>
+                                        <light v-bind:state="newItem.Role ? true : false"/>
+                                    </span>
                                 </td>
                                 <!--Active-->
                                 <td class="text-center">
@@ -210,7 +229,9 @@
                                     <div>
                                         <input type="text"
                                             class="form-control form-control-sm width-5 mx-auto"
-                                            v-model="newItem.HR"
+                                            v-bind:class="[{'border border-danger': !newItem.HR},
+                                                {'border border-success': newItem.HR}]"
+                                            v-model.trim="newItem.HR"
                                             v-bind:maxlength="maxFieldLength.hr" />
                                     </div>
                                 </td>
@@ -219,7 +240,7 @@
                                     <div>
                                         <input type="text"
                                             class="form-control form-control-sm width-5 mx-auto"
-                                            v-model="newItem.Phone"
+                                            v-model.trim="newItem.Phone"
                                             v-bind:maxlength="maxFieldLength.phone" />
                                     </div>
                                 </td>
@@ -228,17 +249,21 @@
                                     <div>
                                         <input type="text"
                                             class="form-control form-control-sm width-5 mx-auto"
-                                            v-model="newItem.Phone2"
+                                            v-model.trim="newItem.Phone2"
                                             v-bind:maxlength="maxFieldLength.phone" />
                                     </div>
                                 </td>
                                 <!--Manager-->
-                                <td>
-                                    <div class="width-14 mx-auto">
-                                        <d-select v-model="newItem.Manager"
+                                <td class="width-14">
+                                    <span class="d-inline-flex">
+                                        <d-select class="width-14"
+                                                v-bind:disabled="newItem.Role != 'CA'"
+                                                v-model="newItem.Manager"
                                                 label="DisplayName"
                                                 v-bind:api="searchSuggestAPI"></d-select>
-                                    </div>
+                                        <light v-show="newItem.Role == 'CA'" 
+                                        v-bind:state="newItem.Manager? true : false"/>
+                                    </span>
                                 </td>
                                 <!--New item actions-->
                                 <td class="text-center">
@@ -273,7 +298,7 @@
                                         :prev-link-class="'page-link'"
                                         :next-class="'page-item'"
                                         :next-link-class="'page-link'"
-                                        :container-class="'pagination pagination-sm no-bottom-margin justify-content-center'">
+                                        :container-class="'pagination no-bottom-margin justify-content-center'">
                                     </page-nav>
                                 </td>
                             </tr>
@@ -289,12 +314,15 @@ import API from "../API";
 //Permission
 import { Permission } from "../AppConst";
 //Components
+import light from "./ValidLight.vue";
 import SearchBar from "./SearchBar.vue";
 import vSelect from "vue-select";
 import DynamicSelect from "./DynamicSelect.vue";
 import pagenav from "vuejs-paginate";
 import axios from "axios";
 import listingMix from "./Shared/listingViewMixins";
+import debounce from 'lodash.debounce'
+
 export default {
     name: "userManagerView",
     template: "usermanager",
@@ -303,7 +331,8 @@ export default {
         "search-bar": SearchBar,
         "page-nav": pagenav,
         "d-select": DynamicSelect,
-        "v-select": vSelect
+        "v-select": vSelect,
+        "light": light
     },
     mounted: function() {
         this.init();
@@ -331,10 +360,17 @@ export default {
     data: function() {
         return {
             orderBy: "Username",
-
             //New item
-            newItem: {},
-
+            newItem: {
+                Username: '',
+                Name: null,
+                Role: null,
+                Active: true,
+                HR: null,
+                Phone: null,
+                Phone2: null,
+                Manager: null
+            },
             //Validate model field's length
             maxFieldLength: {
                 name: 50,
@@ -366,6 +402,10 @@ export default {
                 let { data } = await axios.get(API.UserVM, {
                     params
                 });
+                //Attach props
+                data.Items.forEach(element => {
+                    element.usernameChecked = true;
+                });
                 this.items = data.Items;
                 this.refreshCopy(); //Refresh clones
                 this.updatePagination(data.TotalPages, data.TotalRows);
@@ -385,6 +425,7 @@ export default {
         //CRUD
         //control states
         canUpdateItem: function(id) {
+            if(!this.canUpdate) return;
             let index = this.findItemIndex(id);
             //Must be in Edit mode to save
             if (!this.items[index].editMode) return false;
@@ -398,13 +439,16 @@ export default {
         },
         //Call API
         createItem: async function() {
-            if (!this.isNewItemValid) return;
+            if (!this.isNewItemValid || !this.canCreate) return;
             try {
-                let newUser = this.clone(this.newItem);
+                let newItem = this.clone(this.newItem);
                 // console.log(newUser);
-                await axios.post(API.CreateUser, newUser);
-                //Clear new item
+                var { data } = await axios.post(API.CreateUser, newItem);
+                //Set newly created id to item
+                newItem.UserId = data;
                 this.$emit("showsuccess", "Tạo người dùng mới thành công!");
+                //Push new item to items list
+                this.items.push(newUser);
             } catch (e) {
                 throw e;
                 this.$emit("showinfo", "Có lỗi trong quá trình tạo mới.");
@@ -414,7 +458,7 @@ export default {
             }
         },
         updateItem: async function(id) {
-            if (!this.canUpdateItem(id)) return;
+            if (!this.canUpdateItem(id) || !this.canUpdate) return;
             try {
                 let index = this.findItemIndex(id);
                 let clone = this.clone(this.items[index]);
@@ -444,10 +488,34 @@ export default {
             }
             return true;
         },
+        checkUsername: function(id){
+            this.checkUsernameDebounce(id, this);
+        },
+        checkUsernameDebounce: debounce(async (id, vm) => {
+            let index = -1;
+            let item = null;
+            //New item
+            if(id == -1){ 
+                item = vm.newItem;
+            }else{
+                index = vm.findItemIndex(id);
+                item = vm.items[index];
+            }
+            let userName = item.Username || '';
+            if(!userName){
+                vm.$set(item, 'usernameChecked', false);
+                // item.codeChecked  = false;
+            }else{
+                let { data } = await axios.get(API.CheckUsername.replace('{name}', userName));
+                //-1 means not exist
+                vm.$set(item, 'usernameChecked', data == -1);
+                // item.codeChecked = data == -1;
+            }
+        }, 300),
         //Init & clear item
         clearNewItem: function() {
             this.newItem = {
-                Username: null,
+                Username: '',
                 Name: null,
                 Role: null,
                 Active: true,

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OnlineSalesTool.AppEnum;
 
 namespace OnlineSalesTool.Query
 {
@@ -81,14 +82,51 @@ namespace OnlineSalesTool.Query
 
         public override IQueryable<AppUser> CreateBaseQuery()
         {
-            return Repo.DbContext.AppUser;
+            // return Service.DbContext.AppUser;
+            throw new NotImplementedException();
         }
 
         public override IQueryable<AppUser> CreateBaseQuery(string role)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(role)) throw new ArgumentNullException();
+            if (!Enum.TryParse<RoleEnum>(role, true, out var userRole))
+            {
+                userRole = RoleEnum.UNKNOWN;
+            }
+            switch (userRole)
+            {
+                case RoleEnum.UNKNOWN:
+                    throw new InvalidOperationException();
+                case RoleEnum.CA:
+                    throw new InvalidOperationException();
+                case RoleEnum.BDS:
+                    return BDS_Query();
+                case RoleEnum.ASM:
+                    throw new NotImplementedException();
+                case RoleEnum.ADMIN:
+                    return ADMIN_Query();
+                default:
+                    throw new InvalidOperationException();
+            }
         }
-       
+        /// <summary>
+        /// Returns all users under this user management
+        /// </summary>
+        /// <returns></returns>
+        private IQueryable<AppUser> BDS_Query()
+        {
+            return Service.DbContext.AppUser
+                .Where(u => u.ManagerId == Service.UserId)
+                .Include(u => u.Manager);
+        }
+        /// <summary>
+        /// Returns all users
+        /// </summary>
+        /// <returns></returns>
+        private IQueryable<AppUser> ADMIN_Query()
+        {
+            return Service.DbContext.AppUser;
+        }
         protected override async Task<IEnumerable<AppUserDTO>> ProjectToOutputAsync(IQueryable<AppUser> q)
         {
             if (q == null) throw new ArgumentNullException();

@@ -66,9 +66,12 @@
             <div class="col">
                 <!--Title-->
                 <h4 v-show="isModeTextVisible" class="text-center mb-md-3 mt-md-3">
-                    {{modeText.name}}
+                    {{modeText.mode}}
                     <span class="badge badge-success">
-                        {{modeText.pos}}
+                        {{modeText.pos.PosName}}
+                    </span>
+                    <span class="badge badge-primary">
+                        {{modeText.pos.PosCode}}
                     </span>
                     <span class="badge badge-danger">
                         {{modeText.monthYear}}
@@ -102,6 +105,7 @@
     import API_Const from '../API'
     //Const
     import { Permission } from '../AppConst'
+    
 
     export default {
         name: 'AssignerView',
@@ -115,19 +119,6 @@
             //Init & load vm
             this.init();
         },
-        //watch: {
-        //    selectedPrevSchedule: function (value) {
-        //        this.selectedPrevSchedule = value;
-        //        if (value == null) {
-        //            this.clearSchedule();
-        //            return;
-        //        }
-        //        console.log(value);
-        //        if (!this.currentPrevSchedules.some(s => s.PosScheduleId == value))
-        //            throw `Cant find pos schedule id ${value} of current POS: ${this.selectedPos}`;
-        //        this.reloadPrevSchedule();
-        //    }
-        //},
         data: function () {
             return {
                 //Maybe store VM in vuex?
@@ -155,8 +146,8 @@
 
                 //Creating, viewing...
                 modeText: {
-                    name: '',
-                    pos: '',
+                    mode: '',
+                    pos: {},
                     monthYear: null
                 },
                 isModeTextVisible: false
@@ -168,10 +159,10 @@
             canCreate: function () {
                 //Must have shifts to create schedule
                 if (this.currentShifts.length < 1) return false;
-                return this.$store.getters.can(Permission.CreateShiftSchedule);
+                return this.$store.getters.can(Permission.CreateSchedule);
             },
             canEdit: function () {
-                return this.$store.getters.can(Permission.EditShiftSchedule);
+                return this.$store.getters.can(Permission.EditSchedule);
             },
 
             isLoading: function () {
@@ -316,7 +307,7 @@
                     //Happens if selected pos changed without updating currentPOS
                     this.currentDays = emptyDays;
                 }
-                this.showModeText('Tạo ca trực mới: ', this.currentPOS.PosCode, format(this.systemMonthYear, 'MM-YYYY'))
+                this.showModeText('Tạo ca trực mới: ', this.currentPOS, format(this.systemMonthYear, 'MM-YYYY'))
             },
             saveSchedule: async function () {
                 if (!this.canSaveSchedule) return;
@@ -437,7 +428,7 @@
                 //console.log(days);
                 //Display
                 this.currentDays = emptyDays;
-                this.showModeText('Xem ca trực: ', this.currentPOS.PosCode, scheduleContainer.DisplayMonthYear)
+                this.showModeText('Xem ca trực: ', this.currentPOS, scheduleContainer.DisplayMonthYear)
                 //this.ModeName = `Xem ca trực: ${this.currentPOS.PosCode} ${scheduleContainer.DisplayMonthYear}`;
             },
             loadScheduleDetails: async function (id) {
@@ -450,15 +441,15 @@
                     this.$emit('showinfo', 'Tải chi tiết lịch làm việc thất bại.');
                 }
             },
-            showModeText: function (name, pos, monthYear) {
-                this.modeText.name = name;
+            showModeText: function (mode, pos, monthYear) {
+                this.modeText.mode = mode;
                 this.modeText.pos = pos;
                 this.modeText.monthYear = monthYear;
                 this.isModeTextVisible = true;
             },
             hideModeText: function () {
-                this.modeText.name = '';
-                this.modeText.pos = '';
+                this.modeText.mode = '';
+                this.modeText.pos = {};
                 this.modeText.monthYear = '';
                 this.isModeTextVisible = false;
             },

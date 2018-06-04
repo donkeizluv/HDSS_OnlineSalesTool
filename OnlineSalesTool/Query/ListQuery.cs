@@ -15,10 +15,10 @@ namespace OnlineSalesTool.Query
     /// <typeparam name="TOutput"></typeparam>
     public abstract class ListQuery<TSource, TOutput>
     {
-        protected readonly IService Repo;
+        protected readonly IService Service;
         protected ListQuery(IService repo)
         {
-            Repo = repo ?? throw new ArgumentNullException();
+            Service = repo ?? throw new ArgumentNullException();
         }
         protected abstract IQueryable<TSource> Filter(IQueryable<TSource> q, ListingParams param);
         protected abstract IOrderedQueryable<TSource> ApplyOrder(IQueryable<TSource> q, ListingParams param);

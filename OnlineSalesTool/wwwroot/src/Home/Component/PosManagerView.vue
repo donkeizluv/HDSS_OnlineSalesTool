@@ -50,7 +50,9 @@
                                 <td class="text-center" v-if="isEditMode(item.PosId)">
                                     <input type="text"
                                            class="form-control form-control-sm width-8 mx-auto"
-                                           v-model="item.PosName"
+                                            v-bind:class="[{'border border-danger': !item.PosName},
+                                                {'border border-success': item.PosName}]"
+                                           v-model.trim="item.PosName"
                                            v-bind:maxlength="maxFieldLength.posName" />
                                 </td>
                                 <td class="text-center" v-else>
@@ -59,9 +61,13 @@
                                 <!--PosCode-->
                                 <td class="text-center" v-if="isEditMode(item.PosId)">
                                     <input type="text"
-                                           class="form-control form-control-sm width-8 mx-auto"
-                                           v-model="item.PosCode"
-                                           v-bind:maxlength="maxFieldLength.posCode" />
+                                            class="form-control form-control-sm width-8 mx-auto"
+                                                v-bind:class="[{'border border-danger': !item.codeChecked},
+                                                {'border border-success': item.codeChecked}]"
+                                            v-bind:value="item.PosCode.toUpperCase()" 
+                                            v-on:input="item.PosCode = $event.target.value.toUpperCase().trim()"
+                                            v-on:keyup="checkCode(item.PosId)"
+                                            v-bind:maxlength="maxFieldLength.posCode" />
                                 </td>
                                 <td class="text-center" v-else>
                                     <div class="width-8 mx-auto">{{item.PosCode}}</div>
@@ -70,7 +76,9 @@
                                 <td class="text-center" v-if="isEditMode(item.PosId)">
                                     <input type="text"
                                            class="form-control form-control-sm width-8 mx-auto"
-                                           v-model="item.Address"
+                                            v-bind:class="[{'border border-danger': !item.Address},
+                                                {'border border-success': item.Address}]"
+                                           v-model.trim="item.Address"
                                            v-bind:maxlength="maxFieldLength.address" />
                                 </td>
                                 <td class="text-center text-truncate" v-else>
@@ -79,41 +87,55 @@
                                 <!--Phone-->
                                 <td class="text-center" v-if="isEditMode(item.PosId)">
                                     <input type="text"
-                                           class="form-control form-control-sm width-8 mx-auto"
-                                           v-model="item.Phone"
-                                           v-bind:maxlength="maxFieldLength.phone" />
+                                            class="form-control form-control-sm width-8 mx-auto"
+                                            v-bind:class="[{'border border-danger': !item.Phone},
+                                                {'border border-success': item.Phone}]"
+                                            v-model.trim="item.Phone"
+                                            v-bind:maxlength="maxFieldLength.phone" />
                                 </td>
                                 <td class="text-center" v-else>
                                     <div class="width-8 mx-auto">{{item.Phone}}</div>
                                 </td>
                                 <!-- Shifts -->
                                 <td v-if="isEditMode(item.PosId)" class="width-16">
-                                   <div>
+                                    <span class="d-inline-flex">
                                         <v-select
-                                            multiple :options="shifts"
+                                            class="width-16"
+                                            v-bind:filterable=false
+                                            v-bind:searchable=false
+                                            multiple
+                                            v-bind:options="shifts"
                                             v-model="item.Shifts"
                                             label="Name">
                                             <template slot="option" slot-scope="option">
                                                 {{option.Name}} {{option.ExtName}}
                                             </template>
                                         </v-select>
-                                    </div> 
+                                        <light v-bind:state="item.Shifts.length > 0"/>
+                                    </span> 
                                 </td>
                                 <td v-else class="text-center">
                                     <template v-for="s in item.Shifts" >
-                                        <span v-bind:key="s.Name" class="badge badge-success">
-                                            {{s.Name}}
-                                        </span>
+                                         <popper :options="{placement: 'top'}" v-bind:key="s.Name">
+                                            <div class="popper">
+                                                {{s.ExtName}}
+                                            </div>
+                                            <span class="badge badge-info" slot="reference">
+                                                {{s.Name}}
+                                            </span>
+                                        </popper>
                                         &nbsp;
                                     </template>
                                 </td>
                                 <!--BDS-->
-                                <td v-if="isEditMode(item.PosId)">
-                                    <div class="width-14 mx-auto">
+                                <td v-if="isEditMode(item.PosId)" class="width-14">
+                                    <span class="d-inline-flex">
                                         <d-select v-model="item.BDS"
+                                                class="width-14"
                                                 label="DisplayName"
                                                 v-bind:api="searchSuggestAPI"></d-select>
-                                    </div>
+                                        <light v-bind:state="item.BDS? true : false"/>
+                                    </span>
                                 </td>
                                 <td class="text-center" v-else>
                                     <div class="width-14 mx-auto">{{item.BDS? item.BDS.DisplayName : 'N/A'}}</div>
@@ -160,8 +182,10 @@
                                 <td class="text-center">
                                     <div>
                                         <input type="text"
+                                                v-bind:class="[{'border border-danger': !newItem.PosName},
+                                                    {'border border-success': newItem.PosName}]"
                                                 class="form-control form-control-sm width-8 mx-auto"
-                                                v-model="newItem.PosName"
+                                                v-model.trim="newItem.PosName"
                                                 v-bind:maxlength="maxFieldLength.posName" />
                                     </div>
                                 </td>
@@ -170,7 +194,11 @@
                                     <div>
                                         <input type="text"
                                                 class="form-control form-control-sm width-8 mx-auto"
-                                                v-model="newItem.PosCode"
+                                                v-bind:class="[{'border border-danger': !newItem.codeChecked},
+                                                                {'border border-success': newItem.codeChecked}]"
+                                                v-bind:value="newItem.PosCode.toUpperCase()" 
+                                                v-on:input="newItem.PosCode = $event.target.value.toUpperCase().trim()"
+                                                v-on:keyup="checkCode(-1)"
                                                 v-bind:maxlength="maxFieldLength.posCode" />
                                     </div>
                                 </td>
@@ -178,8 +206,10 @@
                                 <td class="text-center">
                                     <div>
                                         <input type="text"
+                                                v-bind:class="[{'border border-danger': !newItem.Address},
+                                                    {'border border-success': newItem.Address}]"
                                                 class="form-control form-control-sm width-8 mx-auto"
-                                                v-model="newItem.Address"
+                                                v-model.trim="newItem.Address"
                                                 v-bind:maxlength="maxFieldLength.address" />
                                     </div>
                                 </td>
@@ -187,14 +217,19 @@
                                 <td class="text-center">
                                     <div>
                                         <input type="text"
+                                                v-bind:class="[{'border border-danger': !newItem.Phone},
+                                                    {'border border-success': newItem.Phone}]"
                                                 class="form-control form-control-sm width-8 mx-auto"
-                                                v-model="newItem.Phone"
+                                                v-model.trim="newItem.Phone"
                                                 v-bind:maxlength="maxFieldLength.phone"/>
                                     </div>
                                 </td>
                                 <td class="width-16">
-                                    <div>
+                                    <span class="d-inline-flex">
                                         <v-select
+                                            class="width-16"
+                                            v-bind:filterable=false
+                                            v-bind:searchable=false
                                             multiple 
                                             :options="shifts"
                                             v-model="newItem.Shifts"
@@ -203,15 +238,18 @@
                                                 {{option.Name}} {{option.ExtName}}
                                             </template>
                                         </v-select>
-                                    </div>
+                                        <light v-bind:state="newItem.Shifts.length > 0"/>
+                                    </span>
                                 </td>
                                 <!--Manager-->
-                                <td>
-                                    <div class="width-14 mx-auto">
-                                        <d-select v-model="newItem.BDS"
+                                <td class="width-14">
+                                    <span class="d-inline-flex">
+                                        <d-select class="width-14"
+                                                v-model="newItem.BDS"
                                                 label="DisplayName"
                                                 v-bind:api="searchSuggestAPI"></d-select>
-                                    </div>
+                                        <light v-bind:state="newItem.BDS? true : false"/>
+                                    </span>
                                 </td>
                                 <!--New item actions-->
                                 <td class="text-center">
@@ -246,7 +284,7 @@
                                             :prev-link-class="'page-link'"
                                             :next-class="'page-item'"
                                             :next-link-class="'page-link'"
-                                            :container-class="'pagination pagination-sm no-bottom-margin justify-content-center'">
+                                            :container-class="'pagination no-bottom-margin justify-content-center'">
                                         </page-nav>
                                 </td>
                             </tr>
@@ -264,13 +302,14 @@ import API from "../API";
 import { Permission } from "../AppConst";
 //Components
 import SearchBar from "./SearchBar.vue";
+import light from "./ValidLight.vue";
 import DynamicSelect from "./DynamicSelect.vue";
 import vSelect from "vue-select";
-// import multiselect from "vue-multiselect";
-
+import Popper from 'vue-popperjs';
 import pagenav from "vuejs-paginate";
 import axios from "axios";
 import listingMix from "./Shared/listingViewMixins";
+import debounce from 'lodash.debounce'
 
 export default {
     name: "posManagerView",
@@ -280,7 +319,9 @@ export default {
         "search-bar": SearchBar,
         "page-nav": pagenav,
         "d-select": DynamicSelect,
-        "v-select": vSelect
+        "v-select": vSelect,
+        "popper": Popper,
+        "light": light
     },
     mounted: function() {
         this.init();
@@ -301,15 +342,27 @@ export default {
             if (!this.canCreate) return false;
             return this.checkItem(this.newItem);
         }
+        // isNewItemPosCodeValid: function(){
+        //     return this.newItem.codeChecked;
+        // }
     },
     data: function() {
         return {
             orderBy: "PosName",
-            newItem: {},
+            newItem: {
+                PosCode: '',
+                PosName: null,
+                Address: null,
+                Phone: null,
+                BDS: null,
+                Shifts: [],
+                codeChecked: false //Check PosCode unique
+            },
+            errors: [],
             shifts: [],
             maxFieldLength: {
                 posName: 50,
-                posCode: 20,
+                posCode: 8, //POS12345
                 address: 100,
                 phone: 20
             },
@@ -343,6 +396,10 @@ export default {
                 let { data } = await axios.get(API.PosVM, {
                     params
                 });
+                //Attach prop
+                data.Items.forEach(element => {
+                    element.codeChecked = true;
+                });
                 this.items = data.Items;
                 this.shifts = data.Shifts;
                 this.refreshCopy(); //Refresh clones
@@ -357,25 +414,26 @@ export default {
         //New item check
         checkItem: function(item) {
             if (!item) return false;
-            if (
+            if (!item.codeChecked ||
                 !item.PosCode ||
                 !item.PosName ||
                 !item.Address ||
                 !item.BDS ||
-                !item.Phone
+                !item.Phone ||
+                item.Shifts.length < 1
             )
                 return false;
             return true;
         },
-        //Call API
         createItem: async function() {
-            if (!this.isNewItemValid) return;
+            if (!this.isNewItemValid || !this.canCreate) return;
             try {
-                let clone = this.clone(this.newItem);
-                await axios.post(API.CreatePOS, clone);
-                //Clear new item
-                this.$emit("showsuccess", "Tạo người dùng mới thành công!");
-                
+                let newItem = this.clone(this.newItem);
+                let { data } = await axios.post(API.CreatePos, newItem);
+                //Set newly created id to item
+                newItem.PosId = data;
+                this.$emit("showsuccess", "Tạo POS mới thành công!");
+                this.items.push(newItem);
             } catch (e) {
                 // throw e;
                 this.$emit("showinfo", "Có lỗi trong quá trình tạo mới.");
@@ -384,9 +442,8 @@ export default {
                 this.clearNewItem();
             }
         },
-        //Call API
         updateItem: async function(id) {
-            if (!this.canUpdateItem(id)) return;
+            if (!this.canUpdateItem(id) || !this.canUpdate) return;
             try {
                 let index = this.findItemIndex(id);
                 let clone = this.clone(this.items[index]);
@@ -396,13 +453,14 @@ export default {
                 this.$set(this.items, index, clone);
                 //Exit edit mode
                 clone.editMode = false;
-                this.$emit("showsuccess", "Chỉnh sửa người dùng thành công!");
+                this.$emit("showsuccess", "Chỉnh sửa POS thành công!");
             } catch (e) {
                 // throw e;
                 this.$emit("showinfo", "Có lỗi trong quá trình chỉnh sửa.");
             }
         },
         canUpdateItem: function(id) {
+            if(!this.canUpdate) return;
             let index = this.findItemIndex(id);
             //Must be in Edit mode to save
             if (!this.items[index].editMode) return false;
@@ -411,11 +469,13 @@ export default {
         },
         clearNewItem: function() {
             this.newItem = {
-                PosCode: null,
+                PosCode: '',
                 PosName: null,
                 Address: null,
                 Phone: null,
-                BDS: null
+                BDS: null,
+                Shifts: [],
+                codeChecked: false
             };
         },
         findItemIndex: function(id) {
@@ -423,6 +483,34 @@ export default {
             if (index == -1) throw "Cant find POS of id: " + id;
             return index;
         },
+        isPosCodeValid: function(id){
+            let index = this.findItemIndex(id);
+            return this.items[index].codeChecked;
+        },
+        checkCode: function(id){
+            this.checkCodeDebounce(id, this);
+        },
+        checkCodeDebounce: debounce(async (id, vm) => {
+            let index = -1;
+            let item = null;
+            //New item
+            if(id == -1){ 
+                item = vm.newItem;
+            }else{
+                index = vm.findItemIndex(id);
+                item = vm.items[index];
+            }
+            let code = item.PosCode || '';
+            if(!code){
+                vm.$set(item, 'codeChecked', false);
+                // item.codeChecked  = false;
+            }else{
+                let { data } = await axios.get(API.CheckCode.replace('{code}', code));
+                //-1 means not exist
+                vm.$set(item, 'codeChecked', data == -1);
+                // item.codeChecked = data == -1;
+            }
+        }, 300)
         // composeShiftNames: function(list){
         //     if(!list) return '';
         //     return list.reduce((acc, i) =>
@@ -440,7 +528,7 @@ export default {
         //     return this.randomPills.splice(0, 1)[0];
         // }
     }
-};
+}
 </script>
 <style scoped>
 .td-text-center tr td {
@@ -492,5 +580,23 @@ export default {
 /* Workaround for overflow y of datatable */
 .lastrow-padding{
     height: 150px;
+}
+/* vuejs popper */
+.popper {
+  width: auto;
+  background-color: #fafafa;
+  color: #212121;
+  text-align: center;
+  padding: 4px;
+  display: inline-block;
+  border-radius: 3px;
+  position: absolute;
+  font-size: 1rem;
+  font-weight: normal;
+  border: 1px #969696 solid;
+  z-index: 200000;
+}
+.popper[x-placement^="top"] {
+  margin-bottom: 5px;
 }
 </style>

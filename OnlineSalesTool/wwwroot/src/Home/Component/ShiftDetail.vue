@@ -4,10 +4,9 @@
         <div class="card-header">
             <div>
                 <span class="float-left">Ngày {{day.Day}}</span>
-                <div class="float-right">
-                    <i v-show="!readonly" v-if="isAllSet" class="fas fa-check-circle text-success"></i>
-                    <i v-else class="fas fa-exclamation-circle text-danger"></i>
-                </div>
+                <span class="float-right">
+                    <light v-show="!readonly" v-bind:state="isAllSet"/>
+                </span>
             </div>
             
         </div>
@@ -26,12 +25,13 @@
 <script>
     import vSelect from 'vue-select'
     //const vSelect = () => import(/* webpackChunkName: "vselect" */'vue-select')
-
+    import light from './ValidLight.vue'
     export default {
         name: 'shiftdetail',
         template: '#shiftdetail',
         components: {
-            'v-select': vSelect
+            'v-select': vSelect,
+            'light': light
         },
         props: {
             users: {

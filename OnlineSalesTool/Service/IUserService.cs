@@ -13,5 +13,6 @@ namespace OnlineSalesTool.Service
         Task<int> Create(AppUserDTO user);
         Task Update(AppUserDTO user);
         Task<IEnumerable<AppUserDTO>> SearchSuggest(RoleEnum role, string q);
+        Task<int> CheckUsername(string userName);
     }
 }

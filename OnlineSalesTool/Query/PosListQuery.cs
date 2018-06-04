@@ -101,16 +101,16 @@ namespace OnlineSalesTool.Query
         /// <returns></returns>
         private IQueryable<Pos> CA_Query()
         {
-            int mandId = Repo.DbContext.AppUser
-                .Where(u => u.UserId == Repo.UserId)
+            int mandId = Service.DbContext.AppUser
+                .Where(u => u.UserId == Service.UserId)
                 .Select(u => u.ManagerId ?? -1)
                 .First();
             if (mandId == -1)
             {
                 //Invalid
-                _logger.Debug($"CA UserId: {Repo.UserId} doesnt have manager!");
+                _logger.Debug($"CA UserId: {Service.UserId} doesnt have manager!");
             }
-            return Repo.DbContext.Pos.Where(p => p.UserId == mandId)
+            return Service.DbContext.Pos.Where(p => p.UserId == mandId)
                 .Include(p => p.PosShift)
                     .ThenInclude(p => p.Shift);
         }
@@ -120,8 +120,8 @@ namespace OnlineSalesTool.Query
         /// <returns></returns>
         private IQueryable<Pos> BDS_Query()
         {
-            return Repo.DbContext.Pos
-                .Where(p => p.UserId == Repo.UserId)
+            return Service.DbContext.Pos
+                .Where(p => p.UserId == Service.UserId)
                 .Include(p => p.User)
                 .Include(p => p.PosShift)
                     .ThenInclude(ps => ps.Shift);
@@ -132,7 +132,7 @@ namespace OnlineSalesTool.Query
         /// <returns></returns>
         private IQueryable<Pos> ADMIN_Query()
         {
-            return Repo.DbContext.Pos
+            return Service.DbContext.Pos
                 .Include(p => p.User)
                 .Include(p => p.PosShift)
                     .ThenInclude(ps => ps.Shift); ;

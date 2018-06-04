@@ -92,5 +92,12 @@ namespace OnlineSalesTool.Controllers
             }
             
         }
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Check([FromQuery] string q)
+        {
+            if(string.IsNullOrEmpty(q)) return BadRequest();
+            return Ok(await _service.CheckUsername(q.ToLower()));
+        }
     }
 }
