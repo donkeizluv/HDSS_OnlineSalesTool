@@ -459,8 +459,8 @@ export default {
         },
         updateItem: async function(id) {
             if (!this.canUpdateItem(id) || !this.canUpdate) return;
+            let index = this.findItemIndex(id);
             try {
-                let index = this.findItemIndex(id);
                 let clone = this.clone(this.items[index]);
                 // console.log(clone);
                 await axios.post(API.UpdateUser, clone);
@@ -470,7 +470,8 @@ export default {
                 clone.editMode = false;
                 this.$emit("showsuccess", "Chỉnh sửa người dùng thành công!");
             } catch (e) {
-                throw e;
+                // throw e;
+                this.revertItem(index);
                 this.$emit("showinfo", "Có lỗi trong quá trình chỉnh sửa.");
             }
         },

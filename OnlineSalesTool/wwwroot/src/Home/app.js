@@ -1,18 +1,15 @@
 ﻿import Vue from 'vue'
-
-import VModal from 'vue-js-modal'
-//const VModal = () => import(/* webpackChunkName: "modal" */ 'vue-js-modal')
+// import VModal from 'vue-js-modal'
 import Toasted from 'vue-toasted'
-
-import appConst from './AppConst'
-//import mixin from '../Home/mixin'
 import store from './store'
 import router from './router'
 import App from './Component/AppRoot.vue'
+import vBPopover from 'bootstrap-vue/es/directives/popover/popover';
 
-
+//Directives
+Vue.directive('b-popover', vBPopover);
 //Extend & reg
-Vue.use(VModal, { dialog: true });
+// Vue.use(VModal, { dialog: true });
 Vue.use(Toasted,
     {
         duration: 3333,
@@ -20,8 +17,6 @@ Vue.use(Toasted,
         theme: 'primary',
         iconPack: 'fontawesome'
     });
-//Registers globally
-//Vue.mixin(mixin);
 //init
 new Vue({
     //mixins: [mixin],

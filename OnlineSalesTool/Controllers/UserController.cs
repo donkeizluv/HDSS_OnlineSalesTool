@@ -8,6 +8,7 @@ using OnlineSalesTool.DTO;
 using OnlineSalesTool.Service;
 using System.Threading.Tasks;
 using static OnlineSalesTool.ApiParameter.ListingParams;
+using Microsoft.EntityFrameworkCore;
 
 namespace OnlineSalesTool.Controllers
 {
@@ -57,6 +58,11 @@ namespace OnlineSalesTool.Controllers
                 Utility.LogException(ex, _logger);
                 return BadRequest(ex.Message);
             }
+            catch(DbUpdateException ex)
+            {
+                Utility.LogException(ex, _logger);
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPost]
         [Authorize]
@@ -69,6 +75,11 @@ namespace OnlineSalesTool.Controllers
                 return Ok();
             }
             catch (BussinessException ex)
+            {
+                Utility.LogException(ex, _logger);
+                return BadRequest(ex.Message);
+            }
+            catch(DbUpdateException ex)
             {
                 Utility.LogException(ex, _logger);
                 return BadRequest(ex.Message);

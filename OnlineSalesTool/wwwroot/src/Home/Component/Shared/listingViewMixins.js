@@ -49,6 +49,9 @@ export default {
         },
         exitEditMode: function (id) {
             let index = this.findItemIndex(id);
+            this.revertItem(index);
+        },
+        revertItem: function(index){
             let revert = JSON.parse(JSON.stringify(this.items_copy[index]));
             this.$set(this.items, index, revert);
         },

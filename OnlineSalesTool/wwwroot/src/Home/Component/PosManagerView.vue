@@ -116,14 +116,11 @@
                                 </td>
                                 <td v-else class="text-center">
                                     <template v-for="s in item.Shifts" >
-                                         <popper :options="{placement: 'top'}" v-bind:key="s.Name">
-                                            <div class="popper">
-                                                {{s.ExtName}}
-                                            </div>
-                                            <span class="badge badge-info" slot="reference">
+                                        <span v-b-popover.hover.top="s.ExtName"
+                                        class="badge badge-info" 
+                                        v-bind:key="s.Name">
                                                 {{s.Name}}
-                                            </span>
-                                        </popper>
+                                        </span>
                                         &nbsp;
                                     </template>
                                 </td>
@@ -305,7 +302,6 @@ import SearchBar from "./SearchBar.vue";
 import light from "./ValidLight.vue";
 import DynamicSelect from "./DynamicSelect.vue";
 import vSelect from "vue-select";
-import Popper from 'vue-popperjs';
 import pagenav from "vuejs-paginate";
 import axios from "axios";
 import listingMix from "./Shared/listingViewMixins";
@@ -320,7 +316,6 @@ export default {
         "page-nav": pagenav,
         "d-select": DynamicSelect,
         "v-select": vSelect,
-        "popper": Popper,
         "light": light
     },
     mounted: function() {
@@ -444,8 +439,8 @@ export default {
         },
         updateItem: async function(id) {
             if (!this.canUpdateItem(id) || !this.canUpdate) return;
+            let index = this.findItemIndex(id);
             try {
-                let index = this.findItemIndex(id);
                 let clone = this.clone(this.items[index]);
                 // console.log(clone);
                 await axios.post(API.UpdatePos, clone);
@@ -456,6 +451,7 @@ export default {
                 this.$emit("showsuccess", "Chỉnh sửa POS thành công!");
             } catch (e) {
                 // throw e;
+                this.revertItem(index);
                 this.$emit("showinfo", "Có lỗi trong quá trình chỉnh sửa.");
             }
         },
@@ -580,23 +576,5 @@ export default {
 /* Workaround for overflow y of datatable */
 .lastrow-padding{
     height: 150px;
-}
-/* vuejs popper */
-.popper {
-  width: auto;
-  background-color: #fafafa;
-  color: #212121;
-  text-align: center;
-  padding: 4px;
-  display: inline-block;
-  border-radius: 3px;
-  position: absolute;
-  font-size: 1rem;
-  font-weight: normal;
-  border: 1px #969696 solid;
-  z-index: 200000;
-}
-.popper[x-placement^="top"] {
-  margin-bottom: 5px;
 }
 </style>

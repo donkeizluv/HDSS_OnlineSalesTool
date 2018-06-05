@@ -1,6 +1,27 @@
 ﻿<template>
     <div>
-        <v-dialog :clickToClose=false />
+        <!-- <v-dialog :clickToClose=false /> -->
+        <b-modal ref="blockingModal"
+                :hide-footer="true"
+                :hide-header-close="true"
+                :cancel-disabled="true"
+                :ok-disabled="true"
+                :no-close-on-backdrop="true"
+                :no-close-on-esc="true"
+                title="Lỗi :(">
+            <div class="text-center">
+                <h5>{{blockingModalContent}}</h5>
+            </div>
+        </b-modal>
+        <b-modal ref="modal"
+                :title="modalTitle" 
+                ok-only
+                :no-close-on-backdrop="true"
+                :no-close-on-esc="true">
+            <div class="text-center">
+                <h5>{{modalContent}}</h5>
+            </div>
+        </b-modal>
         <nav-bar :app-name="'Online Sales Tool'" :env="'DEV'"></nav-bar>
         <div v-bind:class="{'bg-grey': !isAuthenticated || !isAuthChecked }">
             <!--Only render app when auth is valid & checked-->
@@ -31,11 +52,16 @@
     import { CHECK_AUTH, LOGOUT } from '../actions'
     import API from '../API'
     import LoginView from './LoginView.vue'
-
+    import bModal from 'bootstrap-vue/es/components/modal/modal';
+    //CSS
+    import 'bootstrap/dist/css/bootstrap.css'
+    import 'bootstrap-vue/dist/bootstrap-vue.css'
+    import '../../../css/site.css'
     export default {
         components: {
             'nav-bar': navbar,
-            'login': LoginView
+            'login': LoginView,
+            'b-modal': bModal
         },
         computed: {
             isCurrentRouteAllowed: function(){
@@ -56,7 +82,7 @@
             axios.interceptors.response.use(r => {
                 return r;
             }, async e => {
-                if (e.response.status == 401) {
+                if(e.response.status == 401) {
                     await this.$store.dispatch(LOGOUT);
                 }
                 return Promise.reject(e);
@@ -67,7 +93,10 @@
         },
         data: function () {
             return {
-                blackBg: false
+                blackBg: false,
+                blockingModalContent: '',
+                modalTitle: '',
+                modalContent: ''
             }
         },
         methods: {
@@ -88,40 +117,30 @@
                 });
             },
             showBlockingDialog(mess) {
-                this.blackBg = true;
-                this.$modal.show('dialog', {
-                    title: 'Lỗi :(',
-                    text: mess,
-                    buttons: []
-                });
+                this.blockingModalContent = mess;
+                this.$refs.blockingModal.show();
             },
             showDialog(mess, t) {
-                this.$modal.show('dialog', {
-                    title: t,
-                    text: mess,
-                    buttons: [
-                        {
-                            title: 'OK',
-                            handler: () => { this.$modal.hide('dialog') }
-                        }]
-                });
+              this.modalContent = mess;
+              this.modalTitle = t;
+              this.$refs.modal.show();
             }
         }
     }
 </script>
 <style scoped>
-    .bg-grey {
-        position: fixed; /* Stay in place */
-        z-index: 1; /* Sit on top */
-        left: 0;
-        top: 0;
-        width: 100%; /* Full width */
-        height: 100%; /* Full height */
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgb(0,0,0); /* Fallback color */
-        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-    }
-    .top-margin {
-        margin-top: 1rem;
-    }
+.bg-grey {
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+.top-margin {
+    margin-top: 1rem;
+}
 </style>

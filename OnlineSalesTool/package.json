@@ -8,16 +8,11 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "bootstrap": "^4.1.1",
+    "bootstrap-vue": "^2.0.0-rc.11",
     "date-fns": "^1.29.0",
-    "jquery": "3.3.1",
     "jwt-decode": "^2.2.0",
     "lodash.debounce": "^4.0.8",
-    "popper.js": "^1.14.1",
-    "vee-validate": "^2.0.9",
     "vue": "^2.5.16",
-    "vue-js-modal": "^1.3.15",
-    "vue-popperjs": "^1.3.4",
     "vue-router": "^3.0.1",
     "vue-select": "^2.4.0",
     "vue-toasted": "^1.1.24",
@@ -32,11 +27,13 @@
     "babel-preset-es2015": "^6.24.1",
     "clean-webpack-plugin": "^0.1.19",
     "css-loader": "^0.28.11",
+    "node-sass": "^4.9.0",
+    "sass-loader": "^7.0.2",
     "style-loader": "^0.21.0",
     "vue-loader": "^15.2.4",
     "vue-template-compiler": "^2.5.16",
     "webpack": "^4.10.2",
-    "webpack-cli": "^2.1.5"
+    "webpack-cli": "^3.0.2"
   },
   "babel": {
     "presets": [

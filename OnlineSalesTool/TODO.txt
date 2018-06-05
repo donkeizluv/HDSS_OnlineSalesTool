@@ -4,9 +4,10 @@ TODO:
 -Clean up appsetting.json
 -Permission policies
 -Split frontend permission dict to view dict & action dict
--Check unique names in CRUD
+
 
 DONE:
+-Check unique names in CRUD
 -Generic listing VM
 -Lazy load prev schedules
 **ADMIN role can see all POSs, if no lazy load then prev schedules * POSs  would be very huge

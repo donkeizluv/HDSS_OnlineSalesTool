@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NLog;
 using OnlineSalesTool.CustomException;
 using OnlineSalesTool.DTO;
@@ -54,6 +55,11 @@ namespace OnlineSalesTool.Controllers
                 Utility.LogException(ex, _logger);
                 return BadRequest(ex.Message);
             }
+            catch(DbUpdateException ex)
+            {
+                Utility.LogException(ex, _logger);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
@@ -67,6 +73,11 @@ namespace OnlineSalesTool.Controllers
                 return Ok();
             }
             catch (BussinessException ex)
+            {
+                Utility.LogException(ex, _logger);
+                return BadRequest(ex.Message);
+            }
+            catch(DbUpdateException ex)
             {
                 Utility.LogException(ex, _logger);
                 return BadRequest(ex.Message);

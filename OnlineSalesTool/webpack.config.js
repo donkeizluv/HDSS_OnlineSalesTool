@@ -13,7 +13,8 @@ module.exports = {
         //filename: "[name]_[chunkhash].js"
         filename: "app.js",
         publicPath: '/dist/',
-        chunkFilename: '[name].chunk.js',
+        // chunkFilename: '[name].chunk.js',
+        chunkFilename: '[chunkhash].chunk.js',
     },
     module: {
         rules: [
@@ -29,8 +30,25 @@ module.exports = {
                 loader: "style-loader!css-loader"
             },
             {
+                test: /\.scss$/,
+                use: [
+                  {
+                    loader: 'css-loader'
+                  },
+                  {
+                    loader: 'sass-loader'
+                  }
+                ]
+            },
+            {
                 test: /\.vue$/,
-                loader: 'vue-loader'
+                loader: 'vue-loader',
+                options: {
+                    loaders: {
+                        'scss': 'vue-style-loader!css-loader!sass-loader',
+                        'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
+                    }
+                }
             }
         ]
     },
