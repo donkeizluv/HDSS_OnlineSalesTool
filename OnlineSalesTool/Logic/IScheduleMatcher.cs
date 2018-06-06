@@ -8,7 +8,6 @@ namespace OnlineSalesTool.Logic
 {
     public interface IScheduleMatcher
     {
-
         //bool GetUserMatchedSchedule(string posCode, DateTime date, out IEnumerable<int> matchUserId, out string reason);
         /// <summary>
         /// Try to assign this case to an user according to scheluded shift & System date

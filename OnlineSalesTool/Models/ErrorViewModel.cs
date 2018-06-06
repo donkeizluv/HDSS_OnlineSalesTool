@@ -1,6 +1,6 @@
 using System;
 
-namespace OnlineSalesToolCore.Models
+namespace OnlineSalesTool.Models
 {
     public class ErrorViewModel
     {

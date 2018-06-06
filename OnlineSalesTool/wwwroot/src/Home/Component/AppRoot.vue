@@ -1,6 +1,5 @@
 ﻿<template>
     <div>
-        <!-- <v-dialog :clickToClose=false /> -->
         <b-modal ref="blockingModal"
                 :hide-footer="true"
                 :hide-header-close="true"

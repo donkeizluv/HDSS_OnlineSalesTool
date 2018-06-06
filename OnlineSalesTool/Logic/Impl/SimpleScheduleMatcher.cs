@@ -25,12 +25,8 @@ namespace OnlineSalesTool.Logic.Impl
 
             var timeOfDate = date.TimeOfDay;
             _logger.Trace($"Try assigning for {nameof(posCode)}: {posCode} at: {timeOfDate}");
-            //BUG: Cant merge this query and with out using ToList
-            //Will cause "the multi-part identifier could not be bound"
-            //Workaround is to include shiftdetail then filter on that list
             var detail = await _context.PosSchedule
-                .Where(s => s.Pos.PosCode == posCode)
-                .Where(s => s.MonthYear.Date == new DateTime(date.Year, date.Month, 1))
+                .Where(s => s.Pos.PosCode == posCode && s.MonthYear.Date == new DateTime(date.Year, date.Month, 1))
                 .SelectMany(s => s.ScheduleDetail.Where(d => d.Day == date.Day))
                 .Include(s => s.Shift)
                     .ThenInclude(sd => sd.ShiftDetail).ToListAsync();

@@ -18,6 +18,8 @@ using OnlineSalesTool.Options;
 using OnlineSalesTool.Query;
 using OnlineSalesTool.DTO;
 using OnlineSalesTool.Cache;
+using OnlineSalesTool.Logic.Impl;
+using OnlineSalesTool.Logic;
 
 namespace OnlineSalesTool
 {
@@ -52,6 +54,7 @@ namespace OnlineSalesTool
             services.AddTransient<IPosService, PosService>();
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRoleCache, RoleCache>();
+            services.AddTransient<IScheduleMatcher, SimpleScheduleMatcher>();
             //Inject query
             services.AddTransient<ListQuery<Pos, PosDTO>, PosListQuery>();
             services.AddTransient<ListQuery<AppUser, AppUserDTO>, UserListQuery>();
@@ -73,7 +76,13 @@ namespace OnlineSalesTool
             var jwtSetting = Configuration.GetSection(nameof(JwtIssuerOptions));
             var authSetting = Configuration.GetSection(nameof(WindowsAuthOptions));
             var genOptions = Configuration.GetSection(nameof(GeneralOptions));
+            var apiAuthOptions = Configuration.GetSection(nameof(APIAuthOptions));
             //Inject options
+            //API auth
+            services.Configure<APIAuthOptions>(o =>
+            {
+                o.Pwd = apiAuthOptions[nameof(APIAuthOptions.Pwd)];
+            });
             //Gen option
             services.Configure<GeneralOptions>(o =>
             {
@@ -165,22 +174,20 @@ namespace OnlineSalesTool
             app.UseAuthentication();
             //enforce SSL
             //app.UseRewriter(new RewriteOptions().AddRedirectToHttps((int)HttpStatusCode.Redirect, 44395));
-
-            //Use this in PROD
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //    app.UseBrowserLink();
-            //}
-            //else
-            //{
-            //    app.UseExceptionHandler("/Home/Error");
-            //}
-
+            app.UseExceptionHandler("/Home/Error");
+            app.UseStatusCodePages();
             app.UseResponseCompression();
-            app.UseDeveloperExceptionPage();
-            // app.UseBrowserLink();
+            // app.UseDeveloperExceptionPage();
             app.UseStaticFiles();
+            //Fall back for SPA
+            app.MapWhen(context => context.Request.Path.Value.StartsWith("/App"), builder =>
+            {
+                builder.UseMvc(routes =>
+                {
+                    routes.MapSpaFallbackRoute("spa-fallback", new { controller = "Home", action = "Index" });
+                });
+            });
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -189,9 +196,10 @@ namespace OnlineSalesTool
                 routes.MapRoute(
                    name: "api",
                    template: "API/{controller}/{action}");
-                routes.MapSpaFallbackRoute(
-                    name: "spa-fallback",
-                    defaults: new { controller = "Home", action = "Index" });
+                // This causes wrong URL to fallback to app which feels weird
+                // routes.MapSpaFallbackRoute(
+                //     name: "spa-fallback",
+                //     defaults: new { controller = "Home", action = "Index" });
             });
         }
 

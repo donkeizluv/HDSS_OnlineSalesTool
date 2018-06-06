@@ -282,12 +282,11 @@
                                             :next-class="'page-item'"
                                             :next-link-class="'page-link'"
                                             :container-class="'pagination no-bottom-margin justify-content-center'">
-                                        </page-nav>
+                                    </page-nav>
                                 </td>
                             </tr>
                         </tfoot>
                     </table>
-                    
                 </div>
             </div>
         </div>
