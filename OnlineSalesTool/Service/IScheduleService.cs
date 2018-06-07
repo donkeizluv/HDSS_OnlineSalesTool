@@ -1,4 +1,4 @@
-﻿using OnlineSalesTool.Logic;
+﻿using OnlineSalesTool.Const;
 using OnlineSalesTool.DTO;
 using OnlineSalesTool.ViewModels;
 using System;
@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OnlineSalesTool.Service
+namespace OnlineSalesTool.Const
 {
     public interface IScheduleService
     {

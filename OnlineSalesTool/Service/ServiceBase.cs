@@ -1,17 +1,15 @@
-﻿using OnlineSalesTool.Logic;
+﻿using OnlineSalesTool.Const;
 using System;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
 using OnlineSalesTool.EFModel;
-using OnlineSalesTool.AppEnum;
 using System.Linq;
-using OnlineSalesTool.Service;
 using System.Threading.Tasks;
-using OnlineSalesTool.CustomException;
+using OnlineSalesTool.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
-namespace OnlineSalesTool.Service
+namespace OnlineSalesTool.Const
 {
     /// <summary>
     /// Shared base of all repos, common utilities of repo placed here

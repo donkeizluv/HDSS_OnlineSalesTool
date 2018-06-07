@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using static OnlineSalesTool.Controllers.AccountController;
 
-namespace OnlineSalesTool.Service
+namespace OnlineSalesTool.Const
 {
     public interface IAuthService
     {

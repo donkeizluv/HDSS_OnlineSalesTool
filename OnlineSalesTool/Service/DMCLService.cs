@@ -1,11 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OnlineSalesTool.ApiParameter;
-using OnlineSalesTool.AppEnum;
-using OnlineSalesTool.CustomException;
+using OnlineSalesTool.Const;
+using OnlineSalesTool.Exceptions;
 using OnlineSalesTool.DTO;
 using OnlineSalesTool.EFModel;
-using OnlineSalesTool.Logic;
 using OnlineSalesTool.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,7 @@ using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 
-namespace OnlineSalesTool.Service
+namespace OnlineSalesTool.Const
 {
     public class DMCLService : IDMCLService
     {

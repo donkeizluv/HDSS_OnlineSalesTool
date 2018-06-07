@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OnlineSalesTool.Service;
+using OnlineSalesTool.Const;
 
 namespace OnlineSalesTool.EFModel
 {

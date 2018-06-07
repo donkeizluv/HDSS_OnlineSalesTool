@@ -4,7 +4,7 @@ using OnlineSalesTool.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OnlineSalesTool.Service
+namespace OnlineSalesTool.Const
 {
     public interface IPosService
     {

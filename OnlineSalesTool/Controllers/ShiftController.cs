@@ -1,9 +1,8 @@
 ﻿using OnlineSalesTool.Filter;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OnlineSalesTool.CustomException;
-using OnlineSalesTool.Logic;
-using OnlineSalesTool.Service;
+using OnlineSalesTool.Exceptions;
+using OnlineSalesTool.Const;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;

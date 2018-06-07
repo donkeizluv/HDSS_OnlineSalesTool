@@ -1,5 +1,5 @@
-﻿using OnlineSalesTool.AppEnum;
-using OnlineSalesTool.CustomException;
+﻿using OnlineSalesTool.Const;
+using OnlineSalesTool.Exceptions;
 using OnlineSalesTool.EFModel;
 using System;
 using System.Collections.Generic;

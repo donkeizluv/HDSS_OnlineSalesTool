@@ -1,11 +1,11 @@
 ﻿using OnlineSalesTool.ApiParameter;
-using OnlineSalesTool.AppEnum;
+using OnlineSalesTool.Const;
 using OnlineSalesTool.DTO;
 using OnlineSalesTool.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OnlineSalesTool.Service
+namespace OnlineSalesTool.Const
 {
     public interface IUserService
     {

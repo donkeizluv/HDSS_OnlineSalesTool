@@ -1,8 +1,8 @@
-﻿using OnlineSalesTool.AppEnum;
+﻿using OnlineSalesTool.Const;
 using OnlineSalesTool.EFModel;
 using System.Security.Claims;
 
-namespace OnlineSalesTool.Service
+namespace OnlineSalesTool.Const
 {
     public interface IService
     {

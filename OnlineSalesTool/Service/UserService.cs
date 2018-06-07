@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OnlineSalesTool.ApiParameter;
-using OnlineSalesTool.AppEnum;
+using OnlineSalesTool.Const;
 using OnlineSalesTool.Cache;
-using OnlineSalesTool.CustomException;
+using OnlineSalesTool.Exceptions;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Options;
 using OnlineSalesTool.DTO;
@@ -16,7 +16,7 @@ using OnlineSalesTool.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace OnlineSalesTool.Service
+namespace OnlineSalesTool.Const
 {
     public class UserService : ServiceBase, IUserService
     {

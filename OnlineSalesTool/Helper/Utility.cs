@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using NLog;
-using OnlineSalesTool.Logic;
+using OnlineSalesTool.Const;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
-namespace OnlineSalesTool.Service
+namespace OnlineSalesTool.Const
 {
     public static class Utility
     {

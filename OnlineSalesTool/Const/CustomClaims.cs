@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OnlineSalesTool.Logic
+namespace OnlineSalesTool.Const
 {
     public static class CustomClaims
     {

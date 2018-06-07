@@ -5,16 +5,16 @@ using OnlineSalesTool.EFModel;
 using OnlineSalesTool.DTO;
 using OnlineSalesTool.Query;
 using OnlineSalesTool.ViewModels;
-using OnlineSalesTool.CustomException;
+using OnlineSalesTool.Exceptions;
 using System.Linq;
 using OnlineSalesTool.Cache;
-using OnlineSalesTool.AppEnum;
+using OnlineSalesTool.Const;
 using MoreLinq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace OnlineSalesTool.Service
+namespace OnlineSalesTool.Const
 {
     public class PosService : ServiceBase, IPosService
     {

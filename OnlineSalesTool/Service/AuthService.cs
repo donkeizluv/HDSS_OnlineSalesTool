@@ -6,12 +6,12 @@ using Microsoft.Extensions.Options;
 using OnlineSalesTool.Auth;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Options;
-using OnlineSalesTool.Service;
+using OnlineSalesTool.Const;
 using System;
 using System.Threading.Tasks;
 using static OnlineSalesTool.Controllers.AccountController;
 
-namespace OnlineSalesTool.Service
+namespace OnlineSalesTool.Const
 {
     public class AuthService : ServiceBase, IAuthService
     {

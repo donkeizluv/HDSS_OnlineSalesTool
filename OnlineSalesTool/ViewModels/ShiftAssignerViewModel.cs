@@ -1,4 +1,4 @@
-﻿using OnlineSalesTool.Logic;
+﻿using OnlineSalesTool.Const;
 using OnlineSalesTool.DTO;
 using System;
 using System.Collections.Generic;

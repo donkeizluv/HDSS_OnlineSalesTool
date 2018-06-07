@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OnlineSalesTool.Logic
+namespace OnlineSalesTool.Const
 {
     /// <summary>
     /// Container for all daily shift schedule of specific month. Use for create new schedule

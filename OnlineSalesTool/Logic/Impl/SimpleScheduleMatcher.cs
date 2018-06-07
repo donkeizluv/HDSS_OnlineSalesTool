@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace OnlineSalesTool.Logic.Impl
+namespace OnlineSalesTool.Const.Impl
 {
     public class SimpleScheduleMatcher : IScheduleMatcher
     {

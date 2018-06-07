@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OnlineSalesTool.AppEnum
+namespace OnlineSalesTool.Const
 {
     /// <summary>
     /// Must be in sync with db

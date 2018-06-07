@@ -3,12 +3,11 @@ using OnlineSalesTool.ApiParameter;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Helper;
 using OnlineSalesTool.DTO;
-using OnlineSalesTool.Service;
+using OnlineSalesTool.Const;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OnlineSalesTool.AppEnum;
 using Microsoft.Extensions.Logging;
 
 namespace OnlineSalesTool.Query

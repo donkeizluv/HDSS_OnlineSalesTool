@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using OnlineSalesTool.DTO;
 using static OnlineSalesTool.Controllers.AccountController;
 
-namespace OnlineSalesTool.Service
+namespace OnlineSalesTool.Const
 {
     public interface IAPIAuth
     {

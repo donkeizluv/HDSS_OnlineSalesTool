@@ -1,5 +1,5 @@
 ﻿using OnlineSalesTool.EFModel;
-using OnlineSalesTool.Logic;
+using OnlineSalesTool.Const;
 using System.Collections.Generic;
 using System.Linq;
 

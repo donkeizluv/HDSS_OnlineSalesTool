@@ -1,4 +1,4 @@
-﻿namespace OnlineSalesTool.AppEnum
+﻿namespace OnlineSalesTool.Const
 {
     /// <summary>
     /// Must be in sync of order with db ProcessStage

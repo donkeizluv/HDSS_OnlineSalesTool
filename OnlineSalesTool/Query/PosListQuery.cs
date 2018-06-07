@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineSalesTool.ApiParameter;
-using OnlineSalesTool.AppEnum;
+using OnlineSalesTool.Const;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Helper;
 using OnlineSalesTool.DTO;
-using OnlineSalesTool.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;

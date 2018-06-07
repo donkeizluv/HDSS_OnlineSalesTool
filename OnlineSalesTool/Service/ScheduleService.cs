@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OnlineSalesTool.CustomException;
+using OnlineSalesTool.Exceptions;
 using OnlineSalesTool.EFModel;
-using OnlineSalesTool.Logic;
+using OnlineSalesTool.Const;
 using OnlineSalesTool.DTO;
 using OnlineSalesTool.ViewModels;
 using System;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace OnlineSalesTool.Service
+namespace OnlineSalesTool.Const
 {
     public class ScheduleService : ServiceBase, IScheduleService
     {
@@ -29,13 +29,13 @@ namespace OnlineSalesTool.Service
         {
             switch (Role)
             {
-                case AppEnum.RoleEnum.CA:
+                case Const.RoleEnum.CA:
                     return await CreateVM_CA();
-                case AppEnum.RoleEnum.BDS:
+                case Const.RoleEnum.BDS:
                     return await CreateVM_BDS();
-                case AppEnum.RoleEnum.ASM:
+                case Const.RoleEnum.ASM:
                     throw new NotImplementedException();
-                case AppEnum.RoleEnum.ADMIN: //See all
+                case Const.RoleEnum.ADMIN: //See all
                     return await CreateVM_BDS();
                 default:
                     throw new InvalidOperationException();

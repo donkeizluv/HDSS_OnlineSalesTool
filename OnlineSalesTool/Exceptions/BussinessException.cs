@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OnlineSalesTool.CustomException
+namespace OnlineSalesTool.Exceptions
 {
     /// <summary>
     /// Bussiness check, logic related problem, catch this at controller's actions

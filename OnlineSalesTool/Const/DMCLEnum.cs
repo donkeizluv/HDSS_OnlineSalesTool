@@ -1,4 +1,4 @@
-﻿namespace OnlineSalesTool.AppEnum
+﻿namespace OnlineSalesTool.Const
 {
     /// <summary>
     ///Possible status for DMCL

@@ -11,7 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Globalization;
 
-namespace OnlineSalesTool.Service
+namespace OnlineSalesTool.Const
 {
     public class APIAuth : IAPIAuth
     {
