@@ -2,12 +2,13 @@
 using OnlineSalesTool.Const;
 using OnlineSalesTool.DTO;
 using OnlineSalesTool.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OnlineSalesTool.Const
 {
-    public interface IUserService
+    public interface IUserService : IDisposable
     {
         Task<UserListingVM> Get(ListingParams param);
         Task<int> Create(AppUserDTO user);

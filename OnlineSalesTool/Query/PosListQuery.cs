@@ -16,9 +16,9 @@ namespace OnlineSalesTool.Query
     {
         private readonly ILogger<PosListQuery> _logger;
 
-        public PosListQuery(IService repo, ILogger<PosListQuery> logger) : base(repo)
+        public PosListQuery(IService service, ILogger<PosListQuery> logger) : base(service)
         {
-            if (repo == null) throw new ArgumentNullException();
+            if (service == null) throw new ArgumentNullException();
             _logger = logger;
         }
 

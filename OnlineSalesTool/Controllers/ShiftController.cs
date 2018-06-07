@@ -15,11 +15,11 @@ namespace OnlineSalesTool.Controllers
     public class ShiftController : Controller
     {
         private readonly ILogger<ShiftController> _logger;
-        private readonly IScheduleService _repo;
+        private readonly IScheduleService _service;
 
-        public ShiftController(IScheduleService repo, ILogger<ShiftController> logger)
+        public ShiftController(IScheduleService service, ILogger<ShiftController> logger)
         {
-            _repo = repo;
+            _service = service;
             _logger = logger;
         }
 
@@ -27,14 +27,17 @@ namespace OnlineSalesTool.Controllers
         [Authorize]
         public async Task<IActionResult> Get()
         {
-            return Ok(await _repo.Get());
+            return Ok(await _service.Get());
         }
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetDetails(int? id)
         {
             if (id == null) return BadRequest();
-            return Ok(await _repo.GetDetail(id ?? -1));
+            using (_service)
+            {
+                return Ok(await _service.GetDetail(id ?? -1));
+            }
         }
         [HttpPost]
         [Authorize]
@@ -43,8 +46,11 @@ namespace OnlineSalesTool.Controllers
             if (!ModelState.IsValid || schedule == null) return BadRequest("Invalid post data");
             try
             {
-                var id = await _repo.Create(schedule);
-                return Ok(id);
+                using (_service)
+                {
+                    var id = await _service.Create(schedule);
+                    return Ok(id);
+                }
             }
             catch (BussinessException ex) //Fail bussiness check
             {

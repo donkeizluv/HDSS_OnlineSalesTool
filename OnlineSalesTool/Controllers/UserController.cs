@@ -42,7 +42,10 @@ namespace OnlineSalesTool.Controllers
                     .SetType(type).SetContain(contain)
                     .SetOrderBy(order)
                     .SetAsc(asc);
-            return Ok(await _service.Get(paramBuilder.Build()));
+            using (_service)
+            {
+                return Ok(await _service.Get(paramBuilder.Build()));
+            }                    
         }
 
         [HttpPost]
@@ -52,7 +55,10 @@ namespace OnlineSalesTool.Controllers
             if (!ModelState.IsValid) return BadRequest();
             try
             {
-                return Ok(await _service.Create(user));
+                using (_service)
+                {
+                    return Ok(await _service.Create(user));
+                }
             }
             catch (BussinessException ex)
             {
@@ -72,8 +78,11 @@ namespace OnlineSalesTool.Controllers
             if (!ModelState.IsValid) return BadRequest();
             try
             {
-                await _service.Update(user);
-                return Ok();
+                using (_service)
+                {
+                    await _service.Update(user);
+                    return Ok();
+                }
             }
             catch (BussinessException ex)
             {
@@ -95,8 +104,12 @@ namespace OnlineSalesTool.Controllers
                 return NoContent();
             try
             {
-                _roleCache.GetRoleId(role, out int roleId, out var appRole);
-                return Ok(await _service.SearchSuggest(appRole, q));
+                using (_service)
+                {
+                    _roleCache.GetRoleId(role, out int roleId, out var appRole);
+                    return Ok(await _service.SearchSuggest(appRole, q));
+                }
+
             }
             catch (BussinessException ex)
             {
@@ -109,7 +122,10 @@ namespace OnlineSalesTool.Controllers
         public async Task<IActionResult> Check([FromQuery] string q)
         {
             if(string.IsNullOrEmpty(q)) return BadRequest();
-            return Ok(await _service.CheckUsername(q.ToLower()));
+            using (_service)
+            {
+                return Ok(await _service.CheckUsername(q.ToLower()));
+            }
         }
     }
 }

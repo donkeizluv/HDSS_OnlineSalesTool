@@ -7,7 +7,7 @@ using static OnlineSalesTool.Controllers.AccountController;
 
 namespace OnlineSalesTool.Const
 {
-    public interface IAuthService
+    public interface IAuthService : IDisposable
     {
         Task<(LoginResult, AppUser)> Authenticate(string userName, string pwd);
         Task<AppUser> GetUser(string userName);

@@ -11,22 +11,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace OnlineSalesTool.Const
 {
-    public class DMCLService : IDMCLService
+    public class DMCLService : ServiceBase, IDMCLService
     {
         private readonly ILogger<DMCLService> _logger;
-        private readonly OnlineSalesContext _context;
         private readonly IScheduleMatcher _matcher;
         private readonly IAPIAuth _apiAuth;
         
         public DMCLService(OnlineSalesContext context,
+        IHttpContextAccessor httpContext,
         IScheduleMatcher matcher,
         IAPIAuth apiAuth,
-        ILogger<DMCLService> logger)
+        ILogger<DMCLService> logger) : base(httpContext, context)
         {
-            _context = context;
             _matcher = matcher;
             _apiAuth = apiAuth;
             _logger = logger;
@@ -35,7 +35,7 @@ namespace OnlineSalesTool.Const
         {
             if (string.IsNullOrEmpty(guid))
                 throw new ArgumentException("message", nameof(guid));
-            var order = await _context.OnlineOrder.SingleOrDefaultAsync(o => o.OrderGuid == guid);
+            var order = await DbContext.OnlineOrder.SingleOrDefaultAsync(o => o.OrderGuid == guid);
             if(order == null)
                 throw new BussinessException($"Cant find order of {guid}");
             return new OrderDTO() {
@@ -121,8 +121,8 @@ namespace OnlineSalesTool.Const
                     _logger.LogDebug($"No user matched for order guid {item.OrderGuid} at {currentTime.ToString()}");
                 }
             }
-            await _context.OnlineOrder.AddRangeAsync(appOrders);
-            await _context.SaveChangesAsync();
+            await DbContext.OnlineOrder.AddRangeAsync(appOrders);
+            await DbContext.SaveChangesAsync();
         }
 
         public async Task UpdateBill(OnlineBillDTO onlineBill)
@@ -131,11 +131,11 @@ namespace OnlineSalesTool.Const
             {
                 throw new ArgumentNullException(nameof(onlineBill));
             }
-            var order = _context.OnlineOrder.SingleOrDefault(o => o.OrderGuid == onlineBill.Guid);
+            var order = DbContext.OnlineOrder.SingleOrDefault(o => o.OrderGuid == onlineBill.Guid);
             if(order == null) throw new BussinessException($"Cant find order of {onlineBill.Guid}");
             order.OrderNumber = onlineBill.OnlineBill;
             order.StageId = (int)StageEnum.Completed;
-            await _context.SaveChangesAsync();
+            await DbContext.SaveChangesAsync();
         }
     }
 }

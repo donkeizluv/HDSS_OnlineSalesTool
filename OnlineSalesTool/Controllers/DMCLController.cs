@@ -28,30 +28,39 @@ namespace OnlineSalesTool.Controllers
         [HttpGet]
         public async Task<IActionResult> Status([FromQuery] string guid)
         {
-            if (string.IsNullOrEmpty(guid))
-                return BadRequest();
-            return Ok(await _service.GetStatus(guid));
+            using (_service)
+            {
+                if (string.IsNullOrEmpty(guid))
+                    return BadRequest();
+                return Ok(await _service.GetStatus(guid));
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Push([FromBody] IEnumerable<OrderDTO> orders)
         {
             if(!ModelState.IsValid) return BadRequest();
-            //Check auth
-            if(orders.Any(o => !_apiAuth.Check(o.Signature, o.Guid)))
-                return Unauthorized();
-            await _service.Push(orders);
-            return Ok();
+            using (_service)
+            {
+                //Check auth
+                if(orders.Any(o => !_apiAuth.Check(o.Signature, o.Guid)))
+                    return Unauthorized();
+                await _service.Push(orders);
+                return Ok();
+            }
         }
         [HttpPost]
         public async Task<IActionResult> UpdateBill([FromBody] OnlineBillDTO onlineBill)
         {
             if(!ModelState.IsValid) return BadRequest();
-            //Check auth
-            if(!_apiAuth.Check(onlineBill.Signature, onlineBill.Guid))
-                return Unauthorized();
-            await _service.UpdateBill(onlineBill);
-            return Ok();
+            using (_service)
+            {
+                //Check auth
+                if(!_apiAuth.Check(onlineBill.Signature, onlineBill.Guid))
+                    return Unauthorized();
+                await _service.UpdateBill(onlineBill);
+                return Ok();
+            }
         }
     }
 }

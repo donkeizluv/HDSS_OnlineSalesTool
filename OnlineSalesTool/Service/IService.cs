@@ -1,10 +1,11 @@
 ﻿using OnlineSalesTool.Const;
 using OnlineSalesTool.EFModel;
+using System;
 using System.Security.Claims;
 
 namespace OnlineSalesTool.Const
 {
-    public interface IService
+    public interface IService : IDisposable
     {
         RoleEnum Role { get; }
         string Username { get; }

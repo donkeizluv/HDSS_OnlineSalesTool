@@ -16,9 +16,9 @@ namespace OnlineSalesTool.Query
     public abstract class ListQuery<TSource, TOutput>
     {
         protected readonly IService Service;
-        protected ListQuery(IService repo)
+        protected ListQuery(IService service)
         {
-            Service = repo ?? throw new ArgumentNullException();
+            Service = service ?? throw new ArgumentNullException();
         }
         protected abstract IQueryable<TSource> Filter(IQueryable<TSource> q, ListingParams param);
         protected abstract IOrderedQueryable<TSource> ApplyOrder(IQueryable<TSource> q, ListingParams param);

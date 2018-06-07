@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesTool.Const
 {
-    public interface IScheduleService
+    public interface IScheduleService : IDisposable
     {
         Task<ShiftAssignerViewModel> Get();
         Task<IEnumerable<ScheduleDetailDTO>> GetDetail(int posScheduleId);

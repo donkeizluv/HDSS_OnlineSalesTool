@@ -39,7 +39,10 @@ namespace OnlineSalesTool.Controllers
                     .SetType(type).SetContain(contain)
                     .SetOrderBy(order)
                     .SetAsc(asc);
-            return Ok(await _service.Get(paramBuilder.Build()));
+            using (_service)
+            {
+                return Ok(await _service.Get(paramBuilder.Build()));    
+            }
         }
 
         [HttpPost]
@@ -49,7 +52,11 @@ namespace OnlineSalesTool.Controllers
             if (!ModelState.IsValid) return BadRequest();
             try
             {
-                return Ok(await _service.Create(pos));
+                using (_service)
+                {
+                    return Ok(await _service.Create(pos));
+                }
+                
             }
             catch (BussinessException ex)
             {
@@ -70,8 +77,11 @@ namespace OnlineSalesTool.Controllers
             if (!ModelState.IsValid) return BadRequest();
             try
             {
-                await _service.Update(pos);
-                return Ok();
+                using (_service)
+                {
+                    await _service.Update(pos);    
+                    return Ok();
+                }
             }
             catch (BussinessException ex)
             {
@@ -89,7 +99,10 @@ namespace OnlineSalesTool.Controllers
         public async Task<IActionResult> Check([FromQuery] string q)
         {
             if(string.IsNullOrEmpty(q)) return BadRequest();
-            return Ok(await _service.CheckCode(q.ToUpper()));
+            using (_service)
+            {
+                return Ok(await _service.CheckCode(q.ToUpper()));
+            }
         }
     }
 }

@@ -12,9 +12,9 @@ using Microsoft.EntityFrameworkCore;
 namespace OnlineSalesTool.Const
 {
     /// <summary>
-    /// Shared base of all repos, common utilities of repo placed here
+    /// Shared base of all services, common utilities of service placed here
     /// </summary>
-    public class ServiceBase : IService, IDisposable
+    public class ServiceBase : IService
     {
         public int UserId
         {
@@ -118,7 +118,8 @@ namespace OnlineSalesTool.Const
 
         public void Dispose()
         {
-            if (DbContext != null) DbContext.Dispose();
+            if (DbContext != null) 
+                DbContext.Dispose();
         }
     }
 }
