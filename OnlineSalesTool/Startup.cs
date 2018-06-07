@@ -20,6 +20,9 @@ using OnlineSalesTool.DTO;
 using OnlineSalesTool.Cache;
 using OnlineSalesTool.Logic.Impl;
 using OnlineSalesTool.Logic;
+using NLog.Extensions.Logging;
+using NLog.Web;
+using Microsoft.Extensions.Logging;
 
 namespace OnlineSalesTool
 {
@@ -41,7 +44,7 @@ namespace OnlineSalesTool
             _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
         }
         
-        public void InjectDependency(IServiceCollection services)
+        public void Inject(IServiceCollection services)
         {
             //Inject db context
             services.AddDbContext<OnlineSalesContext>(o => o.UseSqlServer(Configuration.GetConnectionString("Default")));
@@ -52,8 +55,8 @@ namespace OnlineSalesTool
             services.AddTransient<IScheduleService, ScheduleService>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<IPosService, PosService>();
-            services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRoleCache, RoleCache>();
+            services.AddTransient<IUserService, UserService>();
             services.AddTransient<IScheduleMatcher, SimpleScheduleMatcher>();
             //Inject query
             services.AddTransient<ListQuery<Pos, PosDTO>, PosListQuery>();
@@ -63,15 +66,13 @@ namespace OnlineSalesTool
             //    File.ReadAllText($"{Program.ExeDir}\\{Configuration.GetSection("Indus").GetValue<string>("QueryFileName")}")));
             //Inject HttpAccessor
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-            //Inject resolver service
-            services.AddTransient<IUserResolver, UserResolver>();
             //https://stackoverflow.com/questions/40275195/how-to-setup-automapper-in-asp-net-core
             //services.AddAutoMapper()
         }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            InjectDependency(services);
+            Inject(services);
             //Get setting section
             var jwtSetting = Configuration.GetSection(nameof(JwtIssuerOptions));
             var authSetting = Configuration.GetSection(nameof(WindowsAuthOptions));
@@ -169,8 +170,13 @@ namespace OnlineSalesTool
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            //Nlog
+            env.ConfigureNLog("NLog.config");
+            //add NLog to ASP.NET Core
+            loggerFactory.AddNLog();
+            //Webserver stuff
             app.UseAuthentication();
             //enforce SSL
             //app.UseRewriter(new RewriteOptions().AddRedirectToHttps((int)HttpStatusCode.Redirect, 44395));

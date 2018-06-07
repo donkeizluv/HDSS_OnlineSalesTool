@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using NLog;
+using Microsoft.Extensions.Logging;
 using OnlineSalesTool.ApiParameter;
 using OnlineSalesTool.AppEnum;
 using OnlineSalesTool.CustomException;
@@ -17,16 +17,20 @@ namespace OnlineSalesTool.Service
 {
     public class DMCLService : IDMCLService
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<DMCLService> _logger;
         private readonly OnlineSalesContext _context;
         private readonly IScheduleMatcher _matcher;
         private readonly IAPIAuth _apiAuth;
         
-        public DMCLService(OnlineSalesContext context, IScheduleMatcher matcher, IAPIAuth apiAuth)
+        public DMCLService(OnlineSalesContext context,
+        IScheduleMatcher matcher,
+        IAPIAuth apiAuth,
+        ILogger<DMCLService> logger)
         {
             _context = context;
             _matcher = matcher;
             _apiAuth = apiAuth;
+            _logger = logger;
         }
         public async Task<OrderDTO> GetStatus(string guid)
         {
@@ -115,7 +119,7 @@ namespace OnlineSalesTool.Service
                 else
                 {
                     item.StageId = (int)StageEnum.NotAssignable;
-                    _logger.Debug($"No user matched for order guid {item.OrderGuid} at {currentTime.ToString()}");
+                    _logger.LogDebug($"No user matched for order guid {item.OrderGuid} at {currentTime.ToString()}");
                 }
             }
             await _context.OnlineOrder.AddRangeAsync(appOrders);

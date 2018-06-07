@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using NLog;
 using OnlineSalesTool.Logic;
 using System;
@@ -12,7 +13,20 @@ namespace OnlineSalesTool.Service
     public static class Utility
     {
         //private static Logger _logger = LogManager.GetCurrentClassLogger();
-        public static void LogException(Exception ex, Logger logger)
+        public static void LogException(Exception ex, Microsoft.Extensions.Logging.ILogger logger)
+        {
+            if(ex == null)  throw new ArgumentNullException();
+            if(logger == null) throw new ArgumentNullException();
+            logger.LogError(ex.GetType().ToString());
+            logger.LogError(ex.Message);
+            logger.LogError(ex.StackTrace);
+            if (ex.InnerException != null)
+            {
+                logger.LogError("+++++++++Inner Ex: +++++++++");
+                LogException(ex.InnerException, logger);
+            }
+        }
+         public static void LogException(Exception ex, Logger logger)
         {
             if(ex == null)  throw new ArgumentNullException();
             if(logger == null) throw new ArgumentNullException();

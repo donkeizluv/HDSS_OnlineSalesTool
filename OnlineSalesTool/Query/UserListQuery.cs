@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NLog;
 using OnlineSalesTool.ApiParameter;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Helper;
@@ -10,16 +9,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OnlineSalesTool.AppEnum;
+using Microsoft.Extensions.Logging;
 
 namespace OnlineSalesTool.Query
 {
     public class UserListQuery : ListQuery<AppUser, AppUserDTO>
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<UserListQuery> _logger;
 
-        public UserListQuery(IService repo) : base(repo)
+        public UserListQuery(IService repo, ILogger<UserListQuery> logger) : base(repo)
         {
             if (repo == null) throw new ArgumentNullException();
+            _logger = logger;
         }
 
         protected override IQueryable<AppUser> Filter(IQueryable<AppUser> q, ListingParams param)
@@ -75,7 +76,7 @@ namespace OnlineSalesTool.Query
                         return q.OrderByDescending(r => r.Manager.Username);
                     return q.OrderBy(r => r.Manager.Username);
                 default:
-                    _logger.Debug($"Unknown <{nameof(param.OrderBy)}> value: {param.OrderBy}");
+                    _logger.LogDebug($"Unknown <{nameof(param.OrderBy)}> value: {param.OrderBy}");
                     return q.OrderByDescending(r => r.Name);
             }
         }

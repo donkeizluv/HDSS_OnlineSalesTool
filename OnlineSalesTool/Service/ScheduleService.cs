@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NLog;
 using OnlineSalesTool.CustomException;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Logic;
@@ -9,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace OnlineSalesTool.Service
 {
@@ -16,10 +17,13 @@ namespace OnlineSalesTool.Service
     {
         //Number of prev sche to return in VM
         public const int NearestMonthScheduleTake = 5;
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<ScheduleService> _logger;
 
-        public ScheduleService(OnlineSalesContext context, IUserResolver userResolver)
-            : base(userResolver.GetPrincipal(), context) { }
+        public ScheduleService(OnlineSalesContext context, IHttpContextAccessor httpContext, ILogger<ScheduleService> logger)
+            : base(httpContext, context) 
+        { 
+            _logger = logger;
+        }
 
         public async Task<ShiftAssignerViewModel> Get()
         {

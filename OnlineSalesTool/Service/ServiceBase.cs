@@ -64,9 +64,14 @@ namespace OnlineSalesTool.Service
 
         public OnlineSalesContext DbContext { get; private set; }
 
-        public ServiceBase(OnlineSalesContext context, IUserResolver userResolver) : this(userResolver.GetPrincipal(), context)
+        public ServiceBase(IHttpContextAccessor httpContext, OnlineSalesContext context) : this(httpContext.HttpContext.User, context)
         {
             
+        }
+        protected ServiceBase(ClaimsPrincipal principal, OnlineSalesContext context)
+        {
+            UserPrincipal = principal ?? throw new ArgumentNullException();
+            DbContext = context ?? throw new ArgumentNullException();
         }
         /// <summary>
         /// Check if user id match the role
@@ -85,12 +90,7 @@ namespace OnlineSalesTool.Service
                 .AnyAsync(u => u.UserId == userId && u.Role.Name == role.ToString()))
                 throw new BussinessException($"User id: {userId} is not exist or not in valid role: {role.ToString()}");
         }
-        public ServiceBase(ClaimsPrincipal principal, OnlineSalesContext context)
-        {
-            
-            UserPrincipal = principal ?? throw new ArgumentNullException();
-            DbContext = context ?? throw new ArgumentNullException();
-        }
+
         private bool TryGetContextValue<T>(HttpContext context, string claimType, out T value)
         {
             if (context == null) throw new ArgumentNullException();

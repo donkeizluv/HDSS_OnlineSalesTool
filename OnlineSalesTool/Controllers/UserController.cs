@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NLog;
 using OnlineSalesTool.Cache;
 using OnlineSalesTool.CustomException;
 using OnlineSalesTool.Filter;
@@ -9,20 +8,22 @@ using OnlineSalesTool.Service;
 using System.Threading.Tasks;
 using static OnlineSalesTool.ApiParameter.ListingParams;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace OnlineSalesTool.Controllers
 {
-    [LogExceptionFilterAttribute]
+    [LogExceptionFilterAttribute(nameof(UserController))]
     [Authorize]
     public class UserController : Controller
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<UserController> _logger;
         private readonly IUserService _service;
         private readonly IRoleCache _roleCache;
-        public UserController(IUserService service, IRoleCache roleCache)
+        public UserController(IUserService service, IRoleCache roleCache, ILogger<UserController> logger)
         {
             _service = service;
             _roleCache = roleCache;
+            _logger = logger;
         }
 
         [HttpGet]

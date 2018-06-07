@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NLog;
 using OnlineSalesTool.ApiParameter;
 using OnlineSalesTool.AppEnum;
 using OnlineSalesTool.EFModel;
@@ -10,16 +9,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace OnlineSalesTool.Query
 {
     public class PosListQuery : ListQuery<Pos, PosDTO>
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<PosListQuery> _logger;
 
-        public PosListQuery(IService repo) : base(repo)
+        public PosListQuery(IService repo, ILogger<PosListQuery> logger) : base(repo)
         {
             if (repo == null) throw new ArgumentNullException();
+            _logger = logger;
         }
 
         protected override IQueryable<Pos> Filter(IQueryable<Pos> q, ListingParams param)
@@ -61,7 +62,7 @@ namespace OnlineSalesTool.Query
                         return q.OrderByDescending(r => r.User.Username);
                     return q.OrderBy(r => r.User.Username);
                 default:
-                    _logger.Debug($"Unknown <{nameof(param.OrderBy)}> value: {param.OrderBy}");
+                    _logger.LogDebug($"Unknown <{nameof(param.OrderBy)}> value: {param.OrderBy}");
                     return q.OrderByDescending(r => r.PosName);
             }
         }
@@ -108,7 +109,7 @@ namespace OnlineSalesTool.Query
             if (mandId == -1)
             {
                 //Invalid
-                _logger.Debug($"CA UserId: {Service.UserId} doesnt have manager!");
+                _logger.LogDebug($"CA UserId: {Service.UserId} doesnt have manager!");
             }
             return Service.DbContext.Pos.Where(p => p.UserId == mandId)
                 .Include(p => p.PosShift)

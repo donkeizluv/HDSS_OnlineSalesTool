@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NLog;
+using Microsoft.Extensions.Logging;
 using OnlineSalesTool.CustomException;
 using OnlineSalesTool.DTO;
 using OnlineSalesTool.Filter;
@@ -11,16 +11,17 @@ using static OnlineSalesTool.ApiParameter.ListingParams;
 
 namespace OnlineSalesTool.Controllers
 {
-    [LogExceptionFilterAttribute]
+    [LogExceptionFilterAttribute(nameof(PosController))]
     [Authorize]
     public class PosController : Controller
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<PosController> _logger;
         private readonly IPosService _service;
 
-        public PosController(IPosService service)
+        public PosController(IPosService service, ILogger<PosController> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         [HttpGet]

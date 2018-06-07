@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using NLog.Web;
 
 namespace OnlineSalesTool
 {
@@ -26,6 +27,7 @@ namespace OnlineSalesTool
         {
             //Start webserver
             return WebHost.CreateDefaultBuilder(args)
+                .UseNLog()
                 .UseStartup<Startup>();
         }
     }

@@ -13,12 +13,14 @@ using OnlineSalesTool.EFModel;
 using System.Collections.Generic;
 using System.Linq;
 using OnlineSalesTool.Options;
+using Microsoft.Extensions.Logging;
 
 namespace OnlineSalesTool.Controllers
 {
-    [LogExceptionFilterAttribute]
+    [LogExceptionFilterAttribute(nameof(AccountController))]
     public class AccountController : Controller
     {
+        private readonly ILogger<AccountController> _logger;
         private readonly IJwtFactory _jwtFactory;
         private readonly JwtIssuerOptions _jwtOptions;
         
@@ -27,10 +29,12 @@ namespace OnlineSalesTool.Controllers
         public AccountController(IConfiguration config,
             IJwtFactory jwtFactory,
             IOptions<JwtIssuerOptions> jwtOptions,
+            ILogger<AccountController> logger,
             IAuthService repo)
         {
             _jwtFactory = jwtFactory;
             _jwtOptions = jwtOptions.Value;
+            _logger = logger;
             _repo = repo;
         }
 

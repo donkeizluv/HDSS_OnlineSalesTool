@@ -8,18 +8,19 @@ using OnlineSalesTool.Service;
 using System.Collections.Generic;
 using OnlineSalesTool.DTO;
 using System.Linq;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace OnlineSalesTool.Controllers
 {
-    [LogExceptionFilterAttribute]
+    [LogExceptionFilterAttribute(nameof(DMCLController))]
     public class DMCLController : Controller
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<DMCLController> _logger;
         private readonly IDMCLService _service;
         private readonly IAPIAuth _apiAuth;
-        public DMCLController(IDMCLService service, IAPIAuth apiAuth)
+        public DMCLController(IDMCLService service, IAPIAuth apiAuth, ILogger<DMCLController> logger)
         {
+            _logger = logger;
             _service = service;
             _apiAuth = apiAuth;
         }

@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NLog;
 using OnlineSalesTool.Auth;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.Options;
@@ -14,14 +15,16 @@ namespace OnlineSalesTool.Service
 {
     public class AuthService : ServiceBase, IAuthService
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<AuthService> _logger;
         private readonly WindowsAuthOptions _authOption;
 
         public AuthService(OnlineSalesContext context,
-            IUserResolver userResolver,
+            IHttpContextAccessor httpContext,
+            ILogger<AuthService> logger,
             IOptions<WindowsAuthOptions> option)
-            : base(userResolver.GetPrincipal(), context)
+            : base(httpContext, context)
         {
+            _logger = logger;
             _authOption = option.Value;
         }
 

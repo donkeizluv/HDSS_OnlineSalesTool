@@ -87,8 +87,9 @@
                 return Promise.reject(e);
                 });
             //Check auth expire/reload auth
-            if(!this.$store.getters.isAuthChecked)
-                await this.$store.dispatch(CHECK_AUTH);
+            //This better get called from nav guard
+            // if(!this.$store.getters.isAuthChecked)
+            //     await this.$store.dispatch(CHECK_AUTH);
         },
         data: function () {
             return {

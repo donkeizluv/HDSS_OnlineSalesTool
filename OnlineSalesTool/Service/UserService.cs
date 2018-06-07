@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using NLog;
 using OnlineSalesTool.ApiParameter;
 using OnlineSalesTool.AppEnum;
 using OnlineSalesTool.Cache;
@@ -14,27 +13,31 @@ using OnlineSalesTool.Options;
 using OnlineSalesTool.DTO;
 using OnlineSalesTool.Query;
 using OnlineSalesTool.ViewModels;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace OnlineSalesTool.Service
 {
     public class UserService : ServiceBase, IUserService
     {
         private const int SUGGEST_TAKE = 5;
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<UserService> _logger;
         private readonly ListQuery<AppUser, AppUserDTO> _query;
         private readonly GeneralOptions _options;
         private readonly IRoleCache _roleCache;
 
         public UserService(OnlineSalesContext context,
-            IUserResolver userResolver,
+            IHttpContextAccessor httpContext,
             IOptions<GeneralOptions> options,
             IRoleCache roleCache,
-            ListQuery<AppUser, AppUserDTO> q)
-            : base(userResolver.GetPrincipal(), context)
+            ListQuery<AppUser, AppUserDTO> q,
+            ILogger<UserService> logger)
+            : base(httpContext, context)
         {
             _query = q;
             _options = options.Value;
             _roleCache = roleCache;
+            _logger = logger;
         }
 
         public async Task<int> Create(AppUserDTO user)

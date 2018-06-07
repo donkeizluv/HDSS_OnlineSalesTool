@@ -1,7 +1,6 @@
 ﻿using OnlineSalesTool.Filter;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NLog;
 using OnlineSalesTool.CustomException;
 using OnlineSalesTool.Logic;
 using OnlineSalesTool.Service;
@@ -9,18 +8,20 @@ using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace OnlineSalesTool.Controllers
 {
-    [LogExceptionFilterAttribute]
+    [LogExceptionFilterAttribute(nameof(ShiftController))]
     public class ShiftController : Controller
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<ShiftController> _logger;
         private readonly IScheduleService _repo;
 
-        public ShiftController(IScheduleService repo)
+        public ShiftController(IScheduleService repo, ILogger<ShiftController> logger)
         {
             _repo = repo;
+            _logger = logger;
         }
 
         [HttpGet]

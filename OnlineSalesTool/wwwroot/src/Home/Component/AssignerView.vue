@@ -99,13 +99,13 @@
     import axios from 'axios'
     import shiftdetail from './ShiftDetail.vue'
     //import moment from 'moment'
-    import { setDate, format } from 'date-fns'
-
+    //date-fns
+    import setDate from 'date-fns/set_date'
+    import format from 'date-fns/format'
     //Api
     import API_Const from '../API'
     //Const
     import { Permission } from '../AppConst'
-    
 
     export default {
         name: 'AssignerView',

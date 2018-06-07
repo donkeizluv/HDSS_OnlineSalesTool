@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using NLog;
 using OnlineSalesTool.ApiParameter;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.DTO;
@@ -12,21 +11,25 @@ using OnlineSalesTool.Cache;
 using OnlineSalesTool.AppEnum;
 using MoreLinq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace OnlineSalesTool.Service
 {
     public class PosService : ServiceBase, IPosService
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ILogger<PosService> _logger;
         private readonly ListQuery<Pos, PosDTO> _query;
         private readonly IRoleCache _roleCache;
 
         public PosService(OnlineSalesContext context,
-            IUserResolver userResolver,
+            IHttpContextAccessor httpContext,
             IRoleCache roleCache,
+            ILogger<PosService> logger,
             ListQuery<Pos, PosDTO> q)
-            : base(userResolver.GetPrincipal(), context)
+            : base(httpContext, context)
         {
+            _logger = logger;
             _query = q;
             _roleCache = roleCache;
         }
