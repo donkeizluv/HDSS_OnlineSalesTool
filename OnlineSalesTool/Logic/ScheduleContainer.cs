@@ -1,10 +1,10 @@
-﻿using MoreLinq;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using OnlineSalesTool.EFModel;
 using OnlineSalesTool.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OnlineSalesTool.Helper;
 
 namespace OnlineSalesTool.Const
 {
@@ -49,7 +49,7 @@ namespace OnlineSalesTool.Const
                 UserId = d.User.UserId,
                 ShiftId = d.Shift.ShiftId
             });
-            details.ForEach(d => ps.ScheduleDetail.Add(d));
+            ps.ScheduleDetail.AddRange(details);
             return ps;
         }
 

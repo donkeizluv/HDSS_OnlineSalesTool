@@ -63,5 +63,10 @@ namespace OnlineSalesTool.Const
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
+        public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> items)
+        {
+            foreach (var item in items)
+                collection.Add(item);
+        }
     }
 }

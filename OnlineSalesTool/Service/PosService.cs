@@ -9,7 +9,6 @@ using OnlineSalesTool.Exceptions;
 using System.Linq;
 using OnlineSalesTool.Cache;
 using OnlineSalesTool.Const;
-using MoreLinq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -60,7 +59,7 @@ namespace OnlineSalesTool.Const
                 UserId = pos.BDS.UserId,
                 Phone = pos.Phone
             };
-            pos.Shifts.ForEach(s => newPos.PosShift.Add(new PosShift() { ShiftId = s.ShiftId }));
+            newPos.PosShift.AddRange(pos.Shifts.Select(s => new PosShift() { ShiftId = s.ShiftId }));
             await DbContext.Pos.AddAsync(newPos);
             await DbContext.SaveChangesAsync();
             return newPos.PosId;
@@ -84,7 +83,7 @@ namespace OnlineSalesTool.Const
             updatePos.Phone = posDto.Phone;
             //Replace with updated shifts
             updatePos.PosShift.Clear();
-            posDto.Shifts.ForEach(s => updatePos.PosShift.Add(new PosShift() { ShiftId = s.ShiftId }));
+            updatePos.PosShift.AddRange(posDto.Shifts.Select(s => new PosShift() { ShiftId = s.ShiftId }));
             await DbContext.SaveChangesAsync();
         }
 
