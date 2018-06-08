@@ -1,13 +1,14 @@
-﻿using OnlineSalesTool.Filter;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OnlineSalesTool.Exceptions;
-using OnlineSalesTool.Const;
+using Microsoft.Extensions.Logging;
+using OnlineSalesCore.Exceptions;
+using OnlineSalesCore.Service;
+using OnlineSalesCore.ViewModels;
+using OnlineSalesTool.Filter;
+using OnlineSalesTool.Helper;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using System;
-using Microsoft.Extensions.Logging;
 
 namespace OnlineSalesTool.Controllers
 {
@@ -34,10 +35,7 @@ namespace OnlineSalesTool.Controllers
         public async Task<IActionResult> GetDetails(int? id)
         {
             if (id == null) return BadRequest();
-            using (_service)
-            {
-                return Ok(await _service.GetDetail(id ?? -1));
-            }
+            return Ok(await _service.GetDetail(id ?? -1));
         }
         [HttpPost]
         [Authorize]
@@ -46,11 +44,8 @@ namespace OnlineSalesTool.Controllers
             if (!ModelState.IsValid || schedule == null) return BadRequest("Invalid post data");
             try
             {
-                using (_service)
-                {
-                    var id = await _service.Create(schedule);
-                    return Ok(id);
-                }
+                var id = await _service.Create(schedule);
+                return Ok(id);
             }
             catch (BussinessException ex) //Fail bussiness check
             {

@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using OnlineSalesTool.Exceptions;
-using OnlineSalesTool.DTO;
+using OnlineSalesCore.DTO;
+using OnlineSalesCore.Exceptions;
+using OnlineSalesCore.Service;
 using OnlineSalesTool.Filter;
-using OnlineSalesTool.Const;
+using OnlineSalesTool.Helper;
 using System.Threading.Tasks;
-using static OnlineSalesTool.ApiParameter.ListingParams;
+using static OnlineSalesCore.ApiParameter.ListingParams;
 
 namespace OnlineSalesTool.Controllers
 {
@@ -39,10 +40,7 @@ namespace OnlineSalesTool.Controllers
                     .SetType(type).SetContain(contain)
                     .SetOrderBy(order)
                     .SetAsc(asc);
-            using (_service)
-            {
-                return Ok(await _service.Get(paramBuilder.Build()));    
-            }
+            return Ok(await _service.Get(paramBuilder.Build()));
         }
 
         [HttpPost]
@@ -52,11 +50,7 @@ namespace OnlineSalesTool.Controllers
             if (!ModelState.IsValid) return BadRequest();
             try
             {
-                using (_service)
-                {
-                    return Ok(await _service.Create(pos));
-                }
-                
+                return Ok(await _service.Create(pos));
             }
             catch (BussinessException ex)
             {
@@ -77,11 +71,8 @@ namespace OnlineSalesTool.Controllers
             if (!ModelState.IsValid) return BadRequest();
             try
             {
-                using (_service)
-                {
-                    await _service.Update(pos);    
-                    return Ok();
-                }
+                await _service.Update(pos);
+                return Ok();
             }
             catch (BussinessException ex)
             {
@@ -99,10 +90,7 @@ namespace OnlineSalesTool.Controllers
         public async Task<IActionResult> Check([FromQuery] string q)
         {
             if(string.IsNullOrEmpty(q)) return BadRequest();
-            using (_service)
-            {
-                return Ok(await _service.CheckCode(q.ToUpper()));
-            }
+            return Ok(await _service.CheckCode(q.ToUpper()));
         }
     }
 }

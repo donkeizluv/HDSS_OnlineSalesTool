@@ -1,27 +1,27 @@
-﻿using OnlineSalesTool.Helper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using OnlineSalesTool.EFModel;
-using OnlineSalesTool.Const;
-using System;
-using System.Text;
-using OnlineSalesTool.Options;
-using OnlineSalesTool.Query;
-using OnlineSalesTool.DTO;
-using OnlineSalesTool.Cache;
-using OnlineSalesTool.Const.Impl;
 using NLog.Extensions.Logging;
 using NLog.Web;
-using Microsoft.Extensions.Logging;
+using OnlineSalesCore.Cache;
+using OnlineSalesCore.DTO;
+using OnlineSalesCore.EFModel;
+using OnlineSalesCore.Logic;
+using OnlineSalesCore.Logic.Impl;
+using OnlineSalesCore.Options;
+using OnlineSalesCore.Query;
+using OnlineSalesCore.Service;
+using OnlineSalesTool.AuthToken;
+using System;
+using System.Text;
 
 namespace OnlineSalesTool
 {
@@ -49,22 +49,23 @@ namespace OnlineSalesTool
             services.AddDbContext<OnlineSalesContext>(o => o.UseSqlServer(Configuration.GetConnectionString("Default")));
             //Inject JWT factory
             services.AddSingleton<IJwtFactory, JwtFactory>();
+            //Inject HttpAccessor
+            services.AddHttpContextAccessor();
             //Inject service
-            services.AddTransient<IService, ServiceBase>();
-            services.AddTransient<IScheduleService, ScheduleService>();
-            services.AddTransient<IAuthService, AuthService>();
-            services.AddTransient<IPosService, PosService>();
-            services.AddTransient<IRoleCache, RoleCache>();
-            services.AddTransient<IUserService, UserService>();
-            services.AddTransient<IScheduleMatcher, SimpleScheduleMatcher>();
+            services.AddScoped<IService, ServiceBase>();
+            services.AddScoped<IScheduleService, ScheduleService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IPosService, PosService>();
+            services.AddScoped<IRoleCache, RoleCache>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IScheduleMatcher, SimpleScheduleMatcher>();
+            services.AddScoped<ILdapAuth, LdapAuth>();
             //Inject query
-            services.AddTransient<ListQuery<Pos, PosDTO>, PosListQuery>();
-            services.AddTransient<ListQuery<AppUser, AppUserDTO>, UserListQuery>();
+            services.AddScoped<ListQuery<Pos, PosDTO>, PosListQuery>();
+            services.AddScoped<ListQuery<AppUser, AppUserDTO>, UserListQuery>();
             //Inject INDUS
             //services.AddSingleton<IIndusAdapter>(IndusFactory.GetIndusInstance(Configuration,
             //    File.ReadAllText($"{Program.ExeDir}\\{Configuration.GetSection("Indus").GetValue<string>("QueryFileName")}")));
-            //Inject HttpAccessor
-            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             //https://stackoverflow.com/questions/40275195/how-to-setup-automapper-in-asp-net-core
             //services.AddAutoMapper()
         }

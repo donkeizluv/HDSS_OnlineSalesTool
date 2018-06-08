@@ -1,6 +1,0 @@
-﻿{
-  "ConnectionStrings": {
-    "Default": "Server=(LocalDb)\\local;Database=OnlineSales;"
-  },
-  "SyncInterval": 15000 //msec
-}

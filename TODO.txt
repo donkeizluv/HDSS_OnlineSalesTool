@@ -1,0 +1,15 @@
+﻿URGENT:
+
+TODO:
+-Permission policies
+-Split frontend permission dict to view dict & action dict
+
+
+DONE:
+-Clean up appsetting.json
+-Check unique names in CRUD
+-Generic listing VM
+-Lazy load prev schedules
+**ADMIN role can see all POSs, if no lazy load then prev schedules * POSs  would be very huge
+- Admin view can navigate to not permitted by entering the not permitted URL
+-Default child handling for admin view nested route

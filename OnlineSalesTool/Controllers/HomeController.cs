@@ -1,10 +1,8 @@
-﻿using OnlineSalesTool.Filter;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Mvc;
+using OnlineSalesTool.Filter;
+using OnlineSalesTool.Models;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using OnlineSalesTool.ViewModels;
-using Microsoft.EntityFrameworkCore.Design;
 
 namespace OnlineSalesTool.Controllers
 {

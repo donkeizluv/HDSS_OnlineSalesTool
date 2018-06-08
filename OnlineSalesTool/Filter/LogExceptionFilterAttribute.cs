@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
 using NLog;
-using OnlineSalesTool.Const;
+using OnlineSalesTool.Helper;
 
 namespace OnlineSalesTool.Filter
 {

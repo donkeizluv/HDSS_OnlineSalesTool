@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OnlineSalesTool.Cache;
-using OnlineSalesTool.Exceptions;
-using OnlineSalesTool.Filter;
-using OnlineSalesTool.DTO;
-using OnlineSalesTool.Const;
-using System.Threading.Tasks;
-using static OnlineSalesTool.ApiParameter.ListingParams;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using OnlineSalesCore.Cache;
+using OnlineSalesCore.DTO;
+using OnlineSalesCore.Exceptions;
+using OnlineSalesCore.Service;
+using OnlineSalesTool.Filter;
+using OnlineSalesTool.Helper;
+using System.Threading.Tasks;
+using static OnlineSalesCore.ApiParameter.ListingParams;
 
 namespace OnlineSalesTool.Controllers
 {
@@ -42,10 +43,7 @@ namespace OnlineSalesTool.Controllers
                     .SetType(type).SetContain(contain)
                     .SetOrderBy(order)
                     .SetAsc(asc);
-            using (_service)
-            {
-                return Ok(await _service.Get(paramBuilder.Build()));
-            }                    
+            return Ok(await _service.Get(paramBuilder.Build()));
         }
 
         [HttpPost]
@@ -55,10 +53,7 @@ namespace OnlineSalesTool.Controllers
             if (!ModelState.IsValid) return BadRequest();
             try
             {
-                using (_service)
-                {
-                    return Ok(await _service.Create(user));
-                }
+                return Ok(await _service.Create(user));
             }
             catch (BussinessException ex)
             {
@@ -78,11 +73,8 @@ namespace OnlineSalesTool.Controllers
             if (!ModelState.IsValid) return BadRequest();
             try
             {
-                using (_service)
-                {
-                    await _service.Update(user);
-                    return Ok();
-                }
+                await _service.Update(user);
+                return Ok();
             }
             catch (BussinessException ex)
             {
@@ -104,12 +96,8 @@ namespace OnlineSalesTool.Controllers
                 return NoContent();
             try
             {
-                using (_service)
-                {
-                    _roleCache.GetRoleId(role, out int roleId, out var appRole);
-                    return Ok(await _service.SearchSuggest(appRole, q));
-                }
-
+                _roleCache.GetRoleId(role, out int roleId, out var appRole);
+                return Ok(await _service.SearchSuggest(appRole, q));
             }
             catch (BussinessException ex)
             {
@@ -122,10 +110,7 @@ namespace OnlineSalesTool.Controllers
         public async Task<IActionResult> Check([FromQuery] string q)
         {
             if(string.IsNullOrEmpty(q)) return BadRequest();
-            using (_service)
-            {
-                return Ok(await _service.CheckUsername(q.ToLower()));
-            }
+            return Ok(await _service.CheckUsername(q.ToLower()));
         }
     }
 }
