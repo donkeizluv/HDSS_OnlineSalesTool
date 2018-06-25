@@ -54,12 +54,12 @@ namespace OnlineSalesTool.Controllers
             }
             catch (BussinessException ex)
             {
-                Utility.LogException(ex, _logger);
+                Helper.Utility.LogException(ex, _logger);
                 return BadRequest(ex.Message);
             }
             catch(DbUpdateException ex)
             {
-                Utility.LogException(ex, _logger);
+                Helper.Utility.LogException(ex, _logger);
                 return BadRequest(ex.Message);
             }
         }
@@ -76,12 +76,12 @@ namespace OnlineSalesTool.Controllers
             }
             catch (BussinessException ex)
             {
-                Utility.LogException(ex, _logger);
+                Helper.Utility.LogException(ex, _logger);
                 return BadRequest(ex.Message);
             }
             catch(DbUpdateException ex)
             {
-                Utility.LogException(ex, _logger);
+                Helper.Utility.LogException(ex, _logger);
                 return BadRequest(ex.Message);
             }
         }

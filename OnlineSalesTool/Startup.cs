@@ -5,12 +5,14 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
 using NLog.Web;
+using OnlineSalesCore.BackgroundJobs;
 using OnlineSalesCore.Cache;
 using OnlineSalesCore.DTO;
 using OnlineSalesCore.EFModel;
@@ -21,6 +23,7 @@ using OnlineSalesCore.Query;
 using OnlineSalesCore.Service;
 using OnlineSalesTool.AuthToken;
 using System;
+using System.Linq;
 using System.Text;
 
 namespace OnlineSalesTool
@@ -51,6 +54,8 @@ namespace OnlineSalesTool
             services.AddSingleton<IJwtFactory, JwtFactory>();
             //Inject HttpAccessor
             services.AddHttpContextAccessor();
+            //Indus
+            services.AddScoped<IIndusService, IndusService>();
             //Inject service
             services.AddScoped<IService, ServiceBase>();
             services.AddScoped<IScheduleService, ScheduleService>();
@@ -60,24 +65,45 @@ namespace OnlineSalesTool
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IScheduleMatcher, SimpleScheduleMatcher>();
             services.AddScoped<ILdapAuth, LdapAuth>();
-            //Inject query
             services.AddScoped<ListQuery<Pos, PosDTO>, PosListQuery>();
             services.AddScoped<ListQuery<AppUser, AppUserDTO>, UserListQuery>();
-            //Inject INDUS
-            //services.AddSingleton<IIndusAdapter>(IndusFactory.GetIndusInstance(Configuration,
-            //    File.ReadAllText($"{Program.ExeDir}\\{Configuration.GetSection("Indus").GetValue<string>("QueryFileName")}")));
-            //https://stackoverflow.com/questions/40275195/how-to-setup-automapper-in-asp-net-core
-            //services.AddAutoMapper()
+            services.AddScoped<IAPIAuth, APIAuth>();
+            services.AddScoped<IDMCLService, DMCLService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IHtmlComposer, HtmlComposer>();
+            services.AddScoped<IMailerService, MailerService>();
+            //Singleton
+            services.AddSingleton<IMailQueue, MailQueue>();
+        }
+        public void AddJobs(IServiceCollection services)
+        {
+            services.AddSingleton<IHostedService, SyncJob>();
+            services.AddSingleton<IHostedService, MailJob>();
         }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             Inject(services);
+            AddJobs(services);
             //Get setting section
             var jwtSetting = Configuration.GetSection(nameof(JwtIssuerOptions));
             var authSetting = Configuration.GetSection(nameof(WindowsAuthOptions));
             var genOptions = Configuration.GetSection(nameof(GeneralOptions));
             var apiAuthOptions = Configuration.GetSection(nameof(APIAuthOptions));
+            var syncOptions = Configuration.GetSection(nameof(SyncOptions));
+            var mailerSection = Configuration.GetSection(nameof(MailerOptions));
+            var receiverSection = mailerSection.GetSection(nameof(MailerOptions.Receivers));
+            //Mailer
+            services.Configure<MailerOptions>(options =>
+            {
+                options.Server = mailerSection[nameof(MailerOptions.Server)];
+                options.Port = int.Parse(mailerSection[nameof(MailerOptions.Port)]);
+                options.Username = mailerSection[nameof(MailerOptions.Username)];
+                options.Pwd = mailerSection[nameof(MailerOptions.Pwd)];
+                options.Suffix = mailerSection[nameof(MailerOptions.Suffix)];
+                options.Receivers = receiverSection.GetChildren().Select(c => c.Value);
+                options.Disabled = mailerSection[nameof(MailerOptions.Disabled)] == "1";
+            });
             //Inject options
             //API auth
             services.Configure<APIAuthOptions>(o =>
@@ -88,6 +114,11 @@ namespace OnlineSalesTool
             services.Configure<GeneralOptions>(o =>
             {
                 o.EmailSuffix = genOptions[nameof(GeneralOptions.EmailSuffix)];
+            });
+            //Sync options
+            services.Configure<SyncOptions>(o =>
+            {
+                o.Delay = int.Parse(syncOptions[nameof(SyncOptions.Delay)]);
             });
             //JWT option
             services.Configure<JwtIssuerOptions>(o =>
@@ -152,7 +183,7 @@ namespace OnlineSalesTool
             });
 
 
-            //enforce SSL
+            //Enforce SSL
             //services.Configure<MvcOptions>(options =>
             //{
             //    options.Filters.Add(new RequireHttpsAttribute());
@@ -161,16 +192,18 @@ namespace OnlineSalesTool
 
             services.AddMvc().AddJsonOptions(options =>
             {
-                //solve auto camel case prop names
+                //Solve auto camel case prop names
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-                //ignore loop ref of object contains each other
+                //Ignore loop ref of object contains each other
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
         }
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app,
+            Microsoft.AspNetCore.Hosting.IHostingEnvironment env,
+            ILoggerFactory loggerFactory)
         {
             //Nlog
             env.ConfigureNLog("NLog.config");
@@ -178,8 +211,6 @@ namespace OnlineSalesTool
             loggerFactory.AddNLog();
             //Webserver stuff
             app.UseAuthentication();
-            //enforce SSL
-            //app.UseRewriter(new RewriteOptions().AddRedirectToHttps((int)HttpStatusCode.Redirect, 44395));
             app.UseExceptionHandler("/Home/Error");
             app.UseStatusCodePages();
             app.UseResponseCompression();

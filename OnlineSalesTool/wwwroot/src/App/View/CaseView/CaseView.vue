@@ -1,4 +1,4 @@
-﻿<template id="caseview">
+﻿<template>
     <div>
         <!--Search bar-->
         <div class="row">
@@ -13,25 +13,25 @@
     </div>
 </template>
 <script>
-    import searchBar from './SearchBar.vue'
+    import API from "../../API";
+    //Permission
+    import { Permission } from "../../AppConst";
+    import searchBar from '../Shared/SearchBar.vue'
+    import pagenav from "vuejs-paginate";
+    import axios from "axios";
+    import listingMix from "../Shared/listingViewMixins";
+
     export default {
-        template: '#caseview',
+        name: "CaseView",
+        mixins: [listingMix],
         components: {
-            'search-bar': searchBar
+            "search-bar": searchBar
         },
-
-        beforeRouteEnter(to, from, next) {
-            next(async me => {
-                //this component
-                if (!me.VM)
-                    me.init();
-            })
-        },
-
+        
         computed: {
 
         },
-        data: () => {
+        data() {
             return {
                 VM: null,
                 searchProps: [
@@ -60,7 +60,5 @@
     }
 </script>
 <style scoped>
-    .borderless {
-        border: none !important;
-    }
+    
 </style>

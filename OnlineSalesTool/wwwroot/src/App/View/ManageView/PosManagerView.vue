@@ -293,18 +293,18 @@
     </div>
 </template>
 <script>
-import API from "../API";
+import API from "../../API";
 //Permission
-import { Permission } from "../AppConst";
+import { Permission } from "../../AppConst";
 //Components
-import SearchBar from "./SearchBar.vue";
-import light from "./ValidLight.vue";
-import DynamicSelect from "./DynamicSelect.vue";
+import SearchBar from "../Shared/SearchBar.vue";
+import light from "../Shared/ValidLight.vue";
+import DynamicSelect from "../Shared/DynamicSelect.vue";
 import vSelect from "vue-select";
 import pagenav from "vuejs-paginate";
 import axios from "axios";
-import listingMix from "./Shared/listingViewMixins";
-import debounce from 'lodash.debounce'
+import listingMix from "../Shared/listingViewMixins";
+import debounce from "lodash.debounce";
 
 export default {
     name: "posManagerView",
@@ -315,36 +315,36 @@ export default {
         "page-nav": pagenav,
         "d-select": DynamicSelect,
         "v-select": vSelect,
-        "light": light
+        light: light
     },
-    mounted: function() {
+    mounted() {
         this.init();
     },
     computed: {
-        searchSuggestAPI: function() {
+        searchSuggestAPI() {
             return API.UserSearchSuggest.replace("{role}", "BDS");
         },
         //Permission
-        canUpdate: function() {
+        canUpdate() {
             return this.$store.getters.can(Permission.UpdatePOS);
         },
-        canCreate: function() {
+        canCreate() {
             return this.$store.getters.can(Permission.CreatePOS);
         },
         //CRUD
-        isNewItemValid: function() {
+        isNewItemValid() {
             if (!this.canCreate) return false;
             return this.checkItem(this.newItem);
         }
-        // isNewItemPosCodeValid: function(){
+        // isNewItemPosCodeValid(){
         //     return this.newItem.codeChecked;
         // }
     },
-    data: function() {
+    data() {
         return {
             orderBy: "PosName",
             newItem: {
-                PosCode: '',
+                PosCode: "",
                 PosName: null,
                 Address: null,
                 Phone: null,
@@ -379,7 +379,7 @@ export default {
         };
     },
     methods: {
-        init: function() {
+        init() {
             this.loadVM();
         },
         loadVM: async function() {
@@ -406,9 +406,10 @@ export default {
             }
         },
         //New item check
-        checkItem: function(item) {
+        checkItem(item) {
             if (!item) return false;
-            if (!item.codeChecked ||
+            if (
+                !item.codeChecked ||
                 !item.PosCode ||
                 !item.PosName ||
                 !item.Address ||
@@ -454,17 +455,17 @@ export default {
                 this.$emit("showinfo", "Có lỗi trong quá trình chỉnh sửa.");
             }
         },
-        canUpdateItem: function(id) {
-            if(!this.canUpdate) return;
+        canUpdateItem(id) {
+            if (!this.canUpdate) return;
             let index = this.findItemIndex(id);
             //Must be in Edit mode to save
             if (!this.items[index].editMode) return false;
             //Values check
             return this.checkItem(this.items[index]);
         },
-        clearNewItem: function() {
+        clearNewItem() {
             this.newItem = {
-                PosCode: '',
+                PosCode: "",
                 PosName: null,
                 Address: null,
                 Phone: null,
@@ -473,46 +474,48 @@ export default {
                 codeChecked: false
             };
         },
-        findItemIndex: function(id) {
+        findItemIndex(id) {
             let index = this.items.findIndex(x => x.PosId == id);
             if (index == -1) throw "Cant find POS of id: " + id;
             return index;
         },
-        isPosCodeValid: function(id){
+        isPosCodeValid(id) {
             let index = this.findItemIndex(id);
             return this.items[index].codeChecked;
         },
-        checkCode: function(id){
+        checkCode(id) {
             this.checkCodeDebounce(id, this);
         },
         checkCodeDebounce: debounce(async (id, vm) => {
             let index = -1;
             let item = null;
             //New item
-            if(id == -1){ 
+            if (id == -1) {
                 item = vm.newItem;
-            }else{
+            } else {
                 index = vm.findItemIndex(id);
                 item = vm.items[index];
             }
-            let code = item.PosCode || '';
-            if(!code){
-                vm.$set(item, 'codeChecked', false);
+            let code = item.PosCode || "";
+            if (!code) {
+                vm.$set(item, "codeChecked", false);
                 // item.codeChecked  = false;
-            }else{
-                let { data } = await axios.get(API.CheckCode.replace('{code}', code));
+            } else {
+                let { data } = await axios.get(
+                    API.CheckCode.replace("{code}", code)
+                );
                 //-1 means not exist
-                vm.$set(item, 'codeChecked', data == -1);
+                vm.$set(item, "codeChecked", data == -1);
                 // item.codeChecked = data == -1;
             }
         }, 300)
-        // composeShiftNames: function(list){
+        // composeShiftNames(list){
         //     if(!list) return '';
         //     return list.reduce((acc, i) =>
         //         acc = acc + ' ' + i.Name, '');
         // },
         //  //Fun
-        // randomPillColor: function(){
+        // randomPillColor(){
         //     if(this.randomPills.length < 1){
         //         //Refill
         //         for(let i=0; i < 10; i++){
@@ -523,7 +526,7 @@ export default {
         //     return this.randomPills.splice(0, 1)[0];
         // }
     }
-}
+};
 </script>
 <style scoped>
 .td-text-center tr td {
@@ -573,7 +576,7 @@ export default {
     height: 61px;
 }
 /* Workaround for overflow y of datatable */
-.lastrow-padding{
+.lastrow-padding {
     height: 150px;
 }
 </style>

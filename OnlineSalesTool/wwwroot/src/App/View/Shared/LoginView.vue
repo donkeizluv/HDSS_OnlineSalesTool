@@ -1,5 +1,5 @@
 ﻿<template id="loginTemplate">
-    <div class="row h-100 login-top-margin">
+    <div class="row login-top-margin">
         <div class="col-lg-10 mx-auto">
             <div class="row">
                 <div class="col-md-4 mx-auto">
@@ -55,21 +55,21 @@
     </div>
 </template>
 <script>
-    import { LOGIN } from '../actions'
+    import { LOGIN } from '../../actions'
     export default {
         name: 'login',
         template: '#loginTemplate',
         computed: {
-            canSubmit: function () {
+            canSubmit () {
                 if (this.username && this.pwd)
                     return true;
                 return false;
             },
-            loading: function () {
+            loading () {
                 return this.$store.getters.isloading;
             }
         },
-        data: function () {
+        data () {
             return {
                 username: '',
                 pwd: '',
@@ -93,7 +93,7 @@
 </script>
 <style scoped>
     .login-top-margin {
-        margin-top: 12rem !important;
+        margin-top: 9rem !important;
     }
     .no-margin{
         margin: 0;

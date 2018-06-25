@@ -49,17 +49,17 @@ namespace OnlineSalesTool.Controllers
             }
             catch (BussinessException ex) //Fail bussiness check
             {
-                Utility.LogException(ex, _logger);
+                Helper.Utility.LogException(ex, _logger);
                 return BadRequest(ex.Message);
             }
             catch (DbUpdateException ex)
             {
-                Utility.LogException(ex, _logger);
+                Helper.Utility.LogException(ex, _logger);
                 return BadRequest("System error.");
             }
             catch (SqlException ex)
             {
-                Utility.LogException(ex, _logger);
+                Helper.Utility.LogException(ex, _logger);
                 return BadRequest("System error.");
             }
 

@@ -1,4 +1,4 @@
-﻿<template id="adminview">
+﻿<template>
     <div>
         <div class="row">
             <div class="col-lg-12 mx-auto">
@@ -36,26 +36,25 @@
 import adminRoutes from "./adminRoutes";
 
 export default {
-    name: "admin-view",
-    template: "#adminview",
+    name: "ManageView",
     computed: {
-        computedRoutes: function(){
+        computedRoutes(){
             return adminRoutes;
         },
-        currentRoute: function(){
+        currentRoute(){
             return this.$route;
         },
-        isCurrentRouteAllowed: function(){
+        isCurrentRouteAllowed(){
             return this.allow(this.currentRoute);
         }
     },
-    //data: function () {
+    //data() {
     //    return {
     //        //routes: []
     //    }
     //},
     methods: {
-        allow: function(route) {
+        allow(route) {
             return this.$store.getters.can(route.name);
         },
         //Bubbling up

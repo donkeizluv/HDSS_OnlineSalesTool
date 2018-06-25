@@ -16,5 +16,9 @@
     CreateUser: '/API/User/Create',
     UpdateUser: '/API/User/Update',
     UserSearchSuggest: '/API/User/Suggest?role={role}&q=',
-    CheckUsername: '/API/User/Check?q={name}'
+    CheckUsername: '/API/User/Check?q={name}',
+    //Case
+    CaseVM: 'API/Case/Get',
+    CaseUpdateIndusCode: 'API/Case/UpdateCode',
+    CaseCustomerConfirm: 'API/Case/CustomerConfirm'
 }

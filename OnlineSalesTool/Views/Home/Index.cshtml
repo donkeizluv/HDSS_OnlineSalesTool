@@ -5,4 +5,7 @@
 <div id="app"></div>
 @*Prod*@
 @*<script asp-src-include="~/dist/Home_*.js"></script>*@
+<link rel="stylesheet" href="/dist/app_styles.css">
+<!-- https://github.com/webpack-contrib/mini-css-extract-plugin/issues/147 -->
+<script src="/dist/app_styles.chunk.js"></script>
 <script src="/dist/app.js"></script>

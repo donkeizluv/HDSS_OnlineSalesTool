@@ -2,9 +2,6 @@
 import Vuex from "vuex";
 import axios from "axios";
 import jwt from "jwt-decode";
-
-import common from "../Home/Common";
-
 import { ConstStorage } from "./AppConst";
 import permissionDict from "./permissionDict";
 
@@ -77,29 +74,29 @@ export default new Vuex.Store({
     mutations: {
         //Auth
         [AUTHENTICATED](state, value) {
-            this.state.authenticated = value;
+            state.authenticated = value;
         },
         [AUTH_CHECKED](state, value) {
-            this.state.authChecked = value;
+            state.authChecked = value;
         },
         [TOKEN](state, value) {
-            this.state.token = value;
+            state.token = value;
         },
         [EXPIRE](state, value) {
-            this.state.expire = value;
+            state.expire = value;
         },
         [IDENTITY](state, value) {
-            this.state.identity = value;
+            state.identity = value;
         },
         [ABILITY](state, value) {
-            this.state.ability = value;
+            state.ability = value;
         },
         [ROLE](state, value) {
-            this.state.role = value;
+            state.role = value;
         },
         //App wide loading
         [LOADING](state, value) {
-            this.state.isLoading = value;
+            state.isLoading = value;
         }
     },
     actions: {

@@ -9,7 +9,7 @@
             '504': '504 Hết thời gian chờ'
         }
     },
-    errorCodeTranslater: function(code) {
+    errorCodeTranslater(code) {
         return this.errorMessages[this.langCode][code];
     }
 }

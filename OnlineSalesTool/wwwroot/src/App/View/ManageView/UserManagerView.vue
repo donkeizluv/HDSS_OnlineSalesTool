@@ -310,29 +310,30 @@
     </div>
 </template>
 <script>
-import API from "../API";
+import API from "../../API";
 //Permission
-import { Permission } from "../AppConst";
+import { Permission } from "../../AppConst";
 //Components
-import light from "./ValidLight.vue";
-import SearchBar from "./SearchBar.vue";
+import light from "../Shared/ValidLight.vue";
+import SearchBar from "../Shared/SearchBar.vue";
 import vSelect from "vue-select";
-import DynamicSelect from "./DynamicSelect.vue";
+import DynamicSelect from "../Shared/DynamicSelect.vue";
 import pagenav from "vuejs-paginate";
 import axios from "axios";
-import listingMix from "./Shared/listingViewMixins";
-import debounce from 'lodash.debounce'
+import listingMix from "../Shared/listingViewMixins";
+import helperMix from "../Shared/helperMixin";
+import debounce from "lodash.debounce";
 
 export default {
     name: "userManagerView",
     template: "usermanager",
-    mixins: [listingMix],
+    mixins: [listingMix, helperMix],
     components: {
         "search-bar": SearchBar,
         "page-nav": pagenav,
         "d-select": DynamicSelect,
         "v-select": vSelect,
-        "light": light
+        light: light
     },
     mounted: function() {
         this.init();
@@ -342,7 +343,7 @@ export default {
         canUpdate: function() {
             return this.$store.getters.can(Permission.UpdateUser);
         },
-        canCreate: function(){
+        canCreate: function() {
             return this.$store.getters.can(Permission.CreateUser);
         },
         //API
@@ -351,7 +352,7 @@ export default {
         },
         //CRUD
         isNewItemValid: function() {
-            if(!this.canCreate) return false;
+            if (!this.canCreate) return false;
             //use checkItem bc both basically have same validation
             return this.checkItem(this.newItem);
             //return false;
@@ -362,7 +363,7 @@ export default {
             orderBy: "Username",
             //New item
             newItem: {
-                Username: '',
+                Username: "",
                 Name: null,
                 Role: null,
                 Active: true,
@@ -425,7 +426,7 @@ export default {
         //CRUD
         //control states
         canUpdateItem: function(id) {
-            if(!this.canUpdate) return;
+            if (!this.canUpdate) return;
             let index = this.findItemIndex(id);
             //Must be in Edit mode to save
             if (!this.items[index].editMode) return false;
@@ -478,8 +479,7 @@ export default {
         //New item check
         checkItem: function(item) {
             if (!item) return false;
-            if (!item.Username || !item.Name || !item.HR)
-                return false;
+            if (!item.Username || !item.Name || !item.HR) return false;
             //CA must have manager
             if (item.Role == "CA") {
                 if (!item.Manager) return false;
@@ -489,34 +489,36 @@ export default {
             }
             return true;
         },
-        checkUsername: function(id){
+        checkUsername: function(id) {
             this.checkUsernameDebounce(id, this);
         },
         checkUsernameDebounce: debounce(async (id, vm) => {
             let index = -1;
             let item = null;
             //New item
-            if(id == -1){ 
+            if (id == -1) {
                 item = vm.newItem;
-            }else{
+            } else {
                 index = vm.findItemIndex(id);
                 item = vm.items[index];
             }
-            let userName = item.Username || '';
-            if(!userName){
-                vm.$set(item, 'usernameChecked', false);
+            let userName = item.Username || "";
+            if (!userName) {
+                vm.$set(item, "usernameChecked", false);
                 // item.codeChecked  = false;
-            }else{
-                let { data } = await axios.get(API.CheckUsername.replace('{name}', userName));
+            } else {
+                let { data } = await axios.get(
+                    API.CheckUsername.replace("{name}", userName)
+                );
                 //-1 means not exist
-                vm.$set(item, 'usernameChecked', data == -1);
+                vm.$set(item, "usernameChecked", data == -1);
                 // item.codeChecked = data == -1;
             }
         }, 300),
         //Init & clear item
         clearNewItem: function() {
             this.newItem = {
-                Username: '',
+                Username: "",
                 Name: null,
                 Role: null,
                 Active: true,
@@ -567,7 +569,7 @@ export default {
     height: 61px;
 }
 /* Workaround for overflow y of datatable */
-.lastrow-padding{
+.lastrow-padding {
     height: 150px;
 }
 </style>

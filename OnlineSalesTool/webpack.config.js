@@ -2,20 +2,16 @@
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const { VueLoaderPlugin } = require('vue-loader')
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
-
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 module.exports = {
     entry: {
-        //Shared: './wwwroot/src/shared.js',
-        home: './wwwroot/src/Home/app.js'
+        app: './wwwroot/src/App/app.js'
     },
     output: {
         path: __dirname + "/wwwroot/dist/",
-        //filename: "[name]_[chunkhash].js"
-        filename: "app.js",
+        filename: "[name].js",
         publicPath: '/dist/',
-        // chunkFilename: '[name].chunk.js',
-        chunkFilename: '[chunkhash].chunk.js',
+        chunkFilename: '[name].chunk.js',
     },
     module: {
         rules: [
@@ -28,36 +24,42 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                loader: "style-loader!css-loader"
-            },
-            {
-                test: /\.scss$/,
                 use: [
-                  {
-                    loader: 'css-loader'
-                  },
-                  {
-                    loader: 'sass-loader'
-                  }
-                ]
+                    MiniCssExtractPlugin.loader,
+                    {
+                      loader: "css-loader",
+                      query: {
+                        importLoaders: 1
+                      }
+                    }
+                  ]
             },
             {
                 test: /\.vue$/,
-                loader: 'vue-loader',
-                options: {
-                    loaders: {
-                        'scss': 'vue-style-loader!css-loader!sass-loader',
-                        'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
-                    }
-                }
+                loader: 'vue-loader'
             }
         ]
+    },
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                styles: {
+                    name: 'app_styles',
+                    test: module =>  module.nameForCondition &&
+                        /\.(s?css|vue)$/.test(module.nameForCondition()) &&
+                        !/^javascript/.test(module.type),
+                    chunks: 'all',
+                    enforce: true
+                }
+            }
+        }
     },
     plugins: [
         //Ignore locales to reduce bundled size
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/), 
         new CleanWebpackPlugin(['wwwroot/dist'], []),
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new MiniCssExtractPlugin()
     ],
     stats: {
         warnings: false

@@ -1,12 +1,7 @@
 ﻿import store from "./store";
-import { CHECK_AUTH, LOGOUT } from './actions'
-//import AssignerView from './Component/AssignerView.vue'
-import CaseView from "./Component/CaseView.vue";
-//import AdminView from './Component/AdminView.vue'
-import adminRoutes from "./Component/adminRoutes";
-//import TestView from './Component/TestView.vue'
+import { CHECK_AUTH } from './actions'
+import adminRoutes from "./View/ManageView/adminRoutes";
 import { Permission } from "./AppConst";
-import permissionDict from "./permissionDict";
 
 async function checkPermission(to, from, next) {
     if(!store.getters.isAuthChecked)
@@ -23,7 +18,8 @@ const routes = [
     {
         path: "/Home",
         name: Permission.CaseListing,
-        component: CaseView,
+        component: () =>
+            import(/* webpackChunkName: "caseview" */ "./View/CaseView/CaseView.vue"),
         display: "Trang chính",
         navbar: true, //Renders on nav bar if true
         beforeEnter: checkPermission
@@ -32,7 +28,7 @@ const routes = [
         path: "/Assign",
         name: Permission.ScheduleAssigner,
         component: () =>
-            import(/* webpackChunkName: "assignerview" */ "./Component/AssignerView.vue"),
+            import(/* webpackChunkName: "assignerview" */ "./View/ScheduleView/ScheduleView.vue"),
         display: "Lịch trực",
         navbar: true,
         beforeEnter: checkPermission
@@ -41,7 +37,7 @@ const routes = [
         path: "/Manage",
         name: Permission.Management,
         component: () =>
-            import(/* webpackChunkName: "adminview" */ "./Component/AdminView.vue"),
+            import(/* webpackChunkName: "adminview" */ "./View/ManageView/ManageView.vue"),
         display: "Quản lý",
         navbar: true,
         beforeEnter: checkPermission,

@@ -24,8 +24,7 @@
 </template>
 <script>
     import vSelect from 'vue-select'
-    //const vSelect = () => import(/* webpackChunkName: "vselect" */'vue-select')
-    import light from './ValidLight.vue'
+    import light from '../Shared/ValidLight.vue'
     export default {
         name: 'shiftdetail',
         template: '#shiftdetail',
@@ -45,14 +44,14 @@
                 default: false
             }
         },
-        data: function () {
+        data() {
             return {
                 DefaultCardClass: 'card card-width mb-3'
             }
         },
         computed: {
             //Return list of users left to assign
-            usersLeft: function () {
+            usersLeft() {
                 //User left to assign
                 var assigned = this.day.Shifts.map(a => {
                     if (a.Assign)
@@ -63,7 +62,7 @@
                 var left = this.users.filter(u => !assigned.includes(u.UserId));
                 return left.map(u => { return { label: u.DisplayName, value: u.UserId }; });
             },
-            borderColor: function () {
+            borderColor() {
                 if (this.readonly)
                     return `readonly-border-color ${this.DefaultCardClass}`;
                 else {
@@ -74,7 +73,7 @@
 
                 }
             },
-            isAllSet: function () {
+            isAllSet() {
                 return this.day.Shifts.every(d => {
                     if (!d.Assign) return false;
                     if (!d.Assign.value) return false;

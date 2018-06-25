@@ -4,7 +4,7 @@
   "scripts": {
     "build": "webpack --mode development --hide-modules --progress",
     "build-verbose": "webpack --mode development --display-modules",
-    "build-min": "webpack --mode production --hide-modules --optimize-min-chunk-size 51200"
+    "build-min": "webpack --mode production --hide-modules"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -26,12 +26,14 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "clean-webpack-plugin": "^0.1.19",
+    "cross-env": "^5.2.0",
     "css-loader": "^0.28.11",
+    "mini-css-extract-plugin": "^0.4.0",
     "style-loader": "^0.21.0",
     "vue-loader": "^15.2.4",
     "vue-template-compiler": "^2.5.16",
-    "webpack": "^4.11.1",
-    "webpack-cli": "^3.0.3"
+    "webpack": "^4.12.1",
+    "webpack-cli": "^3.0.8"
   },
   "babel": {
     "presets": [

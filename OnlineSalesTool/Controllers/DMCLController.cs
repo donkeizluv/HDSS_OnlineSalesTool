@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OnlineSalesCore.DTO;
+using OnlineSalesCore.Exceptions;
 using OnlineSalesCore.Service;
 using OnlineSalesTool.Filter;
 using System.Collections.Generic;
@@ -21,13 +22,36 @@ namespace OnlineSalesTool.Controllers
             _service = service;
             _apiAuth = apiAuth;
         }
-        
+        [HttpGet]
+        public IActionResult Ping([FromQuery] string guid, [FromQuery] string sig)
+        {
+            if (string.IsNullOrEmpty(guid))
+            {
+                return BadRequest();
+            }
+
+            if (string.IsNullOrEmpty(sig))
+            {
+                return BadRequest();
+            }
+            if(_apiAuth.Check(sig, guid))
+                return Ok();
+            return Unauthorized();
+        }
         [HttpGet]
         public async Task<IActionResult> Status([FromQuery] string guid)
         {
             if (string.IsNullOrEmpty(guid))
                 return BadRequest();
-            return Ok(await _service.GetStatus(guid));
+            try
+            {
+                return Ok(await _service.GetStatus(guid));    
+            }
+            catch (BussinessException ex)
+            {
+                Utility.LogException(ex, _logger);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
@@ -37,8 +61,17 @@ namespace OnlineSalesTool.Controllers
             //Check auth
             if(orders.Any(o => !_apiAuth.Check(o.Signature, o.Guid)))
                 return Unauthorized();
-            await _service.Push(orders);
-            return Ok();
+            try
+            {
+                await _service.Push(orders);
+                return Ok();
+            }
+            catch (BussinessException ex)
+            {
+                Utility.LogException(ex, _logger);
+                return BadRequest(ex.Message);
+            }
+
         }
         [HttpPost]
         public async Task<IActionResult> UpdateBill([FromBody] OnlineBillDTO onlineBill)
@@ -47,8 +80,17 @@ namespace OnlineSalesTool.Controllers
             //Check auth
             if(!_apiAuth.Check(onlineBill.Signature, onlineBill.Guid))
                 return Unauthorized();
-            await _service.UpdateBill(onlineBill);
-            return Ok();
+            try
+            {
+                await _service.UpdateBill(onlineBill);
+                return Ok();
+            }
+            catch (BussinessException ex)
+            {
+                Utility.LogException(ex, _logger);
+                return BadRequest(ex.Message);
+            }    
+
         }
     }
 }

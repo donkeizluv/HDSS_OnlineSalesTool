@@ -46,7 +46,7 @@
             value: null
         },
         computed: {
-            inputListeners: function () {
+            inputListeners () {
                 var vm = this
                 // `Object.assign` merges objects together to form a new object
                 return Object.assign({},
@@ -56,7 +56,7 @@
                     // behavior of some listeners.
                     {
                         // This ensures that the component works with v-model
-                        input: function (event) {
+                        input (event) {
                             //console.log(event);
                             vm.$emit('input', event);
                         }
@@ -64,7 +64,7 @@
                 )
             }
         },
-        data: function () {
+        data () {
             return {
                 options: [],
                 allowSearch: true,
@@ -72,7 +72,7 @@
         },
         
         methods: {
-            onSearch: function (search, loading) {
+            onSearch (search, loading) {
                 loading(true);
                 this.search(loading, search, this);
             },

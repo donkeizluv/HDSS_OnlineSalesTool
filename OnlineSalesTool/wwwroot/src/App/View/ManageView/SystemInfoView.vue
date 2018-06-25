@@ -4,26 +4,26 @@
     </div>
 </template>
 <script>
-import API from "../API";
+import API from "../../API";
 //Permission
-import { Permission } from "../AppConst";
+import { Permission } from "../../AppConst";
 import axios from "axios";
 
 export default {
     name: "systemInfoView",
-    mounted: function() {
+    mounted() {
         this.init();
     },
     computed: {
 
     },
-    data: function() {
+    data() {
         return{
 
         };     
     },
     methods: {
-        init: function() {
+        init() {
 
         }
     }
