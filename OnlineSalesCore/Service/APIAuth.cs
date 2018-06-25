@@ -23,7 +23,7 @@ namespace OnlineSalesCore.Service
                 throw new ArgumentException();
             }
             var forge = Hash256(guid + _options.Pwd);
-            return string.Compare(sig, forge, false, CultureInfo.InvariantCulture) == 0;
+            return string.Compare(sig, forge, true, CultureInfo.InvariantCulture) == 0;
         }
         public string Forge(string guid)
         {

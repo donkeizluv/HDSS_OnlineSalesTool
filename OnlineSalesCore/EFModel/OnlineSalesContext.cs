@@ -7,8 +7,10 @@ namespace OnlineSalesCore.EFModel
     public partial class OnlineSalesContext : DbContext
     {
         public virtual DbSet<Ability> Ability { get; set; }
+        public virtual DbSet<AmendedContracts> AmendedContracts { get; set; }
         public virtual DbSet<AppUser> AppUser { get; set; }
-        public virtual DbSet<Logs> Logs { get; set; }
+        public virtual DbSet<ContractActivities> ContractActivities { get; set; }
+        public virtual DbSet<FollowingContracts> FollowingContracts { get; set; }
         public virtual DbSet<OnlineOrder> OnlineOrder { get; set; }
         public virtual DbSet<Pos> Pos { get; set; }
         public virtual DbSet<PosSchedule> PosSchedule { get; set; }
@@ -19,7 +21,6 @@ namespace OnlineSalesCore.EFModel
         public virtual DbSet<ShiftDetail> ShiftDetail { get; set; }
         public virtual DbSet<UserAbility> UserAbility { get; set; }
         public virtual DbSet<UserRole> UserRole { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Ability>(entity =>
@@ -33,6 +34,23 @@ namespace OnlineSalesCore.EFModel
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(20);
+            });
+
+            modelBuilder.Entity<AmendedContracts>(entity =>
+            {
+                entity.Property(e => e.ContractNumber)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.EndTime).HasColumnType("datetime");
+
+                entity.Property(e => e.NewContractNumber).HasMaxLength(50);
+
+                entity.Property(e => e.ParentSimulation).HasMaxLength(50);
+
+                entity.Property(e => e.StartTime).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<AppUser>(entity =>
@@ -77,21 +95,36 @@ namespace OnlineSalesCore.EFModel
                     .HasConstraintName("FK_AppUser_UserRole");
             });
 
-            modelBuilder.Entity<Logs>(entity =>
+            modelBuilder.Entity<ContractActivities>(entity =>
             {
-                entity.HasKey(e => e.LogId);
-
-                entity.Property(e => e.Class).HasMaxLength(50);
-
-                entity.Property(e => e.Message).HasMaxLength(200);
-
-                entity.Property(e => e.Method).HasMaxLength(50);
-
-                entity.Property(e => e.Timestamp).HasColumnType("datetime");
-
-                entity.Property(e => e.Type)
+                entity.Property(e => e.ActivityCode)
                     .IsRequired()
-                    .HasMaxLength(10);
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CompleteDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ContractNumber)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.InitDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<FollowingContracts>(entity =>
+            {
+                entity.Property(e => e.ContractNumber)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.ContractStatus).HasMaxLength(50);
+
+                entity.Property(e => e.LastUpdatedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<OnlineOrder>(entity =>

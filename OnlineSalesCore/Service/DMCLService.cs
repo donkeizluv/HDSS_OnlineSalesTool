@@ -20,10 +20,10 @@ namespace OnlineSalesCore.Service
         private readonly IAPIAuth _apiAuth;
         
         public DMCLService(OnlineSalesContext context,
-        IHttpContextAccessor httpContext,
-        IScheduleMatcher matcher,
-        IAPIAuth apiAuth,
-        ILogger<DMCLService> logger) : base(httpContext, context)
+            IHttpContextAccessor httpContext,
+            IScheduleMatcher matcher,
+            IAPIAuth apiAuth,
+            ILogger<DMCLService> logger) : base(httpContext, context)
         {
             _matcher = matcher;
             _apiAuth = apiAuth;
@@ -33,7 +33,10 @@ namespace OnlineSalesCore.Service
         {
             if (string.IsNullOrEmpty(guid))
                 throw new ArgumentException("message", nameof(guid));
-            var order = await DbContext.OnlineOrder.SingleOrDefaultAsync(o => o.OrderGuid == guid);
+            var order = await DbContext.OnlineOrder
+                .Where(o => o.OrderGuid == guid)
+                .Include(o => o.Stage)
+                .FirstOrDefaultAsync();
             if(order == null)
                 throw new BussinessException($"Cant find order of {guid}");
             return new OrderDTO() {
@@ -49,12 +52,12 @@ namespace OnlineSalesCore.Service
                 LoanAmount = order.LoanAmount,
                 Term = order.Term,
                 Received = order.Received,
-                Status = DMCL_StageTranslate(order.Stage.ToString()).ToString(),
+                Status = DMCL_StageTranslate(order.Stage.Stage).ToString(),
                 ContractNumber = order.Induscontract,
                 Signature = _apiAuth.Forge(order.OrderGuid)
             };      
         }
-        private static DMCLEnum DMCL_StageTranslate(string stageName)
+        private DMCLEnum DMCL_StageTranslate(string stageName)
         {
             if(!Enum.TryParse<StageEnum>(stageName, out var stage))
                 throw new ArgumentException($"Invalid stage name of {stageName}");
@@ -79,12 +82,18 @@ namespace OnlineSalesCore.Service
                 case StageEnum.CustomerReject:
                     return DMCLEnum.CUSTOMER_REJECT;
                 default:
+                    _logger.LogInformation("Default case used");
                     return DMCLEnum.PROCESSING;
             }
         }
         public async Task Push(IEnumerable<OrderDTO> orders)
         {
             if(orders == null) throw new ArgumentNullException();
+            //Check duplicate guid
+            if(await DbContext.OnlineOrder.AnyAsync(o => orders.ToList().Any(oo => oo.Guid == o.OrderGuid)))
+            {
+                throw new BussinessException("Duplicates of guid");
+            }
             //Map to app orders
             var appOrders = orders.Select(o => new OnlineOrder(){
                 OrderGuid = o.Guid,
@@ -100,7 +109,7 @@ namespace OnlineSalesCore.Service
                 Term = o.Term,
                 Received = DateTime.Now,
                 StageId = (int)StageEnum.NotAssigned
-            });
+            }).ToList();
             //Try to assign
             var currentTime = DateTime.Now;
             foreach (var item in appOrders)
@@ -108,7 +117,8 @@ namespace OnlineSalesCore.Service
                 (var matchFound, var ids, var reason) = await _matcher.GetUserMatchedSchedule(item.PosCode, currentTime);
                 if(matchFound)
                 {
-                    item.StageId = (int)StageEnum.WaitForOnlineBill;
+                    //Assigned OK -> CA ask customer's comfirmation
+                    item.StageId = (int)StageEnum.CustomerConfirm;
                     //In case of additonal logic related to multiple matchers
                     //Goes here
                     item.AssignUserId = ids.First();
@@ -116,7 +126,7 @@ namespace OnlineSalesCore.Service
                 else
                 {
                     item.StageId = (int)StageEnum.NotAssignable;
-                    _logger.LogDebug($"No user matched for order guid {item.OrderGuid} at {currentTime.ToString()}");
+                    _logger.LogDebug($"Cant find assignable users for order guid {item.OrderGuid} at {currentTime.ToString()}");
                 }
             }
             await DbContext.OnlineOrder.AddRangeAsync(appOrders);
@@ -126,9 +136,7 @@ namespace OnlineSalesCore.Service
         public async Task UpdateBill(OnlineBillDTO onlineBill)
         {
             if (onlineBill == null)
-            {
                 throw new ArgumentNullException(nameof(onlineBill));
-            }
             var order = DbContext.OnlineOrder.SingleOrDefault(o => o.OrderGuid == onlineBill.Guid);
             if(order == null) throw new BussinessException($"Cant find order of {onlineBill.Guid}");
             order.OrderNumber = onlineBill.OnlineBill;

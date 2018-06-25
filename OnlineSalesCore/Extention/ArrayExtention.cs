@@ -21,7 +21,7 @@ namespace OnlineSalesCore.Extention
             if (source is IAsyncEnumerable<TSource>)
                 return source.ToListAsync();
             return Task.FromResult(source.ToList());
-            
+
         }
     }
 }
