@@ -3,8 +3,8 @@
         <!--Search bar-->
         <div class="row">
             <div class="col-sm-8 mx-auto">
-                <search-bar v-bind:items="searchFilters"
-                            v-on:submit="submitSearch"></search-bar>
+                <search-bar :items="searchFilters"
+                            @submit="submitSearch"></search-bar>
             </div>
         </div>
         <!--Listing-->
@@ -15,12 +15,12 @@
                         <thead>
                             <tr class="th-text-center th-no-top-border">
                                 <th>
-                                    <button class="btn btn-link" v-on:click="orderByClicked('PosName')">
+                                    <button class="btn btn-link" @click="orderByClicked('PosName')">
                                         <span v-html="headerOrderState('PosName')"></span>Tên POS
                                     </button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" v-on:click="orderByClicked('PosCode')">
+                                    <button class="btn btn-link" @click="orderByClicked('PosCode')">
                                         <span v-html="headerOrderState('PosCode')"></span>Pos Code
                                     </button>
                                 </th>
@@ -34,7 +34,7 @@
                                     <div class="btn btn-link text-dark">Ca trực</div>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" v-on:click="orderByClicked('Manager')">
+                                    <button class="btn btn-link" @click="orderByClicked('Manager')">
                                         <span v-html="headerOrderState('Manager')"></span>BDS
                                     </button>
                                 </th>
@@ -45,15 +45,15 @@
                         </thead>
                         <tbody class="td-item-middle">
                             <template v-if="hasItems">
-                                <tr class="fixed-height" v-for="item in items" v-bind:key="item.PosId">
+                                <tr class="fixed-height" v-for="item in items" :key="item.PosId">
                                 <!--PosName-->
                                 <td class="text-center" v-if="isEditMode(item.PosId)">
                                     <input type="text"
                                            class="form-control form-control-sm width-8 mx-auto"
-                                            v-bind:class="[{'border border-danger': !item.PosName},
+                                            :class="[{'border border-danger': !item.PosName},
                                                 {'border border-success': item.PosName}]"
                                            v-model.trim="item.PosName"
-                                           v-bind:maxlength="maxFieldLength.posName" />
+                                           :maxlength="maxFieldLength.posName" />
                                 </td>
                                 <td class="text-center" v-else>
                                     <div class="width-8 mx-auto">{{item.PosName}}</div>
@@ -62,12 +62,12 @@
                                 <td class="text-center" v-if="isEditMode(item.PosId)">
                                     <input type="text"
                                             class="form-control form-control-sm width-8 mx-auto"
-                                                v-bind:class="[{'border border-danger': !item.codeChecked},
+                                                :class="[{'border border-danger': !item.codeChecked},
                                                 {'border border-success': item.codeChecked}]"
-                                            v-bind:value="item.PosCode.toUpperCase()" 
-                                            v-on:input="item.PosCode = $event.target.value.toUpperCase().trim()"
-                                            v-on:keyup="checkCode(item.PosId)"
-                                            v-bind:maxlength="maxFieldLength.posCode" />
+                                            :value="item.PosCode.toUpperCase()" 
+                                            @input="item.PosCode = $event.target.value.toUpperCase().trim()"
+                                            @keyup="checkCode(item.PosId)"
+                                            :maxlength="maxFieldLength.posCode" />
                                 </td>
                                 <td class="text-center" v-else>
                                     <div class="width-8 mx-auto">{{item.PosCode}}</div>
@@ -76,10 +76,10 @@
                                 <td class="text-center" v-if="isEditMode(item.PosId)">
                                     <input type="text"
                                            class="form-control form-control-sm width-8 mx-auto"
-                                            v-bind:class="[{'border border-danger': !item.Address},
+                                            :class="[{'border border-danger': !item.Address},
                                                 {'border border-success': item.Address}]"
                                            v-model.trim="item.Address"
-                                           v-bind:maxlength="maxFieldLength.address" />
+                                           :maxlength="maxFieldLength.address" />
                                 </td>
                                 <td class="text-center text-truncate" v-else>
                                     <div class="width-8 mx-auto">{{item.Address}}</div>
@@ -88,10 +88,10 @@
                                 <td class="text-center" v-if="isEditMode(item.PosId)">
                                     <input type="text"
                                             class="form-control form-control-sm width-8 mx-auto"
-                                            v-bind:class="[{'border border-danger': !item.Phone},
+                                            :class="[{'border border-danger': !item.Phone},
                                                 {'border border-success': item.Phone}]"
                                             v-model.trim="item.Phone"
-                                            v-bind:maxlength="maxFieldLength.phone" />
+                                            :maxlength="maxFieldLength.phone" />
                                 </td>
                                 <td class="text-center" v-else>
                                     <div class="width-8 mx-auto">{{item.Phone}}</div>
@@ -101,24 +101,24 @@
                                     <span class="d-inline-flex">
                                         <v-select
                                             class="width-16"
-                                            v-bind:filterable=false
-                                            v-bind:searchable=false
+                                            :filterable=false
+                                            :searchable=false
                                             multiple
-                                            v-bind:options="shifts"
+                                            :options="shifts"
                                             v-model="item.Shifts"
                                             label="Name">
                                             <template slot="option" slot-scope="option">
                                                 {{option.Name}} {{option.ExtName}}
                                             </template>
                                         </v-select>
-                                        <light v-bind:state="item.Shifts.length > 0"/>
+                                        <light :state="item.Shifts.length > 0"/>
                                     </span> 
                                 </td>
                                 <td v-else class="text-center">
                                     <template v-for="s in item.Shifts" >
                                         <span v-b-popover.hover.top="s.ExtName"
                                         class="badge badge-info" 
-                                        v-bind:key="s.Name">
+                                        :key="s.Name">
                                                 {{s.Name}}
                                         </span>
                                         &nbsp;
@@ -130,38 +130,38 @@
                                         <d-select v-model="item.BDS"
                                                 class="width-14"
                                                 label="DisplayName"
-                                                v-bind:api="searchSuggestAPI"></d-select>
-                                        <light v-bind:state="item.BDS? true : false"/>
+                                                :api="searchSuggestAPI"></d-select>
+                                        <light :state="item.BDS? true : false"/>
                                     </span>
                                 </td>
                                 <td class="text-center" v-else>
                                     <div class="width-14 mx-auto">{{item.BDS? item.BDS.DisplayName : 'N/A'}}</div>
                                 </td>
                                 <!--CRUD-->
-                                    <td class="text-center">
-                                        <div class="d-inline">
-                                            <button v-if="isEditMode(item.PosId)"
-                                                    class="btn btn-sm btn-outline-warning"
-                                                    v-on:click="exitEditMode(item.PosId)">
-                                                <span class="fas fa-times"></span>
-                                            </button>
-                                            <!--Enter edit-->
-                                            <button v-else
-                                                    v-bind:disabled="!canUpdate"
-                                                    class="btn btn-sm btn-outline-primary"
-                                                    v-on:click="enterEditMode(item.PosId)">
-                                                <span class="fas fa-pencil-alt"></span>
-                                            </button>
-                                            <!--Save changes-->
-                                            <button class="btn btn-sm ml-2"
-                                                    v-bind:class="{'btn-outline-success': canUpdateItem(item.PosId),
-                                                        'btn-outline-secondary': !canUpdateItem(item.PosId)}"
-                                                    v-bind:disabled="!canUpdateItem(item.PosId)"
-                                                    v-on:click="updateItem(item.PosId)">
-                                                <span class="fas fa-save"></span>
-                                            </button>
-                                        </div>
-                                    </td>
+                                <td class="text-center">
+                                    <div class="d-inline">
+                                        <button v-if="isEditMode(item.PosId)"
+                                                class="btn btn-sm btn-outline-warning"
+                                                @click="exitEditMode(item.PosId)">
+                                            <span class="fas fa-times"></span>
+                                        </button>
+                                        <!--Enter edit-->
+                                        <button v-else
+                                                :disabled="!canUpdate"
+                                                class="btn btn-sm btn-outline-primary"
+                                                @click="enterEditMode(item.PosId)">
+                                            <span class="fas fa-pencil-alt"></span>
+                                        </button>
+                                        <!--Save changes-->
+                                        <button class="btn btn-sm ml-2"
+                                                :class="{'btn-outline-success': canUpdateItem(item.PosId),
+                                                    'btn-outline-secondary': !canUpdateItem(item.PosId)}"
+                                                :disabled="!canUpdateItem(item.PosId)"
+                                                @click="updateItem(item.PosId)">
+                                            <span class="fas fa-save"></span>
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                             </template>
                             <template v-else>
@@ -173,100 +173,102 @@
                             </template>
                         </tbody>
                         <!-- New item -->
-                        <tfoot v-show="canCreate">
-                            <tr>
-                                <!-- Pos name -->
-                                <td class="text-center">
-                                    <div>
-                                        <input type="text"
-                                                v-bind:class="[{'border border-danger': !newItem.PosName},
-                                                    {'border border-success': newItem.PosName}]"
-                                                class="form-control form-control-sm width-8 mx-auto"
-                                                v-model.trim="newItem.PosName"
-                                                v-bind:maxlength="maxFieldLength.posName" />
-                                    </div>
-                                </td>
-                                <!-- Pos code -->
-                                <td class="text-center">
-                                    <div>
-                                        <input type="text"
-                                                class="form-control form-control-sm width-8 mx-auto"
-                                                v-bind:class="[{'border border-danger': !newItem.codeChecked},
-                                                                {'border border-success': newItem.codeChecked}]"
-                                                v-bind:value="newItem.PosCode.toUpperCase()" 
-                                                v-on:input="newItem.PosCode = $event.target.value.toUpperCase().trim()"
-                                                v-on:keyup="checkCode(-1)"
-                                                v-bind:maxlength="maxFieldLength.posCode" />
-                                    </div>
-                                </td>
-                                <!-- Address -->
-                                <td class="text-center">
-                                    <div>
-                                        <input type="text"
-                                                v-bind:class="[{'border border-danger': !newItem.Address},
-                                                    {'border border-success': newItem.Address}]"
-                                                class="form-control form-control-sm width-8 mx-auto"
-                                                v-model.trim="newItem.Address"
-                                                v-bind:maxlength="maxFieldLength.address" />
-                                    </div>
-                                </td>
-                                <!-- Phone -->
-                                <td class="text-center">
-                                    <div>
-                                        <input type="text"
-                                                v-bind:class="[{'border border-danger': !newItem.Phone},
-                                                    {'border border-success': newItem.Phone}]"
-                                                class="form-control form-control-sm width-8 mx-auto"
-                                                v-model.trim="newItem.Phone"
-                                                v-bind:maxlength="maxFieldLength.phone"/>
-                                    </div>
-                                </td>
-                                <td class="width-16">
-                                    <span class="d-inline-flex">
-                                        <v-select
-                                            class="width-16"
-                                            v-bind:filterable=false
-                                            v-bind:searchable=false
-                                            multiple 
-                                            :options="shifts"
-                                            v-model="newItem.Shifts"
-                                            label="Name">
-                                            <template slot="option" slot-scope="option">
-                                                {{option.Name}} {{option.ExtName}}
-                                            </template>
-                                        </v-select>
-                                        <light v-bind:state="newItem.Shifts.length > 0"/>
-                                    </span>
-                                </td>
-                                <!--Manager-->
-                                <td class="width-14">
-                                    <span class="d-inline-flex">
-                                        <d-select class="width-14"
-                                                v-model="newItem.BDS"
-                                                label="DisplayName"
-                                                v-bind:api="searchSuggestAPI"></d-select>
-                                        <light v-bind:state="newItem.BDS? true : false"/>
-                                    </span>
-                                </td>
-                                <!--New item actions-->
-                                <td class="text-center">
-                                    <div class="d-inline">
-                                        <!--Clear-->
-                                        <button class="btn btn-sm btn-outline-warning"
-                                                v-on:click="clearNewItem">
-                                            <span class="fas fa-times"></span>
-                                        </button>
-                                        <!--Create-->
-                                        <button class="btn btn-sm ml-2"
-                                                v-bind:class="{'btn-outline-success': isNewItemValid,
-                                                        'btn-outline-secondary': !isNewItemValid}"
-                                                v-bind:disabled="!isNewItemValid"
-                                                v-on:click="createItem">
-                                            <span class="fas fa-plus"></span>
-                                        </button>
-                                    </div>
-                                </td>
-                            <tr>
+                        <tfoot>
+                            <template v-if="canCreate">
+                                <tr>
+                                    <!-- Pos name -->
+                                    <td class="text-center">
+                                        <div>
+                                            <input type="text"
+                                                    :class="[{'border border-danger': !newItem.PosName},
+                                                        {'border border-success': newItem.PosName}]"
+                                                    class="form-control form-control-sm width-8 mx-auto"
+                                                    v-model.trim="newItem.PosName"
+                                                    :maxlength="maxFieldLength.posName" />
+                                        </div>
+                                    </td>
+                                    <!-- Pos code -->
+                                    <td class="text-center">
+                                        <div>
+                                            <input type="text"
+                                                    class="form-control form-control-sm width-8 mx-auto"
+                                                    :class="[{'border border-danger': !newItem.codeChecked},
+                                                                    {'border border-success': newItem.codeChecked}]"
+                                                    :value="newItem.PosCode.toUpperCase()" 
+                                                    @input="newItem.PosCode = $event.target.value.toUpperCase().trim()"
+                                                    @keyup="checkCode(-1)"
+                                                    :maxlength="maxFieldLength.posCode" />
+                                        </div>
+                                    </td>
+                                    <!-- Address -->
+                                    <td class="text-center">
+                                        <div>
+                                            <input type="text"
+                                                    :class="[{'border border-danger': !newItem.Address},
+                                                        {'border border-success': newItem.Address}]"
+                                                    class="form-control form-control-sm width-8 mx-auto"
+                                                    v-model.trim="newItem.Address"
+                                                    :maxlength="maxFieldLength.address" />
+                                        </div>
+                                    </td>
+                                    <!-- Phone -->
+                                    <td class="text-center">
+                                        <div>
+                                            <input type="text"
+                                                    :class="[{'border border-danger': !newItem.Phone},
+                                                        {'border border-success': newItem.Phone}]"
+                                                    class="form-control form-control-sm width-8 mx-auto"
+                                                    v-model.trim="newItem.Phone"
+                                                    :maxlength="maxFieldLength.phone"/>
+                                        </div>
+                                    </td>
+                                    <td class="width-16">
+                                        <span class="d-inline-flex">
+                                            <v-select
+                                                class="width-16"
+                                                :filterable=false
+                                                :searchable=false
+                                                multiple 
+                                                :options="shifts"
+                                                v-model="newItem.Shifts"
+                                                label="Name">
+                                                <template slot="option" slot-scope="option">
+                                                    {{option.Name}} {{option.ExtName}}
+                                                </template>
+                                            </v-select>
+                                            <light :state="newItem.Shifts.length > 0"/>
+                                        </span>
+                                    </td>
+                                    <!--Manager-->
+                                    <td class="width-14">
+                                        <span class="d-inline-flex">
+                                            <d-select class="width-14"
+                                                    v-model="newItem.BDS"
+                                                    label="DisplayName"
+                                                    :api="searchSuggestAPI"></d-select>
+                                            <light :state="newItem.BDS? true : false"/>
+                                        </span>
+                                    </td>
+                                    <!--New item actions-->
+                                    <td class="text-center">
+                                        <div class="d-inline">
+                                            <!--Clear-->
+                                            <button class="btn btn-sm btn-outline-warning"
+                                                    @click="clearNewItem">
+                                                <span class="fas fa-times"></span>
+                                            </button>
+                                            <!--Create-->
+                                            <button class="btn btn-sm ml-2"
+                                                    :class="{'btn-outline-success': isNewItemValid,
+                                                            'btn-outline-secondary': !isNewItemValid}"
+                                                    :disabled="!isNewItemValid"
+                                                    @click="createItem">
+                                                <span class="fas fa-plus"></span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
                             <tr class="td-no-top-border">
                                 <td colspan=7 class="lastrow-padding">
                                     <page-nav :page-count="totalPages"
@@ -303,7 +305,7 @@ import DynamicSelect from "../Shared/DynamicSelect.vue";
 import vSelect from "vue-select";
 import pagenav from "vuejs-paginate";
 import axios from "axios";
-import listingMix from "../Shared/listingViewMixins";
+import listingMix from "../../Mixins/listingViewMixin";
 import debounce from "lodash.debounce";
 
 export default {

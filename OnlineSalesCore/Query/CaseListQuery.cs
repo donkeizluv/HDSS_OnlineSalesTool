@@ -135,7 +135,8 @@ namespace OnlineSalesCore.Query
                 Received = p.Received,
                 Induscontract = p.Induscontract,
                 Stage = p.Stage.Stage,
-                OrderNumber = p.OrderNumber
+                OrderNumber = p.OrderNumber,
+                AssignUser = p.AssignUser != null? new AppUserDTO(p.AssignUser) : null
             });
             return (await projection.ToListAsyncSafe());
         }

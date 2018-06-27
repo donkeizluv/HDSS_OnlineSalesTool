@@ -1,13 +1,13 @@
 ﻿<template id="dynamicSelect">
     <div>
-        <v-select v-bind:disabled="disabled"
-                  v-bind:options="options"
-                  v-on:search="onSearch"
-                  v-bind:value="value"
+        <v-select :disabled="disabled"
+                  :options="options"
+                  @search="onSearch"
+                  :value="value"
                   v-on="inputListeners"
-                  v-bind:searchable="allowSearch"
-                  v-bind:filterable="filterable"
-                  v-bind:label="label">
+                  :searchable="allowSearch"
+                  :filterable="filterable"
+                  :label="label">
         </v-select>
     </div>
 </template>

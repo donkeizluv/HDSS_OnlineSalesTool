@@ -22,7 +22,7 @@
             </div>
         </b-modal>
         <nav-bar :app-name="'Online Sales Tool'" :env="'DEV'"></nav-bar>
-        <div v-bind:class="{'bg-grey': !isAuthenticated || !isAuthChecked }">
+        <div :class="{'bg-grey': !isAuthenticated || !isAuthChecked }">
             <!--Only render app when auth is valid & checked-->
             <div v-if="!isAuthenticated || !isAuthChecked">
                 <!--Hide login when still checking to avoid ugly flash-->
@@ -34,10 +34,10 @@
                     </div>
                     <keep-alive>
                         <router-view class="top-margin"
-                                     v-on:showsuccess="showSuccessToast"
-                                     v-on:showinfo="showInfoToast"
-                                     v-on:showerror="showBlockingDialog"
-                                     v-on:showdialog="showDialog"></router-view>
+                                     @showsuccess="showSuccessToast"
+                                     @showinfo="showInfoToast"
+                                     @showerror="showBlockingDialog"
+                                     @showdialog="showDialog"></router-view>
                     </keep-alive>
                 </div>
             </div>

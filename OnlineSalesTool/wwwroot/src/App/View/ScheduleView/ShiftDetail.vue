@@ -1,21 +1,21 @@
 ﻿<!--Shift detail cell-->
 <template id="shiftdetail">
-    <div v-bind:class="borderColor">
+    <div :class="borderColor">
         <div class="card-header">
             <div>
                 <span class="float-left">Ngày {{day.Day}}</span>
                 <span class="float-right">
-                    <light v-show="!readonly" v-bind:state="isAllSet"/>
+                    <light v-show="!readonly" :state="isAllSet"/>
                 </span>
             </div>
             
         </div>
         <div class="card-body">
-            <div v-for="shift in day.Shifts" v-bind:key="shift.ShiftId">
+            <div v-for="shift in day.Shifts" :key="shift.ShiftId">
                 <div class="d-flex flex-column">
                     <span class="text-secondary">{{shift.Name}} {{shift.ExtName}}</span>
-                    <v-select v-bind:disabled="readonly"
-                              v-bind:options="usersLeft"
+                    <v-select :disabled="readonly"
+                              :options="usersLeft"
                               v-model="shift.Assign"></v-select>
                 </div>
             </div>

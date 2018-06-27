@@ -18,16 +18,18 @@ namespace OnlineSalesCore.Service
         private readonly ILogger<DMCLService> _logger;
         private readonly IScheduleMatcher _matcher;
         private readonly IAPIAuth _apiAuth;
-        
+        private readonly IMailerService _mail;
         public DMCLService(OnlineSalesContext context,
             IHttpContextAccessor httpContext,
             IScheduleMatcher matcher,
             IAPIAuth apiAuth,
+            IMailerService mail,
             ILogger<DMCLService> logger) : base(httpContext, context)
         {
             _matcher = matcher;
             _apiAuth = apiAuth;
             _logger = logger;
+            _mail = mail;
         }
         public async Task<OrderDTO> GetStatus(string guid)
         {
@@ -114,14 +116,16 @@ namespace OnlineSalesCore.Service
             var currentTime = DateTime.Now;
             foreach (var item in appOrders)
             {
-                (var matchFound, var ids, var reason) = await _matcher.GetUserMatchedSchedule(item.PosCode, currentTime);
+                (var matchFound, var users, var reason) = await _matcher.GetUserMatchedSchedule(item.PosCode, currentTime);
                 if(matchFound)
                 {
                     //Assigned OK -> CA ask customer's comfirmation
                     item.StageId = (int)StageEnum.CustomerConfirm;
                     //In case of additonal logic related to multiple matchers
                     //Goes here
-                    item.AssignUserId = ids.First();
+                    var to = users.First();
+                    item.AssignUserId = to.UserId;
+                    _mail.MailNewAssign(item, to.Email, null);
                 }
                 else
                 {
@@ -142,6 +146,7 @@ namespace OnlineSalesCore.Service
             order.OrderNumber = onlineBill.OnlineBill;
             order.StageId = (int)StageEnum.Completed;
             await DbContext.SaveChangesAsync();
+            _mail.MailOnlineBillAvailable(order, order.AssignUser.Email, onlineBill.OnlineBill, null);
         }
     }
 }

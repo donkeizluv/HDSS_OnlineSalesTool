@@ -9,12 +9,12 @@
                             <label>POS: </label>
                             <select class="form-control m-2"
                                     v-model="selectedPos"
-                                    v-on:change="onPosChanged"
-                                    v-bind:disabled="createMode">
+                                    @change="onPosChanged"
+                                    :disabled="createMode">
                                 <option disabled>Pos...</option>
                                 <option v-for="pos in poses"
-                                        v-bind:key="pos.PosId"
-                                        v-bind:value="pos.PosId">
+                                        :key="pos.PosId"
+                                        :value="pos.PosId">
                                     {{composePOSLabel(pos)}}
                                 </option>
                             </select>
@@ -22,12 +22,12 @@
                             <label>Tháng: </label>
                             <select class="form-control m-2"
                                     v-model="selectedPrevSchedule"
-                                    v-on:change="reloadPrevSchedule"
-                                    v-bind:disabled="createMode">
+                                    @change="reloadPrevSchedule"
+                                    :disabled="createMode">
                                 <option disabled>Tháng...</option>
                                 <option v-for="prev in currentPrevSchedules"
-                                        v-bind:key="prev.PosScheduleId"
-                                        v-bind:value="prev.PosScheduleId">
+                                        :key="prev.PosScheduleId"
+                                        :value="prev.PosScheduleId">
                                     {{prev.DisplayMonthYear}}
                                 </option>
                             </select>
@@ -35,25 +35,25 @@
                         <div class="form-inline mx-auto">
                             <button class="btn btn-sm btn-primary m-2"
                                     type="button"
-                                    v-on:click="createNewSchedule"
-                                    v-bind:disabled="!canCreateNewSchedule">
+                                    @click="createNewSchedule"
+                                    :disabled="!canCreateNewSchedule">
                                 <i class="fas fa-plus"></i>
                             </button>
                             <button class="btn btn-sm btn-warning m-2"
                                     type="button"
-                                    v-bind:disabled="!canEditSchedule">
+                                    :disabled="!canEditSchedule">
                                 <i class="fas fa-edit"></i>
                             </button>
                             <button class="btn btn-sm btn-success m-2"
                                     type="button"
-                                    v-on:click="saveSchedule"
-                                    v-bind:disabled="!canSaveSchedule">
+                                    @click="saveSchedule"
+                                    :disabled="!canSaveSchedule">
                                 <i class="fas fa-check"></i>
                             </button>
                             <button class="btn btn-sm btn-danger m-2"
                                     type="button"
-                                    v-on:click="cancelSchedule"
-                                    v-bind:disabled="!canCancelSchedule">
+                                    @click="cancelSchedule"
+                                    :disabled="!canCancelSchedule">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -83,11 +83,11 @@
                 <!--Schedule details-->
                 <div class="d-flex justify-content-around flex-wrap">
                     <template v-for="item in currentDays">
-                        <shift-detail v-bind:key="item.Day"
-                                    v-bind:display="shiftDetailDisplay"
-                                    v-bind:users="users"
-                                    v-bind:readonly="readOnly"
-                                    v-bind:day.sync="item" />
+                        <shift-detail :key="item.Day"
+                                    :display="shiftDetailDisplay"
+                                    :users="users"
+                                    :readonly="readOnly"
+                                    :day.sync="item" />
                     </template>
                 </div>
             </div>
@@ -340,7 +340,7 @@ export default {
             //console.log(schedules);
             postObject.schedules = schedules;
             try {
-                var { data } = await axios.post(
+                let { data } = await axios.post(
                     API_Const.SaveScheduleAPI,
                     postObject
                 );
@@ -473,7 +473,7 @@ export default {
         },
         loadScheduleDetails: async function(id) {
             try {
-                var { data } = await axios.get(
+                let { data } = await axios.get(
                     API_Const.ScheduleDetailAPI.replace("{id}", id)
                 );
                 //console.log(data);

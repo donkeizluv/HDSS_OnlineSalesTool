@@ -22,7 +22,8 @@ namespace OnlineSalesTool.Controllers
         }
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Get([FromQuery]int count = 10,
+        public async Task<IActionResult> Get(
+            [FromQuery]int count = 10,
             [FromQuery]int page = 1,
             [FromQuery]string type = "",
             [FromQuery]string contain = "",

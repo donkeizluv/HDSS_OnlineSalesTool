@@ -18,6 +18,7 @@ namespace OnlineSalesCore.Service
         public APIAuth(IOptions<APIAuthOptions> options) => _options = options.Value ?? throw new ArgumentNullException();
         public bool Check(string sig, string guid)
         {
+            if(_options.NoAuth) return true;
             if (string.IsNullOrEmpty(guid) || string.IsNullOrEmpty(sig))
             {
                 throw new ArgumentException();

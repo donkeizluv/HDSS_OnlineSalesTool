@@ -61,12 +61,14 @@ namespace OnlineSalesTool
             services.AddScoped<IScheduleService, ScheduleService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPosService, PosService>();
+            services.AddScoped<ICaseService, CaseService>();
             services.AddScoped<IRoleCache, RoleCache>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IScheduleMatcher, SimpleScheduleMatcher>();
             services.AddScoped<ILdapAuth, LdapAuth>();
             services.AddScoped<ListQuery<Pos, PosDTO>, PosListQuery>();
             services.AddScoped<ListQuery<AppUser, AppUserDTO>, UserListQuery>();
+            services.AddScoped<ListQuery<OnlineOrder, CaseDTO>, CaseListQuery>();
             services.AddScoped<IAPIAuth, APIAuth>();
             services.AddScoped<IDMCLService, DMCLService>();
             services.AddScoped<IAuthService, AuthService>();
@@ -109,6 +111,7 @@ namespace OnlineSalesTool
             services.Configure<APIAuthOptions>(o =>
             {
                 o.Pwd = apiAuthOptions[nameof(APIAuthOptions.Pwd)];
+                o.NoAuth = apiAuthOptions[nameof(APIAuthOptions.NoAuth)] == "1";
             });
             //Gen option
             services.Configure<GeneralOptions>(o =>

@@ -42,7 +42,7 @@ namespace OnlineSalesCore.Service
 
         public async Task<int> Create(AppUserDTO user)
         {
-            if(user == null) throw new ArgumentNullException();
+            if (user == null) throw new ArgumentNullException();
             await DbContext.AppUser.AddAsync(await ToNewUser(user ?? throw new ArgumentNullException()));
             return await DbContext.SaveChangesAsync();
         }
@@ -61,12 +61,12 @@ namespace OnlineSalesCore.Service
             //Check role & get role id
             _roleCache.GetRoleId(user.Role, out int roleId, out var appRole);
             //CA must have manager
-            if(appRole == RoleEnum.CA)
+            if (appRole == RoleEnum.CA)
             {
                 //CA must have manager
                 await CheckUser(user.Manager?.UserId, RoleEnum.BDS, true);
             }
-            if(appRole == RoleEnum.BDS)
+            if (appRole == RoleEnum.BDS)
             {
                 //Currenly, only CA allow to have manager
                 if (user.Manager != null)
@@ -92,15 +92,15 @@ namespace OnlineSalesCore.Service
             if (appUser == null)
                 throw new BussinessException($"Invalid user id: {user.UserId}");
             _roleCache.GetRoleId(user.Role, out int roleId, out var appRole);
-            if(appRole == RoleEnum.CA)
+            if (appRole == RoleEnum.CA)
             {
                 //CA must have manager
                 await CheckUser(user.Manager?.UserId, RoleEnum.BDS, true);
             }
-            if(appRole == RoleEnum.BDS)
+            if (appRole == RoleEnum.BDS)
             {
                 //Currenly, only CA allow to have manager
-                if(user.Manager != null)
+                if (user.Manager != null)
                     throw new BussinessException($"Only CA can have manager(BDS)");
             }
             appUser.Name = user.Name;
@@ -127,11 +127,11 @@ namespace OnlineSalesCore.Service
         public async Task<IEnumerable<AppUserDTO>> SearchSuggest(RoleEnum role, string q)
         {
             return await DbContext.AppUser
-                .Where(u => (u.Username.Contains(q) || u.Hr.Contains(q)) 
-                    && u.Role.Name == role.ToString() 
+                .Where(u => (u.Username.Contains(q) || u.Hr.Contains(q))
+                    && u.Role.Name == role.ToString()
                     && u.Active)
                 .Take(SUGGEST_TAKE)
-                .Select(u => new AppUserDTO(u) ).ToListAsync();
+                .Select(u => new AppUserDTO(u)).ToListAsync();
         }
         public async Task Update(AppUserDTO user)
         {
@@ -142,7 +142,7 @@ namespace OnlineSalesCore.Service
         public async Task<int> CheckUsername(string userName)
         {
             var user = await DbContext.AppUser.FirstOrDefaultAsync(p => p.Username == userName);
-            if(user == null) return -1;
+            if (user == null) return -1;
             return user.UserId;
         }
     }

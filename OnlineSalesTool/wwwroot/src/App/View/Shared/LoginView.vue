@@ -18,10 +18,10 @@
                                             <i class="fas fa-user" aria-hidden="true" id="basic-addon1" />
                                         </div>
                                     </div>
-                                    <input v-bind:disabled="loading"
+                                    <input :disabled="loading"
                                            v-model="username"
                                            type="text"
-                                           v-on:keyup.enter="login" 
+                                           @keyup.enter="login" 
                                            class="form-control"
                                            placeholder="Tên đăng nhập"
                                            aria-describedby="basic-addon1">
@@ -33,16 +33,16 @@
                                             <i class="fas fa-key" aria-hidden="true" id="basic-addon2" />
                                         </div>
                                     </div>
-                                    <input v-bind:disabled="loading"
+                                    <input :disabled="loading"
                                            v-model="pwd" 
                                            type="password" 
                                            placeholder="Mật khẩu" 
-                                           v-on:keyup.enter="login" 
+                                           @keyup.enter="login" 
                                            class="form-control" 
                                            aria-describedby="basic-addon2">
                                 </div>
                                 <p id="status" class="text-center text-danger" style="height: 15px;">{{status}}</p>
-                                <button v-bind:disabled="!canSubmit || loading" v-on:click="login" class="btn btn-primary btn-block">
+                                <button :disabled="!canSubmit || loading" @click="login" class="btn btn-primary btn-block">
                                     <i v-if="loading" class="fas fa-spinner fa-pulse"></i>
                                     <span v-else>Login</span>
                                 </button>

@@ -4,7 +4,6 @@ TODO:
 -Permission policies
 -Split frontend permission dict to view dict & action dict
 
-
 DONE:
 -Clean up appsetting.json
 -Check unique names in CRUD

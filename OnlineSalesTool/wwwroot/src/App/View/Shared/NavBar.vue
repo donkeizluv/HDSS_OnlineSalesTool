@@ -9,10 +9,10 @@
                 <template v-for="route in routes" v-if="route.navbar">
                     <router-link v-if="allow(route)"
                             active-class="active font-italic"
-                            v-bind:key="route.name" 
+                            :key="route.name" 
                             class="nav-link"
-                            v-bind:to="{ name: route.name }">{{route.display}}</router-link>
-                    <span v-else class="text-secondary nav-link" v-bind:key="route.name" >{{route.display}}</span>
+                            :to="{ name: route.name }">{{route.display}}</router-link>
+                    <span v-else class="text-secondary nav-link" :key="route.name" >{{route.display}}</span>
                 </template>
             </b-navbar-nav>
             <!-- Right aligned nav items -->
@@ -27,7 +27,7 @@
                             </router-link>
                         </li>
                         <!--Dispatch log out action-->
-                        <li class="nav-item"><a class="nav-link" v-on:click="logout">Thoát</a></li>
+                        <li class="nav-item"><a class="nav-link" @click="logout">Thoát</a></li>
                     </ul>
                 </b-nav-item>
             </b-navbar-nav>

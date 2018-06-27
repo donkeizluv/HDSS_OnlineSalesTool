@@ -3,12 +3,12 @@
         <div class="row">
             <div class="col-lg-12 mx-auto">
                 <ul class="nav nav-tabs">
-                    <li class="nav-item" v-for="route in computedRoutes" v-bind:key="route.name">
+                    <li class="nav-item" v-for="route in computedRoutes" :key="route.name">
                         <template v-if="route.navbar">
                             <router-link class="nav-link"
                                          active-class="active"
                                          v-if="allow(route)"
-                                         v-bind:to="{ name: route.name }"
+                                         :to="{ name: route.name }"
                                          exact>{{route.display}}</router-link>
                             <!--Show only name if not permitted-->
                             <span v-else class="text-secondary nav-link">{{route.display}}</span>
@@ -22,10 +22,10 @@
                 <div v-if="isCurrentRouteAllowed">
                     <keep-alive>
                         <router-view class="top-margin"
-                                    v-on:showsuccess="showSuccessToast"
-                                    v-on:showinfo="showInfoToast"
-                                    v-on:showerror="showBlockingDialog"
-                                    v-on:showdialog="showDialog"></router-view>
+                                    @showsuccess="showSuccessToast"
+                                    @showinfo="showInfoToast"
+                                    @showerror="showBlockingDialog"
+                                    @showdialog="showDialog"></router-view>
                     </keep-alive>
                 </div>
             </div>

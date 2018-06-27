@@ -1,24 +1,24 @@
 ﻿<template id="search-bar">
     <div class="form-inline justify-content-center">
         <div class="form-group">
-            <select v-model="model.filter" class="form-control custom-select" v-bind:disabled="disabled">
-                <option v-for="pair in items" v-bind:key="pair.value" v-bind:value="pair.value">{{pair.name}}</option>
+            <select v-model="model.filter" class="form-control custom-select" :disabled="disabled">
+                <option v-for="pair in items" :key="pair.value" :value="pair.value">{{pair.name}}</option>
             </select>
             <div class="input-group">
-                <input v-on:keyup.enter="submitSearch"
+                <input @keyup.enter="submitSearch"
                        v-model="model.text"
                        class="form-control"
-                       v-bind:disabled="disabled"
+                       :disabled="disabled"
                        type="search">
                 <!--Clear button-->
                 <span v-show="showClear"
-                      v-on:click="clear"
+                      @click="clear"
                       class="searchclear fas fa-times"/>
                 <!--Submit-->
                 <span class="input-group-append">
                     <button class="btn input-group-text"
                             type="button"
-                            v-on:click="submitSearch">
+                            @click="submitSearch">
                         <i class="fa fa-search"></i>
                     </button>
                 </span>
