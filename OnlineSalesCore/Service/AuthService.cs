@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesCore.Service
 {
-    public class AuthService : ServiceBase, IAuthService
+    public class AuthService : ContextAwareService, IAuthService
     {
         private readonly ILogger<AuthService> _logger;
         private readonly WindowsAuthOptions _authOption;

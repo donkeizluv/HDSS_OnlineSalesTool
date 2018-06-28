@@ -57,7 +57,7 @@ namespace OnlineSalesTool
             //Indus
             services.AddScoped<IIndusService, IndusService>();
             //Inject service
-            services.AddScoped<IService, ServiceBase>();
+            services.AddScoped<IContextAwareService, ContextAwareService>();
             services.AddScoped<IScheduleService, ScheduleService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPosService, PosService>();

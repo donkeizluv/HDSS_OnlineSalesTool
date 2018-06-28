@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesCore.Service
 {
-    public class DMCLService : ServiceBase, IDMCLService
+    public class DMCLService : ContextAwareService, IDMCLService
     {
         private readonly ILogger<DMCLService> _logger;
         private readonly IScheduleMatcher _matcher;

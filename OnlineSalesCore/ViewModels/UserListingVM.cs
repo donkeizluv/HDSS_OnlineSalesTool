@@ -4,7 +4,7 @@ using OnlineSalesCore.DTO;
 namespace OnlineSalesCore.ViewModels
 {
     /// <summary>
-    /// Generic listing of POSs
+    /// Generic listing of users
     /// </summary>
     public class UserListingVM : ListingViewModel<AppUserDTO>
     {

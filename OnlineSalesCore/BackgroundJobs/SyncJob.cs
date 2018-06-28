@@ -23,8 +23,8 @@ namespace OnlineSalesCore.BackgroundJobs
         private readonly SyncOptions _options;
         private readonly IServiceProvider _provider;
         public SyncJob(IOptions<SyncOptions> options,
-                            ILogger<SyncJob> logger,
-                            IServiceProvider provider)
+            ILogger<SyncJob> logger,
+            IServiceProvider provider)
         {
             _provider = provider;
             _options = options.Value;
@@ -34,6 +34,7 @@ namespace OnlineSalesCore.BackgroundJobs
         private const string REJECT_ACTIVITY = "PREJECT";
         private const string CONTRACTPRINTING_ACTIVITY = "SAN_LETT";
         private const string AMENDED_ACTIVITY = "PAMEND";
+        //TODO: Split this to smaller tasks
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("SyncJob started");

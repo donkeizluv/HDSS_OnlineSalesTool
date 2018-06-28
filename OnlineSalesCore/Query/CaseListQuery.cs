@@ -17,9 +17,8 @@ namespace OnlineSalesCore.Query
     {
         private readonly ILogger _logger;
 
-        public CaseListQuery(IService service, ILogger<CaseListQuery> logger) : base(service)
+        public CaseListQuery(IContextAwareService service, ILogger<CaseListQuery> logger) : base(service)
         {
-            if (service == null) throw new ArgumentNullException();
             _logger = logger;
         }
 

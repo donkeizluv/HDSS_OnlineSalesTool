@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesCore.Service
 {
-    public class PosService : ServiceBase, IPosService
+    public class PosService : ContextAwareService, IPosService
     {
         private readonly ILogger<PosService> _logger;
         private readonly ListQuery<Pos, PosDTO> _query;

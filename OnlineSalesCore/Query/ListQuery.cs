@@ -14,8 +14,8 @@ namespace OnlineSalesCore.Query
     /// <typeparam name="TOutput"></typeparam>
     public abstract class ListQuery<TSource, TOutput>
     {
-        protected readonly IService Service;
-        protected ListQuery(IService service)
+        protected readonly IContextAwareService Service;
+        protected ListQuery(IContextAwareService service)
         {
             Service = service ?? throw new ArgumentNullException();
         }

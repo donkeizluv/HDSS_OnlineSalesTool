@@ -7,7 +7,7 @@ namespace OnlineSalesCore.ViewModels
     /// <summary>
     /// Shift assigner special VM
     /// </summary>
-    public class ShiftAssignerViewModel
+    public class ShiftAssignerVM
     {
         private DateTime _systemMonthYear;
         //All POSs under mangement

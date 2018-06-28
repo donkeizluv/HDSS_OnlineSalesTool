@@ -5,7 +5,7 @@ using System.Security.Claims;
 
 namespace OnlineSalesCore.Service
 {
-    public interface IService : IDisposable
+    public interface IContextAwareService : IDisposable
     {
         RoleEnum Role { get; }
         string Username { get; }

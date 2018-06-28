@@ -17,9 +17,8 @@ namespace OnlineSalesCore.Query
     {
         private readonly ILogger<UserListQuery> _logger;
 
-        public UserListQuery(IService service, ILogger<UserListQuery> logger) : base(service)
+        public UserListQuery(IContextAwareService service, ILogger<UserListQuery> logger) : base(service)
         {
-            if (service == null) throw new ArgumentNullException();
             _logger = logger;
         }
 

@@ -24,9 +24,9 @@ namespace OnlineSalesCore.BackgroundJobs
         private readonly ILogger _logger;
         private readonly IMailQueue _queue;
         public MailJob(IOptions<MailerOptions> options,
-                            IServiceProvider provider,
-                            ILogger<MailJob> logger,
-                            IMailQueue queue)
+            IServiceProvider provider,
+            ILogger<MailJob> logger,
+            IMailQueue queue)
         {
             _options = options.Value;
             _provider = provider;

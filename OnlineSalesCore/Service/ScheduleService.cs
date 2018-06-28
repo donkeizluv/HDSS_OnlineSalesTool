@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesCore.Service
 {
-    public class ScheduleService : ServiceBase, IScheduleService
+    public class ScheduleService : ContextAwareService, IScheduleService
     {
         //Number of prev sche to return in VM
         public const int NearestMonthScheduleTake = 5;
@@ -24,7 +24,7 @@ namespace OnlineSalesCore.Service
             _logger = logger;
         }
 
-        public async Task<ShiftAssignerViewModel> Get()
+        public async Task<ShiftAssignerVM> Get()
         {
             switch (Role)
             {
@@ -41,7 +41,7 @@ namespace OnlineSalesCore.Service
             }
         }
         #region Create VM
-        private async Task<ShiftAssignerViewModel> CreateVM_CA()
+        private async Task<ShiftAssignerVM> CreateVM_CA()
         {
             //CA can see his manager POSs' schedules
             var now = DateTime.Now;
@@ -49,7 +49,7 @@ namespace OnlineSalesCore.Service
                 .Where(u => u.UserId == UserId)
                 .Select(u => u.ManagerId ?? -1).FirstOrDefaultAsync();
             //manId == 1 results in empty POSs, prev schedules vm
-            var vm = new ShiftAssignerViewModel()
+            var vm = new ShiftAssignerVM()
             {
                 //CA cant have anyone under his management
                 Users = new AppUserDTO[] { },
@@ -75,11 +75,11 @@ namespace OnlineSalesCore.Service
             };
             return vm;
         }
-        private async Task<ShiftAssignerViewModel> CreateVM_BDS()
+        private async Task<ShiftAssignerVM> CreateVM_BDS()
         {
             //BDS can see his POSs' schedules
             var now = DateTime.Now;
-            var vm = new ShiftAssignerViewModel()
+            var vm = new ShiftAssignerVM()
             {
                 //Get all ids under management
                 Users = await DbContext.AppUser

@@ -13,7 +13,7 @@ namespace OnlineSalesCore.Service
     /// <summary>
     /// Shared base of all services, common utilities of service placed here
     /// </summary>
-    public class ServiceBase : IService
+    public class ContextAwareService : IContextAwareService
     {
         public int UserId
         {
@@ -61,11 +61,11 @@ namespace OnlineSalesCore.Service
 
         public OnlineSalesContext DbContext { get; private set; }
 
-        public ServiceBase(IHttpContextAccessor httpContext, OnlineSalesContext context) : this(httpContext.HttpContext.User, context)
+        public ContextAwareService(IHttpContextAccessor httpContext, OnlineSalesContext context) : this(httpContext.HttpContext.User, context)
         {
             
         }
-        protected ServiceBase(ClaimsPrincipal principal, OnlineSalesContext context)
+        protected ContextAwareService(ClaimsPrincipal principal, OnlineSalesContext context)
         {
             UserPrincipal = principal ?? throw new ArgumentNullException();
             DbContext = context ?? throw new ArgumentNullException();

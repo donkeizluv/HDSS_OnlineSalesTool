@@ -8,7 +8,7 @@ namespace OnlineSalesCore.Service
 {
     public interface IScheduleService : IDisposable
     {
-        Task<ShiftAssignerViewModel> Get();
+        Task<ShiftAssignerVM> Get();
         Task<IEnumerable<ScheduleDetailDTO>> GetDetail(int posScheduleId);
         Task<int> Create(ScheduleContainer schedule);
     }

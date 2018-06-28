@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesCore.Service
 {
-    public class UserService : ServiceBase, IUserService
+    public class UserService : ContextAwareService, IUserService
     {
         private const int SUGGEST_TAKE = 5;
         private readonly ILogger<UserService> _logger;

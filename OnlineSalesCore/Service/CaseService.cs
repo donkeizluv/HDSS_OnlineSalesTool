@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesCore.Service
 {
-    public class CaseService : ServiceBase, ICaseService
+    public class CaseService : ContextAwareService, ICaseService
     {
         private readonly ILogger _logger;
         private readonly ListQuery<OnlineOrder, CaseDTO> _query;
