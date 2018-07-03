@@ -18,5 +18,7 @@ namespace OnlineSalesCore.ViewModels
         public DateTime SystemMonthYear { get => _systemMonthYear; set => _systemMonthYear = value.Date; }
         //Total days of current system date
         public int TotalDaysOfMonth { get => DateTime.DaysInMonth(SystemMonthYear.Year, SystemMonthYear.Month); }
+        //Accept new schedule for this month
+        public bool AllowCreate { get; set; }
     }
 }

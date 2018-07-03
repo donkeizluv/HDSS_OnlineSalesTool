@@ -1,4 +1,4 @@
-﻿using OnlineSalesCore.ApiParameter;
+﻿using OnlineSalesCore.Helper;
 using OnlineSalesCore.DTO;
 using System.Collections.Generic;
 
@@ -9,7 +9,7 @@ namespace OnlineSalesCore.ViewModels
     /// </summary>
     public class CaseListingVM : ListingViewModel<CaseDTO>
     {
-        public CaseListingVM(ListingParams param) : base(param)
+        public CaseListingVM(Params param) : base(param)
         {
         }
     }

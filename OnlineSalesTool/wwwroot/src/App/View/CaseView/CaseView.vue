@@ -12,81 +12,171 @@
         <div class="row mt-3">
             <div class="col-12">
                 <div class="table-responsive">
-                    <table class="table table-hover text-center">
+                    <table class="table table-hover">
                         <thead>
                             <tr class="th-text-center th-no-top-border">
                                 <th>
-                                    <button class="btn btn-link" @click="orderByClicked('Name')">
-                                        <span v-html="headerOrderState('Name')"></span>Tên Kh.
-                                    </button>
+                                    <button class="btn btn-link text-dark">Tên Kh.</button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" @click="orderByClicked('Phone')">
-                                        <span v-html="headerOrderState('Phone')"></span>SĐT
-                                    </button>
+                                    <button class="btn btn-link text-dark">CMND</button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" @click="orderByClicked('Address')">
-                                        <span v-html="headerOrderState('Address')"></span>Địa chỉ
-                                    </button>
+                                    <button class="btn btn-link text-dark">SĐT</button>
                                 </th>
                                 <th>
+                                    <button class="btn btn-link text-dark">Địa chỉ</button>
+                                </th>
+                                <th v-if="canSeePosCode">
                                     <button class="btn btn-link text-dark">Pos</button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link text-dark">Ngày</button>
-                                </th>
-                                <th>
-                                    <button class="btn btn-link text-dark">Số hd.</button>
-                                </th>
-                                <th>
-                                    <button class="btn btn-link text-dark">Tình trạng</button>
+                                    <button class="btn btn-link" @click="orderByClicked('Received')">
+                                        <span v-html="headerOrderState('Received')"></span>Ngày
+                                    </button>
                                 </th>
                                 <th>
                                     <button class="btn btn-link text-dark">Số bill</button>
                                 </th>
                                 <th>
+                                    <button class="btn btn-link text-dark">Số hd.</button>
+                                </th>
+                                <th>
+                                    <button class="btn btn-link" @click="orderByClicked('Stage')">
+                                        <span v-html="headerOrderState('Stage')"></span>Tình trạng
+                                    </button>
+                                </th>
+                                <th>
+                                    <button class="btn btn-link text-dark">Action</button>
+                                </th>
+                                <th class="pl-0 pr-0" v-if="canSeeAssignDetail">
+                                    <button class="btn btn-link text-dark">Phân bổ</button>
+                                </th>
+                                <th class="pl-0 pr-0">
                                     <button class="btn btn-link text-dark">Chi tiết vay</button>
                                 </th>
                             </tr>
                         </thead>
-                    <tbody class="td-item-middle">
+                        <tbody class="td-item-middle">
                             <template v-if="hasItems">
-                                <template v-for="item in items">
-                                    <tr class="fixed-height" :key="item.OrderId">
+                                <template v-for="(item, i) in items">
+                                    <tr :key="item.OrerId">
                                         <!--Name-->
                                         <td class="text-center">
-                                            <div class="width-8 mx-auto">{{item.Name}}</div>
+                                            <div class="mx-auto"
+                                                v-b-popover.hover.top="item.Name">{{item.Name}}</div>
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="mx-auto">{{item.NatId}}</div>
                                         </td>
                                         <!-- Phone -->
                                         <td class="text-center">
-                                            <div class="width-8 mx-auto">{{item.Phone}}</div>
+                                            <div class="mx-auto">{{item.Phone}}</div>
                                         </td>
                                         <!-- Address -->
                                         <td class="text-center">
-                                            <div class="width-8 mx-auto">{{item.Address}}</div>
+                                            <div class="width-8 mx-auto text-truncate"
+                                                v-b-popover.hover.top="item.Address">{{item.Address}}</div>
                                         </td>
                                         <!-- PosCode -->
-                                        <td class="text-center">
-                                            <div class="width-8 mx-auto">{{item.PosCode}}</div>
+                                        <td v-if="canSeePosCode" class="text-center">
+                                            <div class="mx-auto">{{item.PosCode}}</div>
                                         </td>
                                         <!-- Received -->
                                         <td class="text-center">
-                                            <div class="width-8 mx-auto">{{formatDatetime(item.Received)}}</div>
-                                        </td>
-                                        <!-- Indus contract -->
-                                        <td class="text-center">
-                                            <div class="width-8 mx-auto">{{item.Induscontract}}</div>
-                                        </td>
-                                        <!-- Stage -->
-                                        <td class="text-center">
-                                            <div class="width-8 mx-auto">{{item.Stage}}</div>
+                                            <div class="mx-auto">{{formatDatetime(item.Received)}}</div>
                                         </td>
                                         <!-- Order number -->
                                         <td class="text-center">
-                                            <div class="width-8 mx-auto">{{item.OrderNumber}}</div>
+                                            <div class="mx-auto">{{item.OrderNumber}}</div>
                                         </td>
+                                        <!-- Indus contract -->
+                                        <td class="text-center">
+                                            <div class="mx-auto ">{{item.Induscontract}}</div>
+                                        </td>
+                                        <!-- Stage -->
+                                        <td class="text-center">
+                                            <div class="mx-auto font-italic">{{item.Stage}}</div>
+                                        </td>
+                                        <!-- Process action -->
+                                        <!-- Action set according to role/stage -->
+                                        <!-- Makes this a component -->
                                         <td>
+                                            <div class="text-center" v-if="actionCode(item.Stage) == stageActions.NoAction">
+                                                <span class="fas fa-ellipsis-h"></span>
+                                            </div>
+                                            <div class="text-center" v-if="actionCode(item.Stage) == stageActions.EnterContractNumber">
+                                                <div class="form-inline justify-content-center">
+                                                    <div class="form-group">
+                                                        <div class="input-group">
+                                                            <b-form-input size="sm"
+                                                                type="text"
+                                                                placeholder="Số hd."
+                                                                v-model.trim="item.InduscontractTemp"></b-form-input>
+                                                            <!--Submit-->
+                                                                <span class="input-group-append">
+                                                                <b-button variant="success"
+                                                                    size="sm"
+                                                                    @click="submitContract(item)"
+                                                                    :disabled="!canSubmitContract(item)">
+                                                                    OK
+                                                                </b-button>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-center" v-if="actionCode(item.Stage) == stageActions.CustomerConfirm">
+                                                    <div class="form-inline justify-content-center">
+                                                    <div class="form-group">
+                                                        <b-button class="mr-2"
+                                                            variant="success"
+                                                            size="sm"
+                                                            @click="customerConfirm(item, true)">
+                                                            Đồng ý
+                                                        </b-button>
+                                                        <b-button variant="warning"
+                                                            size="sm"
+                                                            @click="customerConfirm(item, false)">
+                                                            Từ chối
+                                                        </b-button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div v-if="actionCode(item.Stage) == stageActions.AssignCase">
+                                                <div class="form-inline justify-content-center">
+                                                    <div class="form-group">
+                                                        <d-select class="width-14"
+                                                            v-model="item.assignTo"
+                                                            label="DisplayName"
+                                                            :api="assignSuggestApi"></d-select>
+                                                        <span class="input-group-append">
+                                                            <button class="btn btn-sm btn-link"
+                                                                :disabled="!item.assignTo"
+                                                                @click="assignCase(item)">
+                                                                <span class="fas fa-save"></span>
+                                                            </button>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-center" v-if="actionCode(item.Stage) == stageActions.Rejected">
+                                                <span class="fas fa-check"></span>
+                                            </div>
+                                            <div class="text-center" v-if="actionCode(item.Stage) == stageActions.Completed">
+                                                <span class="fas fa-check"></span>
+                                            </div>
+                                        </td>
+                                        <td v-if="canSeeAssignDetail" class="text-center">
+                                            <button @click="toggleAssignDetail(item.OrderId)"
+                                                    class="btn btn-sm btn-link">
+                                                <span class="fas" 
+                                                    :class="{'fa-minus': isShowingAssignDetail(item.OrderId),
+                                                    'fa-plus': !isShowingAssignDetail(item.OrderId)}">
+                                                </span>
+                                            </button>
+                                        </td>
+                                        <td class="text-center">
                                             <button @click="toggleLoanDetail(item.OrderId)"
                                                     class="btn btn-sm btn-link">
                                                 <span class="fas" 
@@ -96,22 +186,29 @@
                                             </button>
                                         </td>
                                     </tr>
-                                    <tr :key="item.OrderId + 1" v-show="isShowingLoanDetail(item.OrderId)">
-                                        <loan-detail :colspan=9 :detail="item"/>
+                                    <tr :key="'loan' + i">
+                                        <loan-detail v-show="isShowingLoanDetail(item.OrderId)"
+                                            :colspan="totalColumn"
+                                            :detail="item"/>
+                                    </tr>
+                                    <tr v-if="canSeeAssignDetail" :key="'assign' + i" >
+                                        <assign-detail v-show="isShowingAssignDetail(item.OrderId)"
+                                            :colspan="totalColumn"
+                                            :detail="item.AssignUser"/>
                                     </tr>
                                 </template>
                             </template>
                             <template v-else>
                                 <tr>
-                                    <td class="text-center font-weight-bold" colspan="9">
-                                        <span>Chưa có dữ liệu :(</span>
+                                    <td class="text-center" :colspan="totalColumn">
+                                        <span class="font-italic">Chưa có dữ liệu :(</span>
                                     </td>
                                 </tr>
                             </template>
                         </tbody>
                         <tfoot>
                             <tr class="td-no-top-border">
-                                <td colspan=9>
+                                <td :colspan="totalColumn" class="lastrow-padding">
                                     <page-nav :page-count="totalPages"
                                         :click-handler="pageNavClicked"
                                         :page-range="2"
@@ -137,29 +234,67 @@
 </template>
 <script>
 import API from "../../API";
-//Permission
-import { Permission } from "../../AppConst";
+import { Permission, Roles } from "../../AppConst";
 import searchBar from "../Shared/SearchBar.vue";
 import loanDetail from "./LoanDetail.vue";
+import assignDetail from "./AssignDetail.vue";
 import pagenav from "vuejs-paginate";
+import DynamicSelect from "../Shared/DynamicSelect.vue";
 import axios from "axios";
 import listingMix from "../../Mixins/listingViewMixin";
 import format from "date-fns/format";
+import stageActions from "./stageActions";
+//Total number of column
+const staticColumnCount = 12;
+
 export default {
     name: "CaseView",
     mixins: [listingMix],
-    mounted: function() {
+    mounted() {
         this.init();
     },
     components: {
         "search-bar": searchBar,
+        "d-select": DynamicSelect,
         "page-nav": pagenav,
-        "loan-detail": loanDetail
+        "loan-detail": loanDetail,
+        "assign-detail": assignDetail
     },
-    computed: {},
+    computed: {
+        stageActions() {
+            return stageActions;
+        },
+        canAssign() {
+            return this.$store.getters.can(Permission.AssignCase);
+        },
+        canConfirmCustomer() {
+            return this.$store.getters.can(Permission.CustomerConfirm);
+        },
+        canInputContract() {
+            return this.$store.getters.can(Permission.EnterContractNumber);
+        },
+        canSeeAssignDetail(){
+            //Hide this for CA since CA only see cases assigned to him
+            return this.$store.getters.role !== Roles.CA;
+        },
+        canSeePosCode(){
+            return this.$store.getters.role !== Roles.CA;
+        },
+        assignSuggestApi() {
+            return API.SuggestAssign;
+        },
+        //Dynamic colspan based on show/hide tr
+        totalColumn(){
+            let hide = 0;
+            if(!this.canSeeAssignDetail) hide--;
+            if(!this.canSeePosCode) hide--;
+            return staticColumnCount + hide;
+        }
+    },
     data() {
         return {
             showLoanDetail: [],
+            showAssignDetail: [],
             orderBy: "Received",
             searchProps: [
                 {
@@ -171,8 +306,8 @@ export default {
                     value: "Phone"
                 },
                 {
-                    name: "Sản phẩm",
-                    value: "Product"
+                    name: "CMND",
+                    value: "NatId"
                 },
                 {
                     name: "Số Hd.",
@@ -188,12 +323,15 @@ export default {
             this.loadVM();
         },
         //Overrides mixins
-        loadVM: async function() {
+        async loadVM() {
             try {
                 let params = { ...this.getQuery() };
-                //console.log(params);
                 let { data } = await axios.get(API.CaseVM, {
                     params
+                });
+                //Attach InduscontractTemp
+                data.Items.forEach(i => {
+                    i.InduscontractTemp = null;
                 });
                 this.items = data.Items;
                 this.updatePagination(data.TotalPages, data.TotalRows);
@@ -204,9 +342,128 @@ export default {
                 );
             }
         },
+        actionCode(stage) {
+            switch (stage) {
+                case "NotAssigned":
+                    return stageActions.NoAction;
+                    break;
+                case "CustomerConfirm":
+                    return this.canConfirmCustomer
+                        ? stageActions.CustomerConfirm
+                        : stageActions.NoAction;
+                    break;
+                case "EnterContractNumber":
+                    return this.canInputContract
+                        ? stageActions.EnterContractNumber
+                        : stageActions.NoAction;
+                    break;
+                case "WaitForFinalStatus":
+                    return stageActions.NoAction;
+                    break;
+                case "WaitForOnlineBill":
+                    return stageActions.NoAction;
+                    break;
+                case "Approved":
+                    return stageActions.Completed;
+                    break;
+                case "Reject":
+                    return stageActions.Rejected;
+                    break;
+                case "CustomerReject":
+                    return stageActions.Rejected;
+                    break;
+                case "NotAssignable":
+                    return this.canAssign
+                        ? stageActions.AssignCase
+                        : stageActions.NoAction;
+                    break;
+                case "Completed":
+                    return stageActions.Completed;
+                    break;
+                default:
+                    console.log(`Invalid stage: ${stage}`);
+                    return null;
+            }
+        },
+        canSubmitContract(item) {
+            if (item.Induscontract) return false;
+            return (
+                item.InduscontractTemp ||
+                !/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(
+                    item.InduscontractTemp
+                )
+            );
+        },
+        async submitContract(item) {
+            if (!this.canSubmitContract(item)) return;
+            //Submit logic
+            try {
+               await axios.post(API.CaseUpdateIndusContract, {
+                   Id: item.OrderId,
+                   Contract: item.InduscontractTemp
+               });
+               //Refresh
+               await this.loadVM();
+
+            } catch (error) {
+                console.log(error);
+                this.$emit("showinfo", "Cập nhật số hợp đồng thất bại");
+            }
+        },
+        async customerConfirm(item, confirm) {
+            //Confirm logic
+            try {
+               await axios.post(API.CaseCustomerConfirm, {
+                   Id: item.OrderId,
+                   Confirm: confirm
+               });
+               //Refresh
+               await this.loadVM();
+
+            } catch (error) {
+                console.log(error);
+                this.$emit("showinfo", "Cập nhật thất bại");
+            }
+        },
+        async assignCase(item) {
+            //Assign logic
+            //Confirm logic
+            try {
+               await axios.post(API.CaseAssign, {
+                   Id: item.OrderId,
+                   UserId: item.assignTo.UserId
+               });
+               //Refresh
+               await this.loadVM();
+
+            } catch (error) {
+                console.log(error);
+                this.$emit("showinfo", "Chia case thất bại");
+            }
+        },
         formatDatetime(d) {
             if (!d) return "";
             return format(d, "DD-MM-YYYY");
+        },
+        //Assign detail
+        isShowingAssignDetail(id) {
+            if (!id) return false;
+            let index = this.showAssignDetail.indexOf(id);
+            if (index != -1) {
+                return true;
+            }
+            return false;
+        },
+        toggleAssignDetail(id) {
+            let index = this.showAssignDetail.indexOf(id);
+            if (index == -1) {
+                //shows
+                this.hideAllDetail(id);
+                this.showAssignDetail.push(id);
+            } else {
+                //hides
+                this.hideAllDetail(id);
+            }
         },
         // Loan detail
         isShowingLoanDetail(id) {
@@ -221,18 +478,23 @@ export default {
             let index = this.showLoanDetail.indexOf(id);
             if (index == -1) {
                 //shows
-                this.hideLoanDetail(id);
+                this.hideAllDetail(id);
                 this.showLoanDetail.push(id);
             } else {
                 //hides
-                this.hideLoanDetail(id);
+                this.hideAllDetail(id);
             }
         },
-        hideLoanDetail(id) {
-            //hide event details
+        hideAllDetail(id) {
+            //hide specific item detail
             let index = this.showLoanDetail.indexOf(id);
             if (index != -1) {
                 this.showLoanDetail.splice(index, 1);
+            }
+            index = -1; //Reuse
+            index = this.showAssignDetail.indexOf(id);
+            if (index != -1) {
+                this.showAssignDetail.splice(index, 1);
             }
         },
         hideAll() {
@@ -246,5 +508,36 @@ export default {
 <style scoped>
 .td-no-top-border td {
     border-top: none !important;
+}
+.th-text-center th {
+    text-align: center;
+}
+.td-item-middle tr td {
+    vertical-align: middle;
+}
+.width-14 {
+    width: 14rem;
+}
+.width-10 {
+    width: 10rem;
+}
+.width-8 {
+    width: 8rem;
+}
+.width-6 {
+    width: 6rem;
+}
+.width-5 {
+    width: 5rem;
+}
+.width-3 {
+    width: 3rem;
+}
+.vetical-center {
+    vertical-align: middle;
+}
+/* Workaround for overflow y of datatable */
+.lastrow-padding {
+    height: 150px;
 }
 </style>

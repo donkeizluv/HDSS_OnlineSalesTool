@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using OnlineSalesCore.EFModel;
+using OnlineSalesCore.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

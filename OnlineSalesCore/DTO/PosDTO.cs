@@ -1,4 +1,4 @@
-﻿using OnlineSalesCore.EFModel;
+﻿using OnlineSalesCore.Models;
 using System.Collections.Generic;
 
 namespace OnlineSalesCore.DTO

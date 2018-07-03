@@ -48,8 +48,8 @@ module.exports = {
                     test: module =>  module.nameForCondition &&
                         /\.(s?css|vue)$/.test(module.nameForCondition()) &&
                         !/^javascript/.test(module.type),
-                    chunks: 'all',
-                    enforce: true
+                    chunks: 'all'
+                    // enforce: true
                 }
             }
         }

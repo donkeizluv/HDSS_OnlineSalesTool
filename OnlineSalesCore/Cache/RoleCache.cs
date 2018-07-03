@@ -1,5 +1,5 @@
 ﻿using OnlineSalesCore.Const;
-using OnlineSalesCore.EFModel;
+using OnlineSalesCore.Models;
 using OnlineSalesCore.Exceptions;
 using System;
 using System.Collections.Generic;

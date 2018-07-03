@@ -3,8 +3,11 @@
 TODO:
 -Permission policies
 -Split frontend permission dict to view dict & action dict
+-Email not assignable case to all bds, CAs of POSs
+-Email unknown POS case to all admins
 
 DONE:
+-Assigner only available certain days in month
 -Clean up appsetting.json
 -Check unique names in CRUD
 -Generic listing VM

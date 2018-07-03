@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OnlineSalesCore.Exceptions;
-using OnlineSalesCore.Service;
+using OnlineSalesCore.Services;
 using OnlineSalesCore.ViewModels;
 using OnlineSalesTool.Filter;
 using OnlineSalesTool.Helper;

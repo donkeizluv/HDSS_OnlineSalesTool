@@ -14,14 +14,18 @@ export default [
     },
     {
         role: 'CA',
-        can: []
+        can: [
+            Permission.CustomerConfirm,
+            Permission.EnterContractNumber
+        ]
     },
     {
         role: 'BDS',
         can: [
             Permission.CreateSchedule,
             Permission.PosManager,
-            Permission.UserManager
+            Permission.UserManager,
+            Permission.AssignCase
         ]
     },
     {
@@ -34,6 +38,8 @@ export default [
             Permission.PosManager,
             Permission.UserManager,
             //Management actions
+            //Case
+            Permission.AssignCase,
             //Schedules
             Permission.CreateSchedule,
             Permission.EditSchedule,

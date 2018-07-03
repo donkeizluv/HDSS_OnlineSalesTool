@@ -51,6 +51,7 @@ export default new Vuex.Store({
         isAuthenticated: state => state.authenticated,
         isAuthChecked: state => state.authChecked,
         identity: state => state.identity,
+        role: state => state.role,
         //Ability: state => state.Ability,
         //HasAbility(state) {
         //    //NYI

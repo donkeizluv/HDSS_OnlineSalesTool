@@ -2,7 +2,8 @@
 using Microsoft.Extensions.Logging;
 using OnlineSalesCore.DTO;
 using OnlineSalesCore.Exceptions;
-using OnlineSalesCore.Service;
+using OnlineSalesCore.Helper;
+using OnlineSalesCore.Services;
 using OnlineSalesTool.Filter;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +50,7 @@ namespace OnlineSalesTool.Controllers
             }
             catch (BussinessException ex)
             {
-                Utility.LogException(ex, _logger);
+                ExceptionHelper.LogException(ex, _logger);
                 return BadRequest(ex.Message);
             }
         }
@@ -68,7 +69,7 @@ namespace OnlineSalesTool.Controllers
             }
             catch (BussinessException ex)
             {
-                Utility.LogException(ex, _logger);
+                ExceptionHelper.LogException(ex, _logger);
                 return BadRequest(ex.Message);
             }
 
@@ -87,7 +88,7 @@ namespace OnlineSalesTool.Controllers
             }
             catch (BussinessException ex)
             {
-                Utility.LogException(ex, _logger);
+                ExceptionHelper.LogException(ex, _logger);
                 return BadRequest(ex.Message);
             }    
 

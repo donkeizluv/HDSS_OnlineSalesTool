@@ -55,8 +55,10 @@
                                            v-model.trim="item.PosName"
                                            :maxlength="maxFieldLength.posName" />
                                 </td>
-                                <td class="text-center" v-else>
-                                    <div class="width-8 mx-auto">{{item.PosName}}</div>
+                                <td class="text-center text-truncate" v-else>
+                                    <div class="width-8 mx-auto" v-b-popover.hover.top="item.PosName">
+                                        {{item.PosName}}
+                                    </div>
                                 </td>
                                 <!--PosCode-->
                                 <td class="text-center" v-if="isEditMode(item.PosId)">
@@ -82,7 +84,9 @@
                                            :maxlength="maxFieldLength.address" />
                                 </td>
                                 <td class="text-center text-truncate" v-else>
-                                    <div class="width-8 mx-auto">{{item.Address}}</div>
+                                    <div class="width-8 mx-auto" v-b-popover.hover.top="item.Address">
+                                        {{item.Address}}
+                                    </div>
                                 </td>
                                 <!--Phone-->
                                 <td class="text-center" v-if="isEditMode(item.PosId)">
@@ -166,8 +170,8 @@
                             </template>
                             <template v-else>
                                 <tr>
-                                    <td class="text-center font-weight-bold" colspan="7">
-                                        <span>Chưa có dữ liệu :(</span>
+                                    <td class="text-center" colspan="7">
+                                        <span class="font-italic">Chưa có dữ liệu :(</span>
                                     </td>
                                 </tr>
                             </template>
@@ -363,8 +367,8 @@ export default {
                 phone: 20
             },
             searchFilters: [
-                { name: "Tên POS", value: "PosName" },
                 { name: "Pos code", value: "PosCode" },
+                { name: "Tên POS", value: "PosName" },
                 { name: "SĐT", value: "Phone" },
                 { name: "BDS", value: "Manager" }
             ]
@@ -384,7 +388,7 @@ export default {
         init() {
             this.loadVM();
         },
-        loadVM: async function() {
+        async loadVM() {
             try {
                 let params = { ...this.getQuery() };
                 //console.log(params);
@@ -422,7 +426,7 @@ export default {
                 return false;
             return true;
         },
-        createItem: async function() {
+        async createItem() {
             if (!this.isNewItemValid || !this.canCreate) return;
             try {
                 let newItem = this.clone(this.newItem);
@@ -439,7 +443,7 @@ export default {
                 this.clearNewItem();
             }
         },
-        updateItem: async function(id) {
+        async updateItem(id) {
             if (!this.canUpdateItem(id) || !this.canUpdate) return;
             let index = this.findItemIndex(id);
             try {

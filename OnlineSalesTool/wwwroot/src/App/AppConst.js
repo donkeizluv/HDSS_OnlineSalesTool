@@ -1,4 +1,10 @@
-﻿export const ConstStorage = {
+﻿export const Roles = {
+    CA: "CA",
+    BDS: "BDS",
+    ADMIN: "ADMIN",
+    ASM: "ASM"
+};
+export const ConstStorage = {
     //Local store
     TokenStorage: 'user-token',
     IdentityStorage: 'id',
@@ -12,6 +18,10 @@ export const Permission = {
     CaseListing: 'CaseListing',
     ScheduleAssigner: 'ScheduleAssigner',
     Management: 'Management',
+    //Case view
+    CustomerConfirm: "CustomerConfirm",
+    EnterContractNumber: "EnterContractNumber",
+    AssignCase: "AssignCase",
     //Schedules
     CreateSchedule: 'CreateSchedule',
     EditSchedule: 'EditSchedule',

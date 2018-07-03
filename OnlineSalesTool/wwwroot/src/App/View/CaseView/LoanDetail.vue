@@ -38,7 +38,7 @@ export default {
         },
         colspan: {
             type: Number,
-            default: 8
+            default: 12
         }
     },
     data() {

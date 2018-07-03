@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OnlineSalesCore.Service;
+using OnlineSalesCore.DTO;
+using OnlineSalesCore.Exceptions;
+using OnlineSalesCore.Services;
 using OnlineSalesTool.Filter;
 using OnlineSalesTool.Models;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using static OnlineSalesCore.ApiParameter.ListingParams;
+using static OnlineSalesCore.Helper.Params;
 
 namespace OnlineSalesTool.Controllers
 {
@@ -19,6 +21,54 @@ namespace OnlineSalesTool.Controllers
         {
             _service = service;
             _logger = logger;
+        }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> UpdateContract([FromBody]UpdateContractDTO dto)
+        {
+            try
+            {
+                await _service.UpdateContract(dto);
+                return Ok();
+            }
+            catch (BussinessException ex)
+            {
+                _logger.LogDebug(ex.Message);
+                return BadRequest(ex.Message);
+            }
+
+        }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Assign([FromBody]CaseAssignDTO dto)
+        {
+            try
+            {
+                await _service.Assign(dto);
+                return Ok();
+            }
+            catch (BussinessException ex)
+            {
+                _logger.LogDebug(ex.Message);
+                return BadRequest(ex.Message);
+            }
+
+        }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Confirm([FromBody]CustomerConfirmDTO dto)
+        {
+            try
+            {
+                await _service.Confirm(dto);
+                return Ok();
+            }
+            catch (BussinessException ex)
+            {
+                _logger.LogDebug(ex.Message);
+                return BadRequest(ex.Message);
+            }
+
         }
         [HttpGet]
         [Authorize]

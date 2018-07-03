@@ -1,4 +1,4 @@
-﻿using OnlineSalesCore.ApiParameter;
+﻿using OnlineSalesCore.Helper;
 using System;
 using System.Collections.Generic;
 
@@ -36,7 +36,7 @@ namespace OnlineSalesCore.ViewModels
             }
         }
         //Interesting, why would C# even allow abstract class ctor to be public :/
-        protected ListingViewModel(ListingParams param)
+        protected ListingViewModel(Params param)
         {
             if (param == null) throw new ArgumentNullException();
             FilterBy = string.IsNullOrEmpty(param.Filter) ? string.Empty : param.Filter;

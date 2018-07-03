@@ -124,6 +124,7 @@ export default {
             //Sys
             systemMonthYear: null,
             totalDaysOfMonth: null,
+            allowCreate: false,
             //Display bindings
             currentPOS: null,
             //Binding depends on POS
@@ -171,8 +172,13 @@ export default {
             return !!this.selectedPos && !!this.selectedPrevSchedule;
         },
         canCreateNewSchedule() {
+            //System controlled allow creation
+            if(!this.allowCreate) return false;
+            //Shifts available check
             if (!this.canCreate) return false;
+            //Is in create mode?
             if (this.createMode) return false;
+            //Current POS does not have schedule
             if (this.currentPOS)
                 return !this.currentPOS.HasCurrentMonthSchedule;
             return false;
@@ -195,7 +201,7 @@ export default {
     },
 
     methods: {
-        init: async function() {
+        async init() {
             await this.loadVM();
             //Display first prev schedule of 1st POS
             if (this.poses.length > 0) {
@@ -206,7 +212,7 @@ export default {
             }
             //console.log(setDate(this.systemMonthYear, 1));
         },
-        loadVM: async function() {
+        async loadVM() {
             //Fetch VM
             try {
                 //Get VM
@@ -219,6 +225,7 @@ export default {
                 //Set sys ref
                 this.systemMonthYear = data.SystemMonthYear;
                 this.totalDaysOfMonth = data.TotalDaysOfMonth;
+                this.allowCreate = data.AllowCreate;
             } catch (e) {
                 this.$emit(
                     "showerror",
@@ -244,7 +251,7 @@ export default {
             //Set displaying available prev schedules
             this.currentPrevSchedules = this.currentPOS.PreviousMonthSchedules;
         },
-        selectDefaultSchedule: async function(posScheduleId = -1) {
+        async selectDefaultSchedule(posScheduleId = -1) {
             //If prev sche is available, display 1st schedule
             if (this.currentPrevSchedules.length > 0) {
                 if (posScheduleId == -1) {
@@ -320,7 +327,7 @@ export default {
                 format(this.systemMonthYear, "MM-YYYY")
             );
         },
-        saveSchedule: async function() {
+        async saveSchedule() {
             if (!this.canSaveSchedule) return;
             let api = API_Const.SaveScheduleAPI;
             //Contructor:
@@ -411,7 +418,7 @@ export default {
             });
             return days;
         },
-        reloadPrevSchedule: async function() {
+        async reloadPrevSchedule() {
             //If no prev sche selected, clear display
             if (!this.selectedPrevSchedule) {
                 this.hideModeText();
@@ -471,7 +478,7 @@ export default {
             );
             //this.ModeName = `Xem ca trực: ${this.currentPOS.PosCode} ${scheduleContainer.DisplayMonthYear}`;
         },
-        loadScheduleDetails: async function(id) {
+        async loadScheduleDetails(id) {
             try {
                 let { data } = await axios.get(
                     API_Const.ScheduleDetailAPI.replace("{id}", id)

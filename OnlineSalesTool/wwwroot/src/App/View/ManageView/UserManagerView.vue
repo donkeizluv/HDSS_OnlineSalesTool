@@ -175,8 +175,8 @@
                             </template>
                             <template v-else>
                                 <tr>
-                                    <td class="text-center font-weight-bold" colspan="9">
-                                        <span>Chưa có dữ liệu :(</span>
+                                    <td class="text-center" colspan="9">
+                                        <span class="font-italic">Chưa có dữ liệu :(</span>
                                     </td>
                                 </tr>
                             </template>
@@ -337,30 +337,30 @@ export default {
         "v-select": vSelect,
         light: light
     },
-    mounted: function() {
+    mounted() {
         this.init();
     },
     computed: {
         //Permission
-        canUpdate: function() {
+        canUpdate() {
             return this.$store.getters.can(Permission.UpdateUser);
         },
-        canCreate: function() {
+        canCreate() {
             return this.$store.getters.can(Permission.CreateUser);
         },
         //API
-        searchSuggestAPI: function() {
+        searchSuggestAPI() {
             return API.UserSearchSuggest.replace("{role}", "BDS");
         },
         //CRUD
-        isNewItemValid: function() {
+        isNewItemValid() {
             if (!this.canCreate) return false;
             //use checkItem bc both basically have same validation
             return this.checkItem(this.newItem);
             //return false;
         }
     },
-    data: function() {
+    data() {
         return {
             orderBy: "Username",
             //New item
@@ -393,12 +393,12 @@ export default {
         };
     },
     methods: {
-        init: function() {
+        init() {
             this.clearNewItem();
             this.loadVM();
         },
         //Overrides mixins
-        loadVM: async function() {
+        async loadVM() {
             try {
                 let params = { ...this.getQuery() };
                 //console.log(params);
@@ -419,7 +419,7 @@ export default {
                 );
             }
         },
-        findItemIndex: function(id) {
+        findItemIndex(id) {
             let index = this.items.findIndex(x => x.UserId == id);
             if (index == -1) throw "Cant find items of id: " + id;
             return index;
@@ -427,7 +427,7 @@ export default {
         //End overrides
         //CRUD
         //control states
-        canUpdateItem: function(id) {
+        canUpdateItem(id) {
             if (!this.canUpdate) return;
             let index = this.findItemIndex(id);
             //Must be in Edit mode to save
@@ -435,13 +435,13 @@ export default {
             //Values check
             return this.checkItem(this.items[index]);
         },
-        canEditManager: function(id) {
+        canEditManager(id) {
             let index = this.findItemIndex(id);
             //Only CA can have manager
             return this.items[index].Role === "CA";
         },
         //Call API
-        createItem: async function() {
+        async createItem() {
             if (!this.isNewItemValid || !this.canCreate) return;
             try {
                 let newItem = this.clone(this.newItem);
@@ -460,7 +460,7 @@ export default {
                 this.clearNewItem();
             }
         },
-        updateItem: async function(id) {
+        async updateItem(id) {
             if (!this.canUpdateItem(id) || !this.canUpdate) return;
             let index = this.findItemIndex(id);
             try {
@@ -479,7 +479,7 @@ export default {
             }
         },
         //New item check
-        checkItem: function(item) {
+        checkItem(item) {
             if (!item) return false;
             if (!item.Username || !item.Name || !item.HR) return false;
             //CA must have manager
@@ -491,7 +491,7 @@ export default {
             }
             return true;
         },
-        checkUsername: function(id) {
+        checkUsername(id) {
             this.checkUsernameDebounce(id, this);
         },
         checkUsernameDebounce: debounce(async (id, vm) => {
@@ -518,7 +518,7 @@ export default {
             }
         }, 300),
         //Init & clear item
-        clearNewItem: function() {
+        clearNewItem() {
             this.newItem = {
                 Username: "",
                 Name: null,

@@ -52,29 +52,29 @@ export default {
         }
     },
     computed: {
-        isAuthenticated: function() {
+        isAuthenticated() {
             return this.$store.getters.isAuthenticated;
         },
-        identity: function() {
+        identity() {
             return this.$store.getters.identity;
         },
-        currentRouteName: function() {
+        currentRouteName() {
             return this.$route.name;
         }
     },
-    data: function() {
+    data() {
         return {
             routes
         };
     },
     methods: {
-        allow: function(route) {
+        allow(route) {
             return this.$store.getters.can(route.name);
         },
-        logout: function() {
+        logout() {
             this.$store.dispatch(LOGOUT);
         },
-        isActiveRoute: function(name) {
+        isActiveRoute(name) {
             return this.currentRouteName === name;
         }
     }

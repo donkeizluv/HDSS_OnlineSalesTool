@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OnlineSalesCore.DTO;
 using OnlineSalesCore.Exceptions;
-using OnlineSalesCore.Service;
+using OnlineSalesCore.Services;
 using OnlineSalesTool.Filter;
 using OnlineSalesTool.Helper;
 using System.Threading.Tasks;
-using static OnlineSalesCore.ApiParameter.ListingParams;
+using static OnlineSalesCore.Helper.Params;
 
 namespace OnlineSalesTool.Controllers
 {

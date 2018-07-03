@@ -32,7 +32,6 @@ export default {
             this.filterString = '';
         },
         //Edit mode methods
-        //Requires items, items_copy to function properly
         enterEditMode: function (id) {
             let index = this.findItemIndex(id);
             if (index == -1) {

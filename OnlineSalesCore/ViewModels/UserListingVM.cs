@@ -1,4 +1,4 @@
-﻿using OnlineSalesCore.ApiParameter;
+﻿using OnlineSalesCore.Helper;
 using OnlineSalesCore.DTO;
 
 namespace OnlineSalesCore.ViewModels
@@ -8,7 +8,7 @@ namespace OnlineSalesCore.ViewModels
     /// </summary>
     public class UserListingVM : ListingViewModel<AppUserDTO>
     {
-        public UserListingVM(ListingParams param) : base(param)
+        public UserListingVM(Params param) : base(param)
         {
         }
     }

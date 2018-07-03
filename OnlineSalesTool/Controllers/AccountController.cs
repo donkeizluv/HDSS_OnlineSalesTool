@@ -5,9 +5,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OnlineSalesCore.Const;
-using OnlineSalesCore.EFModel;
+using OnlineSalesCore.Models;
 using OnlineSalesCore.Options;
-using OnlineSalesCore.Service;
+using OnlineSalesCore.Services;
 using OnlineSalesTool.AuthToken;
 using OnlineSalesTool.Filter;
 using System.Collections.Generic;
@@ -75,8 +75,10 @@ namespace OnlineSalesTool.Controllers
             var claims = new List<Claim>
                 {
                     new Claim(CustomClaims.UserId, user.UserId.ToString()),
-                    new Claim(CustomClaims.UserRole, user.Role.Name),
-                    new Claim(CustomClaims.Username, user.Username.ToLower())
+                    new Claim(CustomClaims.UserRole, user.Role.Name.ToUpper()),
+                    new Claim(CustomClaims.Username, user.Username.ToLower()),
+                    new Claim(CustomClaims.Email, user.Email.ToLower())
+                    
                 };
             //add abilities to claims
             claims.AddRange(user.UserAbility.Select(a => new Claim(CustomClaims.Ability, a.Ability.Name)));

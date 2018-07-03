@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OnlineSalesCore.EFModel;
+using OnlineSalesCore.Models;
 
 namespace OnlineSalesCore.Logic
 {

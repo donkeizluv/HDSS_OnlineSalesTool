@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using OnlineSalesCore.DTO;
-using OnlineSalesCore.EFModel;
-using OnlineSalesCore.Extention;
+using OnlineSalesCore.Models;
+using OnlineSalesCore.Extentions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

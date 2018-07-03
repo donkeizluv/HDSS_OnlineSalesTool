@@ -5,11 +5,11 @@ using Microsoft.Extensions.Logging;
 using OnlineSalesCore.Cache;
 using OnlineSalesCore.DTO;
 using OnlineSalesCore.Exceptions;
-using OnlineSalesCore.Service;
+using OnlineSalesCore.Services;
 using OnlineSalesTool.Filter;
 using OnlineSalesTool.Helper;
 using System.Threading.Tasks;
-using static OnlineSalesCore.ApiParameter.ListingParams;
+using static OnlineSalesCore.Helper.Params;
 
 namespace OnlineSalesTool.Controllers
 {
@@ -97,7 +97,23 @@ namespace OnlineSalesTool.Controllers
             try
             {
                 _roleCache.GetRoleId(role, out int roleId, out var appRole);
-                return Ok(await _service.SearchSuggest(appRole, q));
+                return Ok(await _service.Suggest(appRole, q));
+            }
+            catch (BussinessException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
+        }
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> SuggestAssign([FromQuery]string q = "")
+        {
+            if (string.IsNullOrEmpty(q))
+                return NoContent();
+            try
+            {
+                return Ok(await _service.SuggestAssign(q));
             }
             catch (BussinessException ex)
             {

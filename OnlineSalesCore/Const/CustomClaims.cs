@@ -6,5 +6,6 @@
         public const string UserRole = "Role";
         public const string UserId = "UserId";
         public const string Ability = "Ability";
+        public const string  Email = "Email";
     }
 }
