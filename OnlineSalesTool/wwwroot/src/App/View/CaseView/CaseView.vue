@@ -113,7 +113,7 @@
                                                                 type="text"
                                                                 placeholder="Số hd."
                                                                 v-model.trim="item.InduscontractTemp"></b-form-input>
-                                                            <!--Submit-->
+                                                                <!--Submit-->
                                                                 <span class="input-group-append">
                                                                 <b-button variant="success"
                                                                     size="sm"
@@ -386,13 +386,10 @@ export default {
             }
         },
         canSubmitContract(item) {
+            //Must not have contract attached
             if (item.Induscontract) return false;
-            return (
-                item.InduscontractTemp ||
-                !/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(
-                    item.InduscontractTemp
-                )
-            );
+            if(!item.InduscontractTemp) return false;
+            return !/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(item.InduscontractTemp);
         },
         async submitContract(item) {
             if (!this.canSubmitContract(item)) return;

@@ -15,7 +15,8 @@ namespace OnlineSalesCore.Services
 
         public async Task<IndusContractDTO> GetContract(string contractNumber)
         {
-            throw new NotImplementedException();
+            return null;
+            // throw new NotImplementedException();
         }
     }
 }

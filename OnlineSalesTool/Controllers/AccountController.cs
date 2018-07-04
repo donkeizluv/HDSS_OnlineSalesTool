@@ -50,7 +50,7 @@ namespace OnlineSalesTool.Controllers
             //add claims to identity
             var userIdentity = new ClaimsIdentity();
             //Add whatever claim user has here
-            userIdentity.AddClaims(CreateClaimSet(user));
+            userIdentity.AddClaims(_service.CreateClaims(user));
             //Create token
             var jwt = await Token.GenerateJwt(userIdentity,
                 _jwtFactory,
@@ -67,23 +67,7 @@ namespace OnlineSalesTool.Controllers
         public IActionResult Ping()
         {
             return Ok();
-        }
-
-        private IEnumerable<Claim> CreateClaimSet(AppUser user)
-        {
-            //Required claims to operate go here
-            var claims = new List<Claim>
-                {
-                    new Claim(CustomClaims.UserId, user.UserId.ToString()),
-                    new Claim(CustomClaims.UserRole, user.Role.Name.ToUpper()),
-                    new Claim(CustomClaims.Username, user.Username.ToLower()),
-                    new Claim(CustomClaims.Email, user.Email.ToLower())
-                    
-                };
-            //add abilities to claims
-            claims.AddRange(user.UserAbility.Select(a => new Claim(CustomClaims.Ability, a.Ability.Name)));
-            return claims;
-        }
+        }        
 
     }
 }

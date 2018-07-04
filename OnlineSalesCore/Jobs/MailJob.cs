@@ -56,7 +56,6 @@ namespace OnlineSalesCore.Jobs
                 catch (Exception ex)
                 {
                     ExceptionHelper.LogException(ex, _logger);
-                    // throw;
                 }
                 await Task.Delay(1000, stoppingToken);
             }

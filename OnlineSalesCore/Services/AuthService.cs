@@ -8,6 +8,9 @@ using OnlineSalesCore.Options;
 using OnlineSalesCore.Const;
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Linq;
 
 namespace OnlineSalesCore.Services
 {
@@ -47,7 +50,21 @@ namespace OnlineSalesCore.Services
             if (_authOption.NoPwdCheck) return true;
             return _ldapAuth.Validate(userName, pwd, _authOption.Domain);
         }
-
+        public IEnumerable<Claim> CreateClaims(AppUser user)
+        {
+            //Required claims to operate go here
+            var claims = new List<Claim>
+                {
+                    new Claim(CustomClaims.UserId, user.UserId.ToString()),
+                    new Claim(CustomClaims.UserRole, user.Role.Name.ToUpper()),
+                    new Claim(CustomClaims.Username, user.Username.ToLower()),
+                    new Claim(CustomClaims.Email, user.Email.ToLower())
+                    
+                };
+            //add abilities to claims
+            claims.AddRange(user.UserAbility.Select(a => new Claim(CustomClaims.Ability, a.Ability.Name)));
+            return claims;
+        }
         public async Task<AppUser> GetUser(string userName)
         {
             //Include everything needed to be added in claims
