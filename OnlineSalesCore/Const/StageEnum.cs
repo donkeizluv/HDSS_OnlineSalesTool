@@ -10,7 +10,7 @@
         EnterContractNumber, //Input indus contract number to start tracking for final status
         WaitForFinalStatus, //Tracking for final status
         WaitForOnlineBill, //Waiting for dealer to generate online order number
-        Approved, //Final INDUS status
+        WaitForDocument, //CA checks if documents customer provide legit
         Reject, //All reason to reject go here
         CustomerReject,
         NotAssignable, //No CA to assign

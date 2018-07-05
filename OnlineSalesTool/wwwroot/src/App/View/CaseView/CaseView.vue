@@ -16,48 +16,48 @@
                         <thead>
                             <tr class="th-text-center th-no-top-border">
                                 <th>
-                                    <button class="btn btn-link text-dark">Tên Kh.</button>
+                                    <button class="btn btn-sm btn-link text-dark">Tên Kh.</button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link text-dark">CMND</button>
+                                    <button class="btn btn-sm btn-link text-dark">CMND</button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link text-dark">SĐT</button>
+                                    <button class="btn btn-sm btn-link text-dark">SĐT</button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link text-dark">Địa chỉ</button>
+                                    <button class="btn btn-sm btn-link text-dark">Địa chỉ</button>
                                 </th>
                                 <th v-if="canSeePosCode">
-                                    <button class="btn btn-link text-dark">Pos</button>
+                                    <button class="btn btn-sm btn-link text-dark">Pos</button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" @click="orderByClicked('Received')">
+                                    <button class="btn btn-sm btn-link" @click="orderByClicked('Received')">
                                         <span v-html="headerOrderState('Received')"></span>Ngày
                                     </button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link text-dark">Số bill</button>
+                                    <button class="btn btn-sm btn-link text-dark">Số bill</button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link text-dark">Số hd.</button>
+                                    <button class="btn btn-sm btn-link text-dark">Số hd.</button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" @click="orderByClicked('Stage')">
+                                    <button class="btn btn-sm btn-link" @click="orderByClicked('Stage')">
                                         <span v-html="headerOrderState('Stage')"></span>Tình trạng
                                     </button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link text-dark">Action</button>
+                                    <button class="btn btn-sm btn-link text-dark">Action</button>
                                 </th>
                                 <th class="pl-0 pr-0" v-if="canSeeAssignDetail">
-                                    <button class="btn btn-link text-dark">Phân bổ</button>
+                                    <button class="btn btn-sm btn-link text-dark">Phân bổ</button>
                                 </th>
                                 <th class="pl-0 pr-0">
-                                    <button class="btn btn-link text-dark">Chi tiết vay</button>
+                                    <button class="btn btn-sm btn-link text-dark">Chi tiết vay</button>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="td-item-middle">
+                        <tbody class="td-item-middle td-padding td-font">
                             <template v-if="hasItems">
                                 <template v-for="(item, i) in items">
                                     <tr :key="item.OrerId">
@@ -84,7 +84,7 @@
                                         </td>
                                         <!-- Received -->
                                         <td class="text-center">
-                                            <div class="mx-auto">{{formatDatetime(item.Received)}}</div>
+                                            <div class="mx-auto width-6">{{formatDatetime(item.Received)}}</div>
                                         </td>
                                         <!-- Order number -->
                                         <td class="text-center">
@@ -102,12 +102,12 @@
                                         <!-- Action set according to role/stage -->
                                         <!-- Makes this a component -->
                                         <td>
-                                            <div class="text-center" v-if="actionCode(item.Stage) == stageActions.NoAction">
+                                            <div class="text-center width-3 mx-auto" v-if="actionCode(item.Stage) == stageActions.NoAction">
                                                 <span class="fas fa-ellipsis-h"></span>
                                             </div>
-                                            <div class="text-center" v-if="actionCode(item.Stage) == stageActions.EnterContractNumber">
+                                            <div class="text-center mx-auto" v-if="actionCode(item.Stage) == stageActions.EnterContractNumber">
                                                 <div class="form-inline justify-content-center">
-                                                    <div class="form-group">
+                                                    <div class="form-group width-11">
                                                         <div class="input-group">
                                                             <b-form-input size="sm"
                                                                 type="text"
@@ -126,7 +126,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="text-center" v-if="actionCode(item.Stage) == stageActions.CustomerConfirm">
+                                            <div class="text-center width-8 mx-auto" v-if="actionCode(item.Stage) == stageActions.CustomerConfirm">
                                                     <div class="form-inline justify-content-center">
                                                     <div class="form-group">
                                                         <b-button class="mr-2"
@@ -143,7 +143,24 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div v-if="actionCode(item.Stage) == stageActions.AssignCase">
+                                            <div class="text-center width-8 mx-auto" v-if="actionCode(item.Stage) == stageActions.DocumentConfirm">
+                                                    <div class="form-inline justify-content-center">
+                                                    <div class="form-group">
+                                                        <b-button class="mr-2"
+                                                            variant="success"
+                                                            size="sm"
+                                                            @click="documentConfirm(item, true)">
+                                                            Hợp lệ
+                                                        </b-button>
+                                                        <b-button variant="warning"
+                                                            size="sm"
+                                                            @click="documentConfirm(item, false)">
+                                                            Nhập lại
+                                                        </b-button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="width-14 mx-auto" v-if="actionCode(item.Stage) == stageActions.AssignCase">
                                                 <div class="form-inline justify-content-center">
                                                     <div class="form-group">
                                                         <d-select class="width-14"
@@ -160,10 +177,10 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="text-center" v-if="actionCode(item.Stage) == stageActions.Rejected">
+                                            <div class="text-center width-3 mx-auto" v-if="actionCode(item.Stage) == stageActions.Rejected">
                                                 <span class="fas fa-check"></span>
                                             </div>
-                                            <div class="text-center" v-if="actionCode(item.Stage) == stageActions.Completed">
+                                            <div class="text-center width-3 mx-auto" v-if="actionCode(item.Stage) == stageActions.Completed">
                                                 <span class="fas fa-check"></span>
                                             </div>
                                         </td>
@@ -221,7 +238,7 @@
                                         :prev-link-class="'page-link'"
                                         :next-class="'page-item'"
                                         :next-link-class="'page-link'"
-                                        :container-class="'pagination no-bottom-margin justify-content-center'">
+                                        :container-class="'pagination pagination-sm no-bottom-margin justify-content-center'">
                                     </page-nav>
                                 </td>
                             </tr>
@@ -273,21 +290,24 @@ export default {
         canInputContract() {
             return this.$store.getters.can(Permission.EnterContractNumber);
         },
-        canSeeAssignDetail(){
+        canConfirmDocument() {
+            return this.$store.getters.can(Permission.DocumentConfirm);
+        },
+        canSeeAssignDetail() {
             //Hide this for CA since CA only see cases assigned to him
             return this.$store.getters.role !== Roles.CA;
         },
-        canSeePosCode(){
+        canSeePosCode() {
             return this.$store.getters.role !== Roles.CA;
         },
         assignSuggestApi() {
             return API.SuggestAssign;
         },
         //Dynamic colspan based on show/hide tr
-        totalColumn(){
+        totalColumn() {
             let hide = 0;
-            if(!this.canSeeAssignDetail) hide--;
-            if(!this.canSeePosCode) hide--;
+            if (!this.canSeeAssignDetail) hide--;
+            if (!this.canSeePosCode) hide--;
             return staticColumnCount + hide;
         }
     },
@@ -342,6 +362,7 @@ export default {
                 );
             }
         },
+        //Translates stage name to appropriate action
         actionCode(stage) {
             switch (stage) {
                 case "NotAssigned":
@@ -363,8 +384,10 @@ export default {
                 case "WaitForOnlineBill":
                     return stageActions.NoAction;
                     break;
-                case "Approved":
-                    return stageActions.Completed;
+                case "WaitForDocument":
+                    return this.canConfirmDocument
+                        ? stageActions.DocumentConfirm
+                        : stageActions.NoAction;
                     break;
                 case "Reject":
                     return stageActions.Rejected;
@@ -388,20 +411,21 @@ export default {
         canSubmitContract(item) {
             //Must not have contract attached
             if (item.Induscontract) return false;
-            if(!item.InduscontractTemp) return false;
-            return !/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(item.InduscontractTemp);
+            if (!item.InduscontractTemp) return false;
+            return !/[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(
+                item.InduscontractTemp
+            );
         },
         async submitContract(item) {
             if (!this.canSubmitContract(item)) return;
             //Submit logic
             try {
-               await axios.post(API.CaseUpdateIndusContract, {
-                   Id: item.OrderId,
-                   Contract: item.InduscontractTemp
-               });
-               //Refresh
-               await this.loadVM();
-
+                await axios.post(API.CaseUpdateIndusContract, {
+                    Id: item.OrderId,
+                    Contract: item.InduscontractTemp
+                });
+                //Refresh
+                await this.loadVM();
             } catch (error) {
                 console.log(error);
                 this.$emit("showinfo", "Cập nhật số hợp đồng thất bại");
@@ -410,13 +434,26 @@ export default {
         async customerConfirm(item, confirm) {
             //Confirm logic
             try {
-               await axios.post(API.CaseCustomerConfirm, {
-                   Id: item.OrderId,
-                   Confirm: confirm
-               });
-               //Refresh
-               await this.loadVM();
-
+                await axios.post(API.CaseCustomerConfirm, {
+                    Id: item.OrderId,
+                    Confirm: confirm
+                });
+                //Refresh
+                await this.loadVM();
+            } catch (error) {
+                console.log(error);
+                this.$emit("showinfo", "Cập nhật thất bại");
+            }
+        },
+        async documentConfirm(item, confirm) {
+            //Confirm logic
+            try {
+                await axios.post(API.CaseDocumentConfirm, {
+                    Id: item.OrderId,
+                    Confirm: confirm
+                });
+                //Refresh
+                await this.loadVM();
             } catch (error) {
                 console.log(error);
                 this.$emit("showinfo", "Cập nhật thất bại");
@@ -426,13 +463,12 @@ export default {
             //Assign logic
             //Confirm logic
             try {
-               await axios.post(API.CaseAssign, {
-                   Id: item.OrderId,
-                   UserId: item.assignTo.UserId
-               });
-               //Refresh
-               await this.loadVM();
-
+                await axios.post(API.CaseAssign, {
+                    Id: item.OrderId,
+                    UserId: item.assignTo.UserId
+                });
+                //Refresh
+                await this.loadVM();
             } catch (error) {
                 console.log(error);
                 this.$emit("showinfo", "Chia case thất bại");
@@ -512,8 +548,18 @@ export default {
 .td-item-middle tr td {
     vertical-align: middle;
 }
+.td-padding tr td {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.td-font tr td{
+    font-size: .827rem;
+}
 .width-14 {
     width: 14rem;
+}
+.width-11 {
+    width: 11rem;
 }
 .width-10 {
     width: 10rem;
@@ -537,4 +583,4 @@ export default {
 .lastrow-padding {
     height: 150px;
 }
-</style>
+</style>00

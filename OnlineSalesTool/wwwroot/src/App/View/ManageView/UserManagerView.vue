@@ -15,45 +15,45 @@
                         <thead>
                             <tr class="th-text-center th-no-top-border">
                                 <th>
-                                    <button class="btn btn-link" @click="orderByClicked('Username')">
+                                    <button class="btn btn-sm btn-link" @click="orderByClicked('Username')">
                                         <span v-html="headerOrderState('Username')"></span>Username
                                     </button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" @click="orderByClicked('Name')">
+                                    <button class="btn btn-sm btn-link" @click="orderByClicked('Name')">
                                         <span v-html="headerOrderState('Name')"></span>Họ tên
                                     </button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" @click="orderByClicked('Role')">
+                                    <button class="btn btn-sm btn-link" @click="orderByClicked('Role')">
                                         <span v-html="headerOrderState('Role')"></span>Loại
                                     </button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" @click="orderByClicked('Active')">
+                                    <button class="btn btn-sm btn-link" @click="orderByClicked('Active')">
                                         <span v-html="headerOrderState('Active')"></span>Kích hoạt
                                     </button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link text-dark">HR</button>
+                                    <button class="btn btn-sm btn-link text-dark">HR</button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link text-dark">SĐT 1</button>
+                                    <button class="btn btn-sm btn-link text-dark">SĐT 1</button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link text-dark">SĐT 2</button>
+                                    <button class="btn btn-sm btn-link text-dark">SĐT 2</button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" @click="orderByClicked('Manager')">
+                                    <button class="btn btn-sm btn-link" @click="orderByClicked('Manager')">
                                         <span v-html="headerOrderState('Manager')"></span>Quản lý
                                     </button>
                                 </th>
                                 <th>
-                                    <div class="btn btn-link text-dark">Chỉnh sửa</div>
+                                    <div class="btn btn-sm btn-link text-dark">Chỉnh sửa</div>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="td-item-middle">
+                        <tbody class="td-item-middle td-padding td-font">
                             <template v-if="hasItems">
                                 <tr class="fixed-height" v-for="item in items" :key="item.UserId">
                                     <!--Username-->
@@ -300,7 +300,7 @@
                                         :prev-link-class="'page-link'"
                                         :next-class="'page-item'"
                                         :next-link-class="'page-link'"
-                                        :container-class="'pagination no-bottom-margin justify-content-center'">
+                                        :container-class="'pagination pagination-sm no-bottom-margin justify-content-center'">
                                     </page-nav>
                                 </td>
                             </tr>
@@ -539,6 +539,13 @@ export default {
 }
 .td-item-middle tr td {
     vertical-align: middle;
+}
+.td-padding tr td {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.td-font tr td{
+    font-size: .827rem;
 }
 .th-no-top-border th {
     border-top: none !important;

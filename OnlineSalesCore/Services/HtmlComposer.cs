@@ -6,15 +6,14 @@ namespace OnlineSalesCore.Services
 {
     public class HtmlComposer : IHtmlComposer
     {
-        private readonly HtmlDocument _doc;
+        private HtmlDocument _doc;
         //Keeps track of important nodes
         private HtmlNode _body;
         private HtmlNode _head;
         private HtmlNode _html;
         public HtmlComposer()
         {
-            _doc = new HtmlAgilityPack.HtmlDocument();
-            Init();
+            Reset();
         }
         public void AppendText(string tag, string text)
         {
@@ -35,7 +34,15 @@ namespace OnlineSalesCore.Services
         }
         public override string ToString()
         {
-            return _doc.DocumentNode.WriteTo();
+            var html = _doc.DocumentNode.WriteTo();
+            Reset();
+            return html;
+        }
+
+        public void Reset()
+        {
+             _doc = new HtmlAgilityPack.HtmlDocument();
+            Init();
         }
     }
 }

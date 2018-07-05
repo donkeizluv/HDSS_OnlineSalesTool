@@ -16,7 +16,8 @@ export default [
         role: 'CA',
         can: [
             Permission.CustomerConfirm,
-            Permission.EnterContractNumber
+            Permission.EnterContractNumber,
+            Permission.DocumentConfirm
         ]
     },
     {

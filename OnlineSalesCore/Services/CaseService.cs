@@ -13,6 +13,8 @@ using OnlineSalesCore.ViewModels;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using OnlineSalesCore.Options;
+using Microsoft.Extensions.Options;
 
 namespace OnlineSalesCore.Services
 {
@@ -23,12 +25,14 @@ namespace OnlineSalesCore.Services
         private readonly IRoleCache _roleCache;
         private readonly IIndusService _indus;
         private readonly IMailerService _mail;
+        private readonly CaseOptions _options;
         public CaseService(OnlineSalesContext context,
             IHttpContextAccessor httpContext,
             IRoleCache roleCache,
             ILogger<CaseService> logger,
             ListQuery<OnlineOrder, CaseDTO> q,
             IIndusService indus,
+            IOptions<CaseOptions> options,
             IMailerService mail)
             : base(httpContext, context)
         {
@@ -37,6 +41,7 @@ namespace OnlineSalesCore.Services
             _roleCache = roleCache;
             _indus = indus;
             _mail = mail;
+            _options = options.Value;
         }
         public async Task UpdateContract(UpdateContractDTO dto)
         {
@@ -50,8 +55,8 @@ namespace OnlineSalesCore.Services
                 .Where(o => o.OrderId == dto.Id)
                 .Include(o => o.AssignUser)
                 .Include(o => o.Stage)
-                .SingleOrDefaultAsync() ?? 
-                    throw new BussinessException($"Order: {dto.Id} is not exist");;
+                .SingleOrDefaultAsync() ??
+                    throw new BussinessException($"Order: {dto.Id} is not exist"); ;
             if (order.AssignUser.UserId != UserId)
             {
                 throw new BussinessException($"Order: {dto.Id} is not assigned to this user");
@@ -72,11 +77,14 @@ namespace OnlineSalesCore.Services
             // }
             //Check INDUS contract exists
             //Check INDUS contract NatId == case NatId
-            var indusContract = await _indus.GetContract(dto.Contract) ??
-                throw new BussinessException($"Contract: {dto.Contract} is not exist");
-            if (string.Compare(indusContract.NatId, order.NatId, true) != 0)
+            if (!_options.NoNatIdCheck)
             {
-                throw new BussinessException($"Contract: {dto.Contract} customer nat id is not the same as order");
+                var indusContract = await _indus.GetContract(dto.Contract) ??
+                    throw new BussinessException($"Contract: {dto.Contract} is not exist");
+                if (string.Compare(indusContract.NatId, order.NatId, true) != 0)
+                {
+                    throw new BussinessException($"Contract: {dto.Contract} customer nat id is not the same as order");
+                }
             }
             //Proceed
             //Update order's contract number & stage
@@ -118,6 +126,37 @@ namespace OnlineSalesCore.Services
             _mail.MailNewAssign(order, assignee.Email, null);
 
         }
+        public async Task DocumentConfirm(CustomerConfirmDTO dto)
+        {
+            if (dto == null)
+            {
+                throw new ArgumentNullException(nameof(dto));
+            }
+            var order = await DbContext.OnlineOrder.Where(o => o.OrderId == dto.Id).SingleOrDefaultAsync() ??
+                throw new BussinessException($"Order: {dto.Id} is not exists");
+            if (order.StageId != (int)StageEnum.WaitForDocument)
+            {
+                throw new BussinessException($"Order: {dto.Id} stage is not valid for document confirm");
+            }
+            //Must be the assignee of case to confirm                
+            if (order.AssignUserId != UserId)
+            {
+                throw new BussinessException($"Order: {dto.Id} is not assigned to current user");
+            }
+            if (dto.Confirm)
+            {
+                //Proceed to wait for online bill
+                order.StageId = (int)StageEnum.WaitForOnlineBill;
+            }
+            else
+            {
+                //Back to enter contract number
+                order.StageId = (int)StageEnum.EnterContractNumber;
+                //Clear indus contract
+                order.Induscontract = null;
+            }
+            await DbContext.SaveChangesAsync();
+        }
         public async Task Confirm(CustomerConfirmDTO dto)
         {
             if (dto == null)
@@ -127,17 +166,17 @@ namespace OnlineSalesCore.Services
             var order = await DbContext.OnlineOrder.Where(o => o.OrderId == dto.Id).SingleOrDefaultAsync() ??
                 throw new BussinessException($"Order: {dto.Id} is not exists");
             //Stage check
-            if(order.StageId != (int)StageEnum.CustomerConfirm)
+            if (order.StageId != (int)StageEnum.CustomerConfirm)
             {
-                throw new BussinessException($"Order: {dto.Id} stage is not valid for comfirming");
+                throw new BussinessException($"Order: {dto.Id} stage is not valid for customer confirm");
             }
             //Must be the assignee of case to confirm                
-            if(order.AssignUserId != UserId)
+            if (order.AssignUserId != UserId)
             {
                 throw new BussinessException($"Order: {dto.Id} is not assigned to current user");
             }
             //Proceed
-            if(dto.Confirm)
+            if (dto.Confirm)
             {
                 order.StageId = (int)StageEnum.EnterContractNumber;
             }

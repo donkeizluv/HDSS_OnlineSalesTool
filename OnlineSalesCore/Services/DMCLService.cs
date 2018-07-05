@@ -41,9 +41,10 @@ namespace OnlineSalesCore.Services
                 .Where(o => o.OrderGuid == guid)
                 .Include(o => o.Stage)
                 .FirstOrDefaultAsync();
-            if(order == null)
+            if (order == null)
                 throw new BussinessException($"Cant find order of {guid}");
-            return new OrderDTO() {
+            return new OrderDTO()
+            {
                 Guid = order.OrderGuid,
                 FullName = order.Name,
                 NatId = order.NatId,
@@ -59,16 +60,16 @@ namespace OnlineSalesCore.Services
                 Status = DMCL_StageTranslate(order.Stage.Stage).ToString(),
                 ContractNumber = order.Induscontract,
                 Signature = _apiAuth.Forge(order.OrderGuid)
-            };      
+            };
         }
         private DMCLEnum DMCL_StageTranslate(string stageName)
         {
-            if(!Enum.TryParse<StageEnum>(stageName, out var stage))
+            if (!Enum.TryParse<StageEnum>(stageName, out var stage))
                 throw new ArgumentException($"Invalid stage name of {stageName}");
             switch (stage)
             {
-                case StageEnum.Approved:
-                    return DMCLEnum.APPROVED;
+                case StageEnum.WaitForDocument:
+                    return DMCLEnum.PROCESSING;
                 case StageEnum.CustomerConfirm:
                     return DMCLEnum.PROCESSING;
                 case StageEnum.EnterContractNumber:
@@ -78,15 +79,15 @@ namespace OnlineSalesCore.Services
                 case StageEnum.NotAssigned:
                     return DMCLEnum.PROCESSING;
                 case StageEnum.WaitForOnlineBill:
-                    return DMCLEnum.PROCESSING;
+                    return DMCLEnum.APPROVED; //Final
                 case StageEnum.WaitForFinalStatus:
                     return DMCLEnum.PROCESSING;
-                case StageEnum.Reject:
+                case StageEnum.Reject: //Final
                     return DMCLEnum.REJECT;
                 case StageEnum.CustomerReject:
-                    return DMCLEnum.CUSTOMER_REJECT;
+                    return DMCLEnum.CUSTOMER_REJECT; //Final
                 case StageEnum.Completed:
-                    return DMCLEnum.APPROVED;
+                    return DMCLEnum.APPROVED; //Final
                 default:
                     _logger.LogInformation($"Unexspected stage: [{stage}] -> use default case {DMCLEnum.PROCESSING}");
                     return DMCLEnum.PROCESSING;
@@ -94,9 +95,9 @@ namespace OnlineSalesCore.Services
         }
         public async Task Push(IEnumerable<OrderDTO> orders)
         {
-            if(orders == null) throw new ArgumentNullException();
+            if (orders == null) throw new ArgumentNullException();
             //Check duplicate guid
-            if(await DbContext.OnlineOrder.AnyAsync(o => orders.ToList().Any(oo => oo.Guid == o.OrderGuid)))
+            if (await DbContext.OnlineOrder.AnyAsync(o => orders.ToList().Any(oo => oo.Guid == o.OrderGuid)))
             {
                 throw new BussinessException("Duplicates of guid");
             }
@@ -108,7 +109,8 @@ namespace OnlineSalesCore.Services
                 .Distinct()
                 .ToListAsync();
             //Map to app orders
-            var appOrders = orders.Select(o => new OnlineOrder(){
+            var appOrders = orders.Select(o => new OnlineOrder()
+            {
                 OrderGuid = o.Guid,
                 Name = o.FullName,
                 NatId = o.NatId,
@@ -129,7 +131,7 @@ namespace OnlineSalesCore.Services
             foreach (var item in appOrders)
             {
                 (var matchFound, var users, var reason) = await _matcher.GetUserMatchedSchedule(item.PosCode, currentTime);
-                if(matchFound)
+                if (matchFound)
                 {
                     //Assigned OK -> CA ask customer's comfirmation
                     item.StageId = (int)StageEnum.CustomerConfirm;
@@ -145,7 +147,7 @@ namespace OnlineSalesCore.Services
                     _logger.LogDebug($"Cant find assignable users for order guid {item.OrderGuid} at {currentTime.ToString()}");
                     //Notify BDS if POS found
                     var bds = foundPos.FirstOrDefault(p => p.PosId == item.PosId)?.User;
-                    if(bds != null)
+                    if (bds != null)
                     {
                         _mail.MailNotAssignable(item, bds.Email, reason, null);
                         // continue;
@@ -169,9 +171,9 @@ namespace OnlineSalesCore.Services
                 .Include(o => o.AssignUser)
                 .Include(o => o.Stage)
                 .SingleOrDefaultAsync();
-            if(order == null) throw new BussinessException($"Cant find order of {onlineBill.Guid}");
+            if (order == null) throw new BussinessException($"Cant find order of {onlineBill.Guid}");
             //Only allow when WaitForOnlineBill
-            if(order.StageId != (int)StageEnum.WaitForOnlineBill)
+            if (order.StageId != (int)StageEnum.WaitForOnlineBill)
                 throw new BussinessException($"Order is not ready for bill number, current stage: {order.Stage.Stage}");
             order.OrderNumber = onlineBill.OnlineBill;
             order.StageId = (int)StageEnum.Completed;

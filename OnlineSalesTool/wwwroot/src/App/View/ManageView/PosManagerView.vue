@@ -15,35 +15,35 @@
                         <thead>
                             <tr class="th-text-center th-no-top-border">
                                 <th>
-                                    <button class="btn btn-link" @click="orderByClicked('PosName')">
+                                    <button class="btn btn-sm btn-link" @click="orderByClicked('PosName')">
                                         <span v-html="headerOrderState('PosName')"></span>Tên POS
                                     </button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" @click="orderByClicked('PosCode')">
+                                    <button class="btn btn-sm btn-link" @click="orderByClicked('PosCode')">
                                         <span v-html="headerOrderState('PosCode')"></span>Pos Code
                                     </button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link text-dark">Địa chỉ</button>
+                                    <button class="btn btn-sm btn-sm btn-link text-dark">Địa chỉ</button>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link text-dark">Phone</button>
+                                    <button class="btn btn-sm btn-link text-dark">Phone</button>
                                 </th>
                                 <th>
-                                    <div class="btn btn-link text-dark">Ca trực</div>
+                                    <div class="btn btn-sm btn-link text-dark">Ca trực</div>
                                 </th>
                                 <th>
-                                    <button class="btn btn-link" @click="orderByClicked('Manager')">
+                                    <button class="btn btn-sm btn-link" @click="orderByClicked('Manager')">
                                         <span v-html="headerOrderState('Manager')"></span>BDS
                                     </button>
                                 </th>
                                 <th>
-                                    <div class="btn btn-link text-dark">Chỉnh sửa</div>
+                                    <div class="btn btn-sm btn-link text-dark">Chỉnh sửa</div>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="td-item-middle">
+                        <tbody class="td-item-middle td-padding td-font">
                             <template v-if="hasItems">
                                 <tr class="fixed-height" v-for="item in items" :key="item.PosId">
                                 <!--PosName-->
@@ -287,7 +287,7 @@
                                             :prev-link-class="'page-link'"
                                             :next-class="'page-item'"
                                             :next-link-class="'page-link'"
-                                            :container-class="'pagination no-bottom-margin justify-content-center'">
+                                            :container-class="'pagination pagination-sm no-bottom-margin justify-content-center'">
                                     </page-nav>
                                 </td>
                             </tr>
@@ -542,7 +542,13 @@ export default {
 .td-item-middle tr td {
     vertical-align: middle;
 }
-
+.td-padding tr td {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.td-font tr td{
+    font-size: .827rem;
+}
 .th-no-top-border th {
     border-top: none !important;
 }

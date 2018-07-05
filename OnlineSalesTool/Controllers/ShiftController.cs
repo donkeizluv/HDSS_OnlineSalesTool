@@ -41,7 +41,7 @@ namespace OnlineSalesTool.Controllers
         [Authorize]
         public async Task<IActionResult> Create([FromBody]ScheduleContainer schedule)
         {
-            if (!ModelState.IsValid || schedule == null) return BadRequest("Invalid post data");
+            if (!ModelState.IsValid) return BadRequest();
             try
             {
                 var id = await _service.Create(schedule);
@@ -49,7 +49,7 @@ namespace OnlineSalesTool.Controllers
             }
             catch (BussinessException ex) //Fail bussiness check
             {
-                Helper.Utility.LogException(ex, _logger);
+                _logger.LogDebug(ex.Message);
                 return BadRequest(ex.Message);
             }
             catch (DbUpdateException ex)

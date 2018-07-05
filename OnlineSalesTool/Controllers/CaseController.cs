@@ -73,6 +73,23 @@ namespace OnlineSalesTool.Controllers
             }
 
         }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> DocumentConfirm([FromBody]CustomerConfirmDTO dto)
+        {
+            if(!ModelState.IsValid) return BadRequest();
+            try
+            {
+                await _service.DocumentConfirm(dto);
+                return Ok();
+            }
+            catch (BussinessException ex)
+            {
+                _logger.LogDebug(ex.Message);
+                return BadRequest(ex.Message);
+            }
+
+        }
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> Get(

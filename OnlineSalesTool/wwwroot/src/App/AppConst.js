@@ -20,6 +20,7 @@ export const Permission = {
     Management: 'Management',
     //Case view
     CustomerConfirm: "CustomerConfirm",
+    DocumentConfirm: "DocumentConfirm",
     EnterContractNumber: "EnterContractNumber",
     AssignCase: "AssignCase",
     //Schedules

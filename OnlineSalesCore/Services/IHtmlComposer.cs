@@ -6,5 +6,6 @@ namespace OnlineSalesCore.Services
     public interface IHtmlComposer
     {
         void AppendText(string tag, string text);
+        void Reset();
     }
 }

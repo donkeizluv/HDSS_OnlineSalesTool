@@ -12,5 +12,6 @@ namespace OnlineSalesCore.Services
         Task UpdateContract(UpdateContractDTO dto);
         Task Assign(CaseAssignDTO dto);
         Task Confirm(CustomerConfirmDTO dto);
+        Task DocumentConfirm(CustomerConfirmDTO dto);
     }
 }

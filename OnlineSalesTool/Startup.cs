@@ -131,7 +131,8 @@ namespace OnlineSalesTool
             //Inject HttpAccessor
             services.AddHttpContextAccessor();
             //Inject service
-            services.AddScoped<IIndusService, IndusService>();
+            // services.AddScoped<IIndusService, IndusService>();
+            services.AddScoped<IIndusService, MockIndusService>();
             services.AddScoped<IContextAwareService, ContextAwareService>();
             services.AddScoped<IScheduleService, ScheduleService>();
             services.AddScoped<IAuthService, AuthService>();
@@ -165,10 +166,17 @@ namespace OnlineSalesTool
             var mailerSection = Configuration.GetSection(nameof(MailerOptions));
             var receiverSection = mailerSection.GetSection(nameof(MailerOptions.Receivers));
             var shiftScheduleOptions = Configuration.GetSection(nameof(ShiftScheduleOptions));
+            var caseOptions = Configuration.GetSection(nameof(CaseOptions));
             //Shift scheudle
-            services.Configure<ShiftScheduleOptions>(o => {
+            services.Configure<ShiftScheduleOptions>(o =>
+            {
                 o.Start = int.Parse(shiftScheduleOptions[nameof(ShiftScheduleOptions.Start)]);
                 o.End = int.Parse(shiftScheduleOptions[nameof(ShiftScheduleOptions.End)]);
+            });
+            //Case options
+            services.Configure<CaseOptions>(o =>
+            {
+                o.NoNatIdCheck = caseOptions[nameof(CaseOptions.NoNatIdCheck)] == "1";
             });
             //Mailer
             services.Configure<MailerOptions>(o =>

@@ -22,5 +22,6 @@
     CaseVM: '/API/Case/Get',
     CaseUpdateIndusContract: '/API/Case/UpdateContract',
     CaseCustomerConfirm: '/API/Case/Confirm',
+    CaseDocumentConfirm: '/API/Case/DocumentConfirm',
     CaseAssign: '/API/Case/Assign'
 }

@@ -91,7 +91,7 @@ namespace OnlineSalesCore.Jobs
                             _logger.LogInformation($"Case {aCase.OrderId} has {activities.Count()}");
                             if (IsReject(activities))
                             {
-                                _logger.LogDebug($"Contract {aCase} is Rejected");
+                                _logger.LogDebug($"Contract {aCase.Induscontract} is Rejected");
                                 //Final status Reject
                                 aCase.StageId = (int)StageEnum.Reject;
                                 stopTracking.Add(aCase.Induscontract);
@@ -104,33 +104,34 @@ namespace OnlineSalesCore.Jobs
                             }
                             if (IsContractPrinting(activities))
                             {
-                                _logger.LogDebug($"Contract {aCase} is ContractPrinting");
-                                //Move to next stage
-                                aCase.StageId = (int)StageEnum.WaitForOnlineBill;
-                                stopTracking.Add(aCase.Induscontract);
-                                //Notify
-                                mailService.MailStageChanged(aCase,
-                                   "CONTRACT PRINTING",
-                                   aCase.AssignUser.Email,
-                                   null);
-                                //Update lastest INDUS data back to order
+                                _logger.LogDebug($"Contract {aCase.Induscontract} is ContractPrinting");
                                 var indusContract = await indus.GetContract(aCase.Induscontract);
                                 if(indusContract == null)
                                 {
+                                    //Pend this case until this problem is resolved
                                     _logger.LogError($"Cant get indus contract data of {aCase.Induscontract}");
                                     continue;
                                 }
+                                //Move to next stage
+                                aCase.StageId = (int)StageEnum.WaitForDocument;
+                                stopTracking.Add(aCase.Induscontract);
+                                //Update lastest INDUS data back to order
                                 aCase.Name = indusContract.FullName;
                                 aCase.Product = indusContract.Product;
                                 aCase.Amount = indusContract.Amount;
                                 aCase.Paid = indusContract.Paid;
                                 aCase.LoanAmount = indusContract.LoanAmount;
                                 aCase.Term = indusContract.Term;
+                                //Notify
+                                mailService.MailStageChanged(aCase,
+                                   "CONTRACT PRINTING",
+                                   aCase.AssignUser.Email,
+                                   null);
                                 continue;
                             }
                             if (IsAmended(activities))
                             {
-                                _logger.LogDebug($"Contract {aCase} is Amended");
+                                _logger.LogDebug($"Contract {aCase.Induscontract} is Amended");
                                 var amend = await context.AmendedContracts
                                     .FirstOrDefaultAsync(a => a.ContractNumber == aCase.Induscontract);
                                 if (amend == null || string.IsNullOrEmpty(amend.NewContractNumber))
@@ -139,6 +140,9 @@ namespace OnlineSalesCore.Jobs
                                     _logger.LogDebug($"New contract number for amended case {aCase.Induscontract} is not available");
                                     continue;
                                 }
+                                _logger.LogDebug($"Replace {aCase.Induscontract} with {amend.NewContractNumber}");
+                                //Stop syncing old number
+                                stopTracking.Add(aCase.Induscontract);
                                 //Update new contract number
                                 aCase.Induscontract = amend.NewContractNumber;
                                 //Follow new contract number
@@ -146,8 +150,6 @@ namespace OnlineSalesCore.Jobs
                                     ContractNumber = amend.NewContractNumber,
                                     StartDate = now
                                 });
-                                //Stop syncing old number
-                                stopTracking.Add(aCase.Induscontract);
                                 continue;
                             }
                         }

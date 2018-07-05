@@ -36,6 +36,7 @@ namespace OnlineSalesCore.Services
                 throw new ArgumentException("message", nameof(bdsEmail));
             }
             #endregion
+            _composer.Reset();
             _composer.AppendText("p", $"Cant assign case from: {order.Name} CMND: {order.NatId}");
             _composer.AppendText("p", "Please assign manually.");
             if(!string.IsNullOrEmpty(reason))
@@ -70,6 +71,7 @@ namespace OnlineSalesCore.Services
         //         throw new ArgumentException("message", nameof(emails));
         //     }
         //     #endregion
+        //     _composer.Reset();
         //     _composer.AppendText("p", $"POS {order.PosCode} is not registered on the system.");
         //     _composer.AppendText("p", "Please assign manually.");
         //     var mail = new MailMessage()
@@ -98,6 +100,7 @@ namespace OnlineSalesCore.Services
                 throw new ArgumentException("message", nameof(assignTo));
             }
             #endregion
+            _composer.Reset();
             _composer.AppendText("p", $"New order from: {order.Name} CMND: {order.NatId}");
             _composer.AppendText("p", $"Assigned to: {assignTo}");
             var mail = new MailMessage()
@@ -133,6 +136,7 @@ namespace OnlineSalesCore.Services
                 throw new ArgumentException("message", nameof(billNumber));
             }
             #endregion
+            _composer.Reset();
             _composer.AppendText("p", $"Case {order.Name} CMND: {order.NatId}");
             _composer.AppendText("p", $"Contract number: {order.Induscontract ?? "null"}");
             _composer.AppendText("p", $"Bill number: {billNumber}");
@@ -169,6 +173,7 @@ namespace OnlineSalesCore.Services
                 throw new ArgumentException("message", nameof(to));
             }
             #endregion
+            _composer.Reset();
             _composer.AppendText("p", $"Case {order.Name} CMND: {order.NatId}");
             _composer.AppendText("p", $"Contract number: {order.Induscontract ?? "null"}");
             _composer.AppendText("p", $"Status changed to: {stage}");
