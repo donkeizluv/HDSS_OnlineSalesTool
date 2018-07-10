@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OnlineSalesCore.Services
 {
-    public interface IIndusService : IDisposable
+    public interface IIndusService
     {
         Task<IndusContractDTO> GetContract(string contractNumber);
     }

@@ -102,10 +102,12 @@
                                         <!-- Action set according to role/stage -->
                                         <!-- Makes this a component -->
                                         <td>
-                                            <div class="text-center width-3 mx-auto" v-if="actionCode(item.Stage) == stageActions.NoAction">
+                                            <div class="text-center width-3 mx-auto"
+                                                v-if="actionCode(item.Stage) == stageActions.NoAction">
                                                 <span class="fas fa-ellipsis-h"></span>
                                             </div>
-                                            <div class="text-center mx-auto" v-if="actionCode(item.Stage) == stageActions.EnterContractNumber">
+                                            <div class="text-center mx-auto"
+                                                v-if="actionCode(item.Stage) == stageActions.EnterContractNumber">
                                                 <div class="form-inline justify-content-center">
                                                     <div class="form-group width-11">
                                                         <div class="input-group">
@@ -126,7 +128,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="text-center width-8 mx-auto" v-if="actionCode(item.Stage) == stageActions.CustomerConfirm">
+                                            <div class="text-center width-8 mx-auto"
+                                                v-if="actionCode(item.Stage) == stageActions.CustomerConfirm">
                                                     <div class="form-inline justify-content-center">
                                                     <div class="form-group">
                                                         <b-button class="mr-2"
@@ -143,7 +146,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="text-center width-8 mx-auto" v-if="actionCode(item.Stage) == stageActions.DocumentConfirm">
+                                            <div class="text-center width-8 mx-auto"
+                                                v-if="actionCode(item.Stage) == stageActions.DocumentConfirm">
                                                     <div class="form-inline justify-content-center">
                                                     <div class="form-group">
                                                         <b-button class="mr-2"
@@ -552,8 +556,8 @@ export default {
     padding-left: 5px;
     padding-right: 5px;
 }
-.td-font tr td{
-    font-size: .827rem;
+.td-font tr td {
+    font-size: 0.827rem;
 }
 .width-14 {
     width: 14rem;

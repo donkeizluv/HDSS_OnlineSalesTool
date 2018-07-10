@@ -8,8 +8,8 @@ namespace OnlineSalesTool.Filter
     /// Log unhandled exceptions
     /// </summary>
     public class LogExceptionFilterAttribute : ExceptionFilterAttribute
-    {
-        private readonly string _name;
+    {        private readonly string _name;
+
         public LogExceptionFilterAttribute(string name)
         {
             _name = name;

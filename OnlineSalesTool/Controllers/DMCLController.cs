@@ -60,6 +60,7 @@ namespace OnlineSalesTool.Controllers
         {
             if(!ModelState.IsValid) return BadRequest();
             //Check auth
+            //TODO: move this do custom middleware
             if(orders.Any(o => !_apiAuth.Check(o.Signature, o.Guid)))
                 return Unauthorized();
             try

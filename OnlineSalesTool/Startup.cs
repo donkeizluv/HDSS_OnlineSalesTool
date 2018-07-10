@@ -25,12 +25,14 @@ using OnlineSalesTool.AuthToken;
 using System;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace OnlineSalesTool
 {
     public class Startup
     {
         public IConfiguration Configuration { get; }
+        public Microsoft.AspNetCore.Hosting.IHostingEnvironment HostingEnvironment { get; private set;}
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -132,7 +134,7 @@ namespace OnlineSalesTool
             services.AddHttpContextAccessor();
             //Inject service
             // services.AddScoped<IIndusService, IndusService>();
-            services.AddScoped<IIndusService, MockIndusService>();
+            services.AddScoped<IIndusService, IndusService>();
             services.AddScoped<IContextAwareService, ContextAwareService>();
             services.AddScoped<IScheduleService, ScheduleService>();
             services.AddScoped<IAuthService, AuthService>();
@@ -167,6 +169,13 @@ namespace OnlineSalesTool
             var receiverSection = mailerSection.GetSection(nameof(MailerOptions.Receivers));
             var shiftScheduleOptions = Configuration.GetSection(nameof(ShiftScheduleOptions));
             var caseOptions = Configuration.GetSection(nameof(CaseOptions));
+            var indusOptions = Configuration.GetSection(nameof(IndusOptions));
+            //Indus options
+            services.Configure<IndusOptions>(o =>
+            {
+                o.ConnectionString = indusOptions[nameof(IndusOptions.ConnectionString)];
+                o.ContractDetailScript = indusOptions[nameof(IndusOptions.ContractDetailScript)];
+            });
             //Shift scheudle
             services.Configure<ShiftScheduleOptions>(o =>
             {

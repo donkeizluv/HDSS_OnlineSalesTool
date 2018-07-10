@@ -26,7 +26,7 @@ namespace OnlineSalesTool.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateContract([FromBody]UpdateContractDTO dto)
         {
-            if(!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return BadRequest();
             try
             {
                 await _service.UpdateContract(dto);
@@ -43,7 +43,7 @@ namespace OnlineSalesTool.Controllers
         [Authorize]
         public async Task<IActionResult> Assign([FromBody]CaseAssignDTO dto)
         {
-            if(!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return BadRequest();
             try
             {
                 await _service.Assign(dto);
@@ -60,7 +60,7 @@ namespace OnlineSalesTool.Controllers
         [Authorize]
         public async Task<IActionResult> Confirm([FromBody]CustomerConfirmDTO dto)
         {
-            if(!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return BadRequest();
             try
             {
                 await _service.Confirm(dto);
@@ -77,7 +77,7 @@ namespace OnlineSalesTool.Controllers
         [Authorize]
         public async Task<IActionResult> DocumentConfirm([FromBody]CustomerConfirmDTO dto)
         {
-            if(!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return BadRequest();
             try
             {
                 await _service.DocumentConfirm(dto);
